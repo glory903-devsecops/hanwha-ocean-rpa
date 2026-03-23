@@ -76,10 +76,10 @@ class DashboardEngine:
             cells=dict(values=[ai_insights], fill_color="#1a1a1a", font=dict(color=self.config.COLOR_ACCENT, size=13), align='left', height=40)
         ), row=3, col=2)
 
-        # Balanced Professional Annotations (v2.6)
-        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.64, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.26, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.26, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
+        # Balanced Professional Annotations (v2.6.2)
+        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.70, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
+        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.36, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
+        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.36, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
 
         fig.update_layout(
             paper_bgcolor=self.config.COLOR_BACKGROUND, plot_bgcolor=self.config.COLOR_BACKGROUND, 
@@ -88,12 +88,12 @@ class DashboardEngine:
             title_font=dict(size=28, color=self.config.COLOR_ORANGE),
             title_x=0.5, title_y=0.98,
             height=self.config.DASHBOARD_HEIGHT, template="plotly_dark", showlegend=False,
-            margin=dict(t=120, b=40, l=60, r=60) 
+            margin=dict(t=120, b=60, l=60, r=60) 
         )
         
-        # Prevent clipping and optimize labels
-        fig.update_yaxes(range=[0, 115], row=2, col=1)
-        fig.update_xaxes(tickangle=45, tickfont=dict(size=8), row=2, col=1)
+        # Prevent clipping and optimize labels (90deg for many items)
+        fig.update_yaxes(range=[0, 118], row=2, col=1)
+        fig.update_xaxes(tickangle=90, tickfont=dict(size=7), row=2, col=1)
 
         output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
         
