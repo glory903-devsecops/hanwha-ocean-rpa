@@ -1,0 +1,44 @@
+{
+  "dashboard_name": "Hanwha Ocean Smart Yard Control Center",
+  "version": "1.0",
+  "last_updated": "2026-03-23T07:10:00Z",
+  "data_sources": [
+    {
+      "name": "Dock Status (Real-time)",
+      "file": "dock_status.csv",
+      "refresh_frequency": "Every 1 hour",
+      "columns": ["도크", "공정률", "현재작업", "안전이슈"]
+    },
+    {
+      "name": "Safety Training Master",
+      "file": "safety_training_master.xlsx",
+      "refresh_frequency": "Daily",
+      "key_columns": ["WorkerID", "Department", "TrainingStatus"]
+    }
+  ],
+  "calculated_measures": [
+    {
+      "name": "Overall Avg Process",
+      "formula": "AVERAGE('Dock Status'[공정률])",
+      "format": "Percentage"
+    },
+    {
+      "name": "Safety Alert Rate",
+      "formula": "COUNTROWS(FILTER('Dock Status', 'Dock Status'[안전이슈] <> \"없음\")) / COUNTROWS('Dock Status')",
+      "format": "Percentage"
+    }
+  ],
+  "visuals": [
+    {
+      "type": "Gauge",
+      "title": "Yard Overall Progress",
+      "measure": "Overall Avg Process"
+    },
+    {
+      "type": "Clustered Bar Chart",
+      "title": "Progress by Dock",
+      "axis": "도크",
+      "values": "공정률"
+    }
+  ]
+}
