@@ -1,67 +1,66 @@
-# 🚢 Hanwha Ocean Smart Yard AX Portfolio (Enterprise Edition)
+# 🚢 Hanwha Ocean Smart Yard AX Portfolio (Final Release)
 
-한화오션의 **AX(AI Transformation) 전략**을 실무 수준의 개발 프로세스로 구현한 최종 결과물입니다. 본 프로젝트는 비즈니스 기획부터 시스템 설계, 자동화 구현, 서비스 배포까지의 **End-to-End A-Z 과정**을 전문적으로 증명합니다.
-
----
-
-## 📸 Dashboard Preview
-
-![Smart Yard Dashboard](docs/dashboard_screenshot.png)
-*한화 오렌지 브랜드 테마와 예측 AI(Predictive AX) 기능이 적용된 실시간 관제 대시보드입니다.*
+한화오션 거제/통영 야드의 실시간 공정 관리와 **AI 기반 의사 결정 지원(AX)** 시스템을 구축한 하이엔드 포트폴리오입니다.
 
 ---
 
-## 📂 Enterprise Project Structure
+## 📸 Dashboard Preview (Premium AX)
 
-실제 기업의 개발 표준을 준수하여 프로젝트를 구조화하였습니다.
-
-```text
-├── docs/                   # [기획/표준화] 비즈니스 및 기술 문서
-│   ├── BRD.md             # Business Requirements: 비즈니스 핵심 가치 정의
-│   ├── SDD.md             # System Design: 아키텍처 및 모듈 상세 설계
-│   ├── USER_MANUAL.md     # 운영 및 사용자 가이드
-│   └── dashboard_screenshot.png
-├── src/                    # [개발] 핵심 비즈니스 로직 및 RPA 봇
-│   ├── auto_dashboard.py  # 메인 대시보드 엔진 (One-Click)
-│   ├── rpa_bot.py         # Selenium 기반 데이터 수집 봇
-│   └── mock_portal.html   # 데이터 소스 시뮬레이션
-├── tests/                  # [QA] 데이터 무결성 검증 환경
-│   └── test_pbi_ready.py  # 데이터 유효성 자동 검사
-├── data/                   # [저장] 수집 및 처리된 데이터 폴더
-└── smart_yard_dashboard.html # 최종 결과물 (배포용 독립 HTML)
-```
+![Smart Yard AX Dashboard](docs/dashboard_premium.png)
+*한화 브랜드 테마와 AI Insight 패널이 적용된 최종 대시보드입니다.*
 
 ---
 
-## 📈 실무 중심의 개발 프로세스 (A to Z)
+## 🧭 개발 프로세스 및 워크플로우 (A to Z)
 
-본 프로젝트는 다음과 같은 기업용 개발 절차를 준수하여 진행되었습니다.
+입문자도 이해할 수 있도록 실제 데이터가 어떻게 흐르는지 정리하였습니다.
 
-### 1단계: 비즈니스 기획 (Planning)
-- **[BRD 확인](docs/BRD.md)**: 한화오션의 AX 전략을 분석하여 비즈니스 페인 포인트(데이터 수동 취합, 안전 사고 지연) 도출 및 해결 방안 수립.
+### 1단계: 데이터 소스 (DB & Portal)
+- **대상**: 야드 현장의 도크별 공정 기록 사내 포털(`src/mock_portal.html`) 및 엑셀 문서.
+- **방식**: 실제 기업 환경을 모사하여 30개 이상의 구역(거제 1~3도크, 통영 야드 등) 데이터를 대형화하여 준비했습니다.
 
-### 2단계: 시스템 설계 (Design)
-- **[SDD 확인](docs/SDD.md)**: RPA -> Python Processing -> Interactive Visualization으로 이어지는 데이터 파이프라인 설계 및 데이터 명세 정의.
+### 2단계: RPA 자동 수집 및 정제
+- **도구**: Selenium (Python)
+- **흐름**: 
+    1. RPA 봇이 웹 포털에 접속하여 실시간 공정률과 안전 이슈를 텍스트로 읽어옵니다.
+    2. 수집된 데이터를 분석이 용이한 CSV 형식(`data/dock_status.csv`)으로 자동 저장합니다.
 
-### 3단계: 자동화 구현 (Implementation)
-- **RPA 수집**: Selenium을 이용해 웹 환경의 데이터를 사람처럼 정교하게 수집.
-- **예측 로직**: 현재 조업 속도를 기반으로 한 **D-Day 예측 알고리즘** 구현.
-- **Premium UI**: Plotly를 활용하여 브랜드 가치를 높이는 하이엔드 시각화 결과 도출.
+### 3단계: AI 데이터 시뮬레이션 및 분석
+- **도구**: Pandas, NumPy
+- **흐름**: 
+    - **예측 AI**: 현재 조업 속도를 분석하여 프로젝트의 **최종 완공일(D-Day)**을 예측합니다.
+    - **의사결정 AI**: 흩어진 데이터를 종합 분석하여 "인력 재배치가 필요한 도크"나 "안전 점검이 시급한 구역"을 AI가 직접 제안합니다.
 
-### 4단계: 검증 및 배포 (QA & Release)
-- **자동 검증**: BI 툴 연동 전 데이터 Integrity 체크 절차 통과.
-- **GitHub 배포**: 형상 관리 및 문서화 통결.
+### 4단계: 프리미엄 시각화 (Command Center)
+- **도구**: Plotly Interactive
+- **결과**: 고위 의사결정권자가 야드 전체 상황을 한눈에 파악하고, AI의 가이드를 받아 즉각적인 리소스 조정을 결정할 수 있는 커맨드 센터를 구축했습니다.
 
 ---
 
-## 🚀 Quick Execution
+## 📊 대시보드 데이터 상세 설명
 
-현직자/의사결정권자가 즉시 결과를 확인할 수 있도록 통합 자동화 도구를 제공합니다.
+- **Overall Yard Process**: 야드 전체의 평균 공정률입니다.
+- **Projected Completion Date**: 현재 진척 속도 기준, AI가 예측한 미래 완공 시점입니다. (D-Day 인디케이터 제공)
+- **AI Decision Support (AX Guidance)**: AI가 도출한 인사이트입니다. (예: "A야드 인력을 B도크로 이동 권장")
+- **Real-time Safety Alert**: 현장의 안전 위험을 리프레시 타임마다 실시간으로 모니터링합니다.
+
+---
+
+## 🚀 실행 및 확인 방법
 
 ```bash
 # 한화오션 RPA 루트 폴더에서 실행
 ./venv/bin/python3 src/auto_dashboard.py
 ```
+*실행 후 `smart_yard_dashboard.html` 파일이 생성되며 브라우저가 자동 실행됩니다.*
 
 ---
-*Developed by Hanwha Ocean IT Development Team Portfolio Sync.*
+
+## 📂 Enterprise Structure
+- `src/`: 핵심 로직 (RPA, 데이터 생성, 대시보드 엔진)
+- `docs/`: 전문 기획서 (BRD, SDD, 가이드, 스크린샷)
+- `tests/`: 데이터 무결성 검증 환경
+- `data/`: 수집/정제된 실무 데이터
+
+---
+*Developed for Hanwha Ocean AX Strategic Transformation Portfolio.*
