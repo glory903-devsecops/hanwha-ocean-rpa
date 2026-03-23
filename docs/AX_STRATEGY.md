@@ -1,4 +1,4 @@
-# 🧠 Hanwha Ocean AX Strategy & Roadmap (v2.5)
+# Hanwha Ocean AX Strategy & Roadmap (v2.5)
 
 한화오션의 AX(AI Transformation) 전략을 기반으로 한 스마트 야드 구축 로직 및 중장기 로드맵을 정의합니다.
 
