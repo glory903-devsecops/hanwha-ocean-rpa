@@ -1,52 +1,67 @@
-# 🚢 Hanwha Ocean Smart Yard AX Portfolio
+# 🚢 Hanwha Ocean Smart Yard AX Portfolio (Enterprise Edition)
 
-이 프로젝트는 한화오션의 **AX(AI Transformation) 전략**에 맞추어, 조선소 현장의 자율 주행 데이터 수집(RPA)과 인공지능 기반 공정 예측 시각화 시스템을 구축한 포트폴리오 프로젝트입니다.
+한화오션의 **AX(AI Transformation) 전략**을 실무 수준의 개발 프로세스로 구현한 최종 결과물입니다. 본 프로젝트는 비즈니스 기획부터 시스템 설계, 자동화 구현, 서비스 배포까지의 **End-to-End A-Z 과정**을 전문적으로 증명합니다.
 
-## 🌟 주요 특징 (Key Features)
+---
 
-### 1. "One-Click" 하이엔드 대시보드 (`auto_dashboard.py`)
-- **Premium UI**: 기업 브랜딩(Hanwha Orange) 및 사용자 경험을 극대화한 다크 모드 인터페이스.
-- **Predictive AX**: 현재 공정률 데이터를 기반으로 실시간 완공 예정(D-Day)을 시뮬레이션하고 시각화합니다.
-- **Interactive Graphs**: Plotly를 사용하여 각 도크별 상세 조업 현황을 탐색할 수 있습니다.
+## 📸 Dashboard Preview
 
-### 2. 하이브리드 데이터 수집 파이프라인
-- **RPA 모듈 (`rpa_bot.py`)**: Selenium을 활용하여 가상 공정 포털에서 실시간 공정 현황을 자동으로 수집(Scraping)합니다.
-- **샘플 데이터 생성기 (`generate_pbi_data.py`)**: 대규모 야드 환경을 시뮬레이션하기 위해 10개 이상의 도크 데이터를 대량 생성합니다.
+![Smart Yard Dashboard](docs/dashboard_screenshot.png)
+*한화 오렌지 브랜드 테마와 예측 AI(Predictive AX) 기능이 적용된 실시간 관제 대시보드입니다.*
 
-### 3. 무결성 검증 및 DAX 최적화
-- **Verification (`test_pbi_ready.py`)**: 수집된 데이터가 분석 시스템(Power BI 등)에 적합한지 자동으로 사전 검증합니다.
-- **DAX 레시피**: Power BI Desktop 활용 시 즉시 적용 가능한 고급 수식(`DAX_SNIPPETS.md`)을 제공합니다.
+---
 
-## 🛠 기술 스택 (Tech Stack)
+## 📂 Enterprise Project Structure
 
-- **Language**: Python 3.x
-- **Automation**: Selenium, Webdriver-manager
-- **Data Analysis**: Pandas, Numpy
-- **Visualization**: Plotly (Interactive HTML)
-- **Business Intelligence**: Power BI Desktop (DAX Integration)
-
-## 🚀 시작하기 (Quick Start)
-
-가상 환경(venv)이 설정된 상태에서 아래 명령어를 실행하면 데이터 생성부터 대시보드 브라우저 출력까지 한 번에 완료됩니다.
-
-```bash
-cd hanwha-ocean-rpa
-./venv/bin/python3 auto_dashboard.py
-```
-
-## 📂 프로젝트 구조
+실제 기업의 개발 표준을 준수하여 프로젝트를 구조화하였습니다.
 
 ```text
-├── hanwha-ocean-rpa/
-│   ├── data/                 # 수집 및 생성된 데이터 (CSV, Excel)
-│   ├── rpa_bot.py           # RPA 봇 스크립트
-│   ├── auto_dashboard.py    # 통합 자동화 대시보드 엔진
-│   ├── generate_pbi_data.py # 샘플 데이터 생성기
-│   ├── test_pbi_ready.py    # 데이터 무결성 검증 스크립트
-│   ├── DAX_SNIPPETS.md      # Power BI용 DAX 수식 가이드
-│   └── README.md            # 프로젝트 가이드
-└── CONVERSATION_HISTORY.md   # 전체 대화 및 개발 히스토리 요약
+├── docs/                   # [기획/표준화] 비즈니스 및 기술 문서
+│   ├── BRD.md             # Business Requirements: 비즈니스 핵심 가치 정의
+│   ├── SDD.md             # System Design: 아키텍처 및 모듈 상세 설계
+│   ├── USER_MANUAL.md     # 운영 및 사용자 가이드
+│   └── dashboard_screenshot.png
+├── src/                    # [개발] 핵심 비즈니스 로직 및 RPA 봇
+│   ├── auto_dashboard.py  # 메인 대시보드 엔진 (One-Click)
+│   ├── rpa_bot.py         # Selenium 기반 데이터 수집 봇
+│   └── mock_portal.html   # 데이터 소스 시뮬레이션
+├── tests/                  # [QA] 데이터 무결성 검증 환경
+│   └── test_pbi_ready.py  # 데이터 유효성 자동 검사
+├── data/                   # [저장] 수집 및 처리된 데이터 폴더
+└── smart_yard_dashboard.html # 최종 결과물 (배포용 독립 HTML)
 ```
 
 ---
-*Developed as part of the Hanwha Ocean IT Systems Development Portfolio.*
+
+## 📈 실무 중심의 개발 프로세스 (A to Z)
+
+본 프로젝트는 다음과 같은 기업용 개발 절차를 준수하여 진행되었습니다.
+
+### 1단계: 비즈니스 기획 (Planning)
+- **[BRD 확인](docs/BRD.md)**: 한화오션의 AX 전략을 분석하여 비즈니스 페인 포인트(데이터 수동 취합, 안전 사고 지연) 도출 및 해결 방안 수립.
+
+### 2단계: 시스템 설계 (Design)
+- **[SDD 확인](docs/SDD.md)**: RPA -> Python Processing -> Interactive Visualization으로 이어지는 데이터 파이프라인 설계 및 데이터 명세 정의.
+
+### 3단계: 자동화 구현 (Implementation)
+- **RPA 수집**: Selenium을 이용해 웹 환경의 데이터를 사람처럼 정교하게 수집.
+- **예측 로직**: 현재 조업 속도를 기반으로 한 **D-Day 예측 알고리즘** 구현.
+- **Premium UI**: Plotly를 활용하여 브랜드 가치를 높이는 하이엔드 시각화 결과 도출.
+
+### 4단계: 검증 및 배포 (QA & Release)
+- **자동 검증**: BI 툴 연동 전 데이터 Integrity 체크 절차 통과.
+- **GitHub 배포**: 형상 관리 및 문서화 통결.
+
+---
+
+## 🚀 Quick Execution
+
+현직자/의사결정권자가 즉시 결과를 확인할 수 있도록 통합 자동화 도구를 제공합니다.
+
+```bash
+# 한화오션 RPA 루트 폴더에서 실행
+./venv/bin/python3 src/auto_dashboard.py
+```
+
+---
+*Developed by Hanwha Ocean IT Development Team Portfolio Sync.*
