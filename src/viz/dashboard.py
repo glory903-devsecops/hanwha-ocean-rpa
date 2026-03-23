@@ -93,12 +93,12 @@ class DashboardEngine:
             title_font=dict(size=28, color=self.config.COLOR_ORANGE),
             title_x=0.5, title_y=0.98,
             height=self.config.DASHBOARD_HEIGHT + 200, template="plotly_dark", showlegend=False,
-            margin=dict(t=100, b=40, l=60, r=60) 
+            margin=dict(t=120, b=60, l=220, r=220)  # 30% Width reduction (Increased margins)
         )
         
-        # Optimize horizontal bar view
-        fig.update_xaxes(range=[0, 115], row=2, col=1)
-        fig.update_yaxes(tickfont=dict(size=10), row=2, col=1, autorange="reversed") # Normal order top-to-bottom
+        # Optimize horizontal bar view (v2.8)
+        fig.update_xaxes(range=[0, 150], row=2, col=1) # 2/3 size relative to space
+        fig.update_yaxes(tickfont=dict(size=12, color='white'), row=2, col=1, autorange="reversed") 
 
         output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
         
