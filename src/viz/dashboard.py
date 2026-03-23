@@ -96,9 +96,9 @@ class DashboardEngine:
             margin=dict(t=120, b=60, l=100, r=100) 
         )
         
-        # Master Center Alignment (v2.9)
+        # Master Center Alignment (v2.9.1)
         # Using domain ensures the BARS themselves are centered regardless of label length
-        fig.update_xaxes(range=[0, 150], domain=[0.22, 0.88], row=2, col=1) 
+        fig.update_xaxes(range=[0, 150], domain=[0.20, 0.80], row=2, col=1) 
         fig.update_yaxes(tickfont=dict(size=12, color='white'), row=2, col=1, autorange="reversed") 
 
         output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
