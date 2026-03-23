@@ -47,7 +47,7 @@ def create_dashboard():
     days_to_go = (100 - avg_proc) / progress_per_day
     proj_date = (datetime.now() + timedelta(days=days_to_go)).strftime("%Y-%m-%d")
 
-    # Create Dashboard Layout
+    # Create Dashboard Layout (Improved spacing)
     fig = make_subplots(
         rows=3, cols=2,
         specs=[
@@ -58,19 +58,19 @@ def create_dashboard():
         subplot_titles=(
             "Overall Yard Process", 
             "Projected Completion Date",
-            "Localized Yard Progress (Massive Data)",
-            "Real-time Safety Monitor",
+            "Localized Yard Progress (Massive Data View)",
+            "Real-time Safety Alert Monitor",
             "🤖 AI Decision Support Panel (AX Guidance)"
         ),
-        vertical_spacing=0.1,
-        row_heights=[0.3, 0.4, 0.3]
+        vertical_spacing=0.2, # 3x increase in spacing
+        row_heights=[0.25, 0.45, 0.3] # More room for the bar chart
     )
 
     # 1. Gauge
     fig.add_trace(go.Indicator(
         mode = "gauge+number",
         value = avg_proc,
-        number = {'suffix': "%", 'font': {'color': HANWHA_ORANGE}},
+        number = {'suffix': "%", 'font': {'color': HANWHA_ORANGE, 'size': 40}},
         gauge = {'bar': {'color': HANWHA_ORANGE}, 'bgcolor': "#333"}
     ), row=1, col=1)
 
@@ -78,47 +78,55 @@ def create_dashboard():
     fig.add_trace(go.Indicator(
         mode = "number",
         value = days_to_go,
-        number = {'prefix': "D-", 'font': {'color': "white"}},
+        number = {'prefix': "D-", 'font': {'color': "white", 'size': 60}},
         title = {'text': f"Expected: {proj_date}", 'font': {'size': 20}}
     ), row=1, col=2)
 
-    # 3. Bar Chart
+    # 3. Bar Chart (Rotated Labels for Readability)
     fig.add_trace(go.Bar(
-        x=df_dock["구역/도크"] + "<br>(" + df_dock["건립선종"] + ")",
+        x=df_dock["구역/도크"] + " (" + df_dock["건립선종"] + ")",
         y=df_dock["공정률"],
         marker_color=HANWHA_ORANGE,
-        name="Progress"
+        name="Progress",
+        text=df_dock["공정률"],
+        textposition='outside'
     ), row=2, col=1)
 
     # 4. Safety Table
     alert_df = df_dock[df_dock["안전이슈"] != "없음"].head(10)
     fig.add_trace(go.Table(
-        header=dict(values=["도크/구역", "작업", "이슈"], fill_color=HANWHA_ORANGE, font=dict(color='white')),
-        cells=dict(values=[alert_df["구역/도크"], alert_df["현재작업"], alert_df["안전이슈"]], fill_color=DARK_BG, font=dict(color='white'))
+        header=dict(values=["도크/구역", "작업", "이슈"], fill_color=HANWHA_ORANGE, font=dict(color='white', size=13), height=30),
+        cells=dict(values=[alert_df["구역/도크"], alert_df["현재작업"], alert_df["안전이슈"]], fill_color=DARK_BG, font=dict(color='white', size=11), height=25)
     ), row=3, col=1)
 
     # 5. AI Insights Table
     fig.add_trace(go.Table(
-        header=dict(values=["<b>AI Insight & Guidance</b>"], fill_color="#002c5f", font=dict(color='white', size=16)),
+        header=dict(values=["<b>AI Insight & Guidance</b>"], fill_color="#002c5f", font=dict(color='white', size=15), height=30),
         cells=dict(
             values=[ai_insights], 
             fill_color="#1a1a1a", 
-            font=dict(color='cyan', size=14),
-            height=40,
+            font=dict(color='cyan', size=13),
+            height=35,
             align='left'
         )
     ), row=3, col=2)
 
+    # Layout Fine-Tuning
     fig.update_layout(
         paper_bgcolor=DARK_BG, plot_bgcolor=DARK_BG, font=dict(color="white"),
-        title_text=f"🚢 <b>HANWHA OCEAN</b> Smart Yard AX Command Center (v1.8)",
-        title_font=dict(size=26, color=HANWHA_ORANGE),
-        height=1000, template="plotly_dark", showlegend=False
+        title_text=f"🚢 <b>HANWHA OCEAN</b> Smart Yard AX Command Center (v2.0)",
+        title_font=dict(size=28, color=HANWHA_ORANGE),
+        height=1200, # Increased height for better spacing
+        template="plotly_dark", showlegend=False,
+        margin=dict(t=150, b=100, l=60, r=60)
     )
+
+    # Rotate X-axis labels to prevent overlap
+    fig.update_xaxes(tickangle=45, tickfont=dict(size=10), row=2, col=1)
 
     output_file = os.path.join(base_dir, "..", "smart_yard_dashboard.html")
     fig.write_html(output_file)
-    print(f"✨ AI-Integrated Dashboard generated: {output_file}")
+    print(f"✨ UI Optimized Dashboard generated: {output_file}")
     
     try:
         webbrowser.open(f"file://{os.path.abspath(output_file)}")

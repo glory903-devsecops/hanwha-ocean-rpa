@@ -4,11 +4,12 @@
 본 시스템은 **Data Source -> Extraction (RPA) -> Analytics -> Visualization**의 4단계 파이프라인으로 구성됩니다.
 
 ```mermaid
-graph LR
-    A[Mock Portal / Excel] --> B[RPA Bot: Selenium]
-    B --> C[Data: CSV/Excel]
-    C --> D[Verification: Python]
-    D --> E[Dashboard: Plotly HTML]
+graph TD
+    DB[(Hanwha ERP/DB)] -- ETL Process --> PRT[Shipyard Portal]
+    PRT -- Scraping --> RPA[RPA Bot: Selenium]
+    RPA -- Export --> CSV[Data: CSV/Excel]
+    CSV -- Import --> PBI[Power BI Desktop]
+    CSV -- Integration --> DSH[Web Dashboard: Plotly]
 ```
 
 ## 2. 모듈별 상세 설계 (Module Design)

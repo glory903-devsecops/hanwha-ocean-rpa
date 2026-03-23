@@ -56,11 +56,29 @@
 
 ---
 
+## 🗄️ DB 연동 및 데이터 관리 전략 (Data Strategy)
+
+실무 환경에서의 데이터 수거 및 활용 계획을 구체화하였습니다.
+
+### 1. DB 획득 전략 (Database Acquisition)
+- **Source**: 한화오션 사내 ERP(SAP) 또는 공정 관리 시스템.
+- **Workflow**: 
+    - DB에 직접 접근하여 SQL로 데이터를 추출하거나, 보안성 확보가 필요한 경우 RPA 봇이 포털에서 직접 데이터를 '읽어내는' 하이브리드 방식을 채택합니다.
+    - 추출된 데이터는 매일 정해진 시간에 `data/` 폴더의 CSV/Excel로 동기화됩니다.
+
+### 2. Power BI(Windows) 연동 플랜
+- **도구**: Power BI Desktop (Windows 환경 최적화)
+- **연동 방식**: 
+    - RPA가 업데이트하는 `data/dock_status.csv` 파일을 Power BI의 데이터 소스로 연결합니다.
+    - **절대 경로** 설정을 통해 코드 한 줄 수정 없이 '새로고침' 버튼 하나로 현장 상황을 BI 리포트에 반영할 수 있습니다. 자세한 방법은 [운영 가이드](docs/USER_MANUAL.md)를 참고하세요.
+
+---
+
 ## 📂 Enterprise Structure
-- `src/`: 핵심 로직 (RPA, 데이터 생성, 대시보드 엔진)
-- `docs/`: 전문 기획서 (BRD, SDD, 가이드, 스크린샷)
+- `src/`: 핵심 로직 (RPA v2.0 - UI 최적화 완료)
+- `docs/`: 전문 기획서 (DB 전략 및 BI 가이드 포함)
 - `tests/`: 데이터 무결성 검증 환경
-- `data/`: 수집/정제된 실무 데이터
+- `data/`: 실무 시뮬레이션 데이터
 
 ---
 *Developed for Hanwha Ocean AX Strategic Transformation Portfolio.*
