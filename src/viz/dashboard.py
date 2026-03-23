@@ -57,15 +57,18 @@ class DashboardEngine:
             domain={'y': [0.1, 0.85], 'x': [0.15, 0.85]}
         ), row=1, col=2)
 
+        # Filter to Top 12 for focus & readability (v2.6.3)
+        df_bar = self.df_dock.head(12)
+        
         fig.add_trace(go.Bar(
-            x=self.df_dock["구역/도크"] + "<br>(" + self.df_dock["건립선종"] + ")",
-            y=self.df_dock["공정률"],
+            x=df_bar["구역/도크"] + "<br>(" + df_bar["건립선종"] + ")",
+            y=df_bar["공정률"],
             marker_color=self.config.COLOR_ORANGE,
-            text=self.df_dock["공정률"], textposition='outside'
+            text=df_bar["공정률"], textposition='outside'
         ), row=2, col=1)
 
         # Tables
-        alert_df = self.df_dock[self.df_dock["안전이슈"] != "없음"].head(10)
+        alert_df = self.df_dock[self.df_dock["안전이슈"] != "없음"].head(8)
         fig.add_trace(go.Table(
             header=dict(values=["도크/구역", "작업", "이슈"], fill_color=self.config.COLOR_ORANGE, font=dict(color='white')),
             cells=dict(values=[alert_df["구역/도크"], alert_df["현재작업"], alert_df["안전이슈"]], fill_color=self.config.COLOR_BACKGROUND, font=dict(color='white'))
@@ -76,10 +79,10 @@ class DashboardEngine:
             cells=dict(values=[ai_insights], fill_color="#1a1a1a", font=dict(color=self.config.COLOR_ACCENT, size=13), align='left', height=40)
         ), row=3, col=2)
 
-        # Balanced Professional Annotations (v2.6.2)
-        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.70, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.36, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.36, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
+        # Precise Spacing (v2.6.3)
+        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.66, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
+        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.31, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
+        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.31, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
 
         fig.update_layout(
             paper_bgcolor=self.config.COLOR_BACKGROUND, plot_bgcolor=self.config.COLOR_BACKGROUND, 
@@ -88,12 +91,12 @@ class DashboardEngine:
             title_font=dict(size=28, color=self.config.COLOR_ORANGE),
             title_x=0.5, title_y=0.98,
             height=self.config.DASHBOARD_HEIGHT, template="plotly_dark", showlegend=False,
-            margin=dict(t=120, b=60, l=60, r=60) 
+            margin=dict(t=100, b=40, l=60, r=60) 
         )
         
-        # Prevent clipping and optimize labels (90deg for many items)
-        fig.update_yaxes(range=[0, 118], row=2, col=1)
-        fig.update_xaxes(tickangle=90, tickfont=dict(size=7), row=2, col=1)
+        # Optimized bar chart (v2.6.3 Balance)
+        fig.update_yaxes(range=[0, 112], row=2, col=1)
+        fig.update_xaxes(tickangle=45, tickfont=dict(size=9), row=2, col=1)
 
         output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
         
