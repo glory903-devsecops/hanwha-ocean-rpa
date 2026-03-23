@@ -27,7 +27,7 @@ class DashboardEngine:
         days_to_go, proj_date = self.analytics.predict_dday(avg_proc)
         ai_insights = self.analytics.generate_ai_insights(self.df_dock)
         
-        # Layout Setup (Titles removed from make_subplots for custom positioning)
+        # Layout Setup (Native Subplot Titles for managed spacing)
         fig = make_subplots(
             rows=3, cols=2,
             specs=[
@@ -35,25 +35,30 @@ class DashboardEngine:
                 [{"colspan": 2}, None],
                 [{"type": "table"}, {"type": "table"}]
             ],
+            subplot_titles=(
+                self.config.LABELS["subtitle_overall"],
+                self.config.LABELS["subtitle_dday"],
+                self.config.LABELS["subtitle_bar"],
+                self.config.LABELS["subtitle_safety"],
+                self.config.LABELS["subtitle_ai"]
+            ),
             vertical_spacing=self.config.VERTICAL_SPACING,
             row_heights=self.config.ROW_HEIGHTS
         )
 
-        # Traces using Configured Branding & Plotly-Native Titles (v2.5.3)
+        # Traces using Configured Branding & Reduced Font Sizes (v2.5.4 - Fix)
         fig.add_trace(go.Indicator(
             mode="gauge+number", value=avg_proc,
             number={'suffix': "%", 'font': {'color': self.config.COLOR_ORANGE, 'size': self.config.GAUGE_TEXT_SIZE}},
-            gauge={'bar': {'color': self.config.COLOR_ORANGE}, 'bgcolor': "#333"},
-            title={'text': self.config.LABELS["subtitle_overall"], 'font': {'size': 18, 'color': self.config.COLOR_ORANGE}},
-            domain={'y': [0, 0.65]} # Absolute clearance for top row
+            gauge={'bar': {'color': self.config.COLOR_ORANGE}, 'bgcolor': "#333", 'axis': {'range': [0, 100]}},
+            domain={'y': [0.15, 0.85], 'x': [0.15, 0.85]} # Tight domain for clearance
         ), row=1, col=1)
 
         fig.add_trace(go.Indicator(
             mode="number", value=days_to_go,
             number={'prefix': "D-", 'font': {'color': self.config.COLOR_TEXT, 'size': self.config.DDAY_TEXT_SIZE}},
-            title={'text': f"{self.config.LABELS['subtitle_dday']}<br><span style='font-size:14px; color:#aaa'>Expected: {proj_date}</span>", 
-                   'font': {'size': 18, 'color': self.config.COLOR_ORANGE}},
-            domain={'y': [0, 0.65]}
+            title={'text': f"<br><span style='font-size:16px; color:#aaa'>Expected: {proj_date}</span>", 'font': {'size': 16}},
+            domain={'y': [0.15, 0.85], 'x': [0.15, 0.85]}
         ), row=1, col=2)
 
         fig.add_trace(go.Bar(
@@ -75,18 +80,17 @@ class DashboardEngine:
             cells=dict(values=[ai_insights], fill_color="#1a1a1a", font=dict(color=self.config.COLOR_ACCENT, size=13), align='left', height=40)
         ), row=3, col=2)
 
-        # Custom Annotations with Increased Clearance (v2.5.3) - Row 1 Titles handled by Indicator
-        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, y=0.72, showarrow=False, font=dict(size=18, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, y=0.32, showarrow=False, font=dict(size=18, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, y=0.32, showarrow=False, font=dict(size=18, color=self.config.COLOR_ORANGE))
+        # Precise Global Tuning
+        fig.update_annotations(font_size=16, font_color=self.config.COLOR_ORANGE, yshift=30) 
 
         fig.update_layout(
             paper_bgcolor=self.config.COLOR_BACKGROUND, plot_bgcolor=self.config.COLOR_BACKGROUND, 
             font=dict(color=self.config.COLOR_TEXT),
             title_text=self.config.LABELS["title"],
-            title_font=dict(size=30, color=self.config.COLOR_ORANGE),
+            title_font=dict(size=28, color=self.config.COLOR_ORANGE),
+            title_x=0.5, title_y=0.96, # Center and push header higher
             height=self.config.DASHBOARD_HEIGHT, template="plotly_dark", showlegend=False,
-            margin=dict(t=220, b=100, l=60, r=60) # Massive top margin for header
+            margin=dict(t=200, b=80, l=60, r=60) 
         )
         
         fig.update_xaxes(tickangle=45, tickfont=dict(size=9), row=2, col=1)
