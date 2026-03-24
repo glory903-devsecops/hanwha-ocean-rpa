@@ -81,37 +81,40 @@ class DashboardEngine:
             cells=dict(values=[ai_insights], fill_color="#1a1a1a", font=dict(color=self.config.COLOR_ACCENT, size=13), align='left', height=40)
         ), row=3, col=2)
 
-        # Precision Spacing for Horizontal Layout (v2.7)
-        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.76, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.32, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.32, showarrow=False, font=dict(size=17, color=self.config.COLOR_ORANGE))
+        # High-Visibility Annotations (v3.0 Centered)
+        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.76, showarrow=False, font=dict(size=20, color=self.config.COLOR_ORANGE))
+        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.32, showarrow=False, font=dict(size=19, color=self.config.COLOR_ORANGE))
+        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.32, showarrow=False, font=dict(size=19, color=self.config.COLOR_ORANGE))
 
         fig.update_layout(
             paper_bgcolor=self.config.COLOR_BACKGROUND, plot_bgcolor=self.config.COLOR_BACKGROUND, 
-            font=dict(color=self.config.COLOR_TEXT),
+            font=dict(color=self.config.COLOR_TEXT, size=14),
             title_text=self.config.LABELS["title"],
-            title_font=dict(size=28, color=self.config.COLOR_ORANGE),
+            title_font=dict(size=36, color=self.config.COLOR_ORANGE, family="Pretendard, Inter"),
             title_x=0.5, title_y=0.98,
-            height=self.config.DASHBOARD_HEIGHT + 200, template="plotly_dark", showlegend=False,
-            margin=dict(t=120, b=60, l=100, r=100) 
+            height=self.config.DASHBOARD_HEIGHT + 200, 
+            autosize=True,
+            template="plotly_dark", showlegend=False,
+            margin=dict(t=120, b=60, l=40, r=40) 
         )
         
-        # Master Center Alignment (v2.9.1)
-        # Using domain ensures the BARS themselves are centered regardless of label length
-        fig.update_xaxes(range=[0, 150], domain=[0.20, 0.80], row=2, col=1) 
-        fig.update_yaxes(tickfont=dict(size=12, color='white'), row=2, col=1, autorange="reversed") 
+        # Master Center Alignment (v3.0 Precision)
+        fig.update_xaxes(range=[0, 150], domain=[0.18, 0.82], row=2, col=1) 
+        fig.update_yaxes(tickfont=dict(size=14, color='white'), row=2, col=1, autorange="reversed") 
 
         output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
         
         # Selection Fix (CSS Injection)
         html_content = fig.to_html(include_plotlyjs='cdn', full_html=True)
-        css_selection_fix = """
+        css_responsive_fix = """
         <style>
             * { user-select: text !important; -webkit-user-select: text !important; }
             .modebar { display: none !important; }
+            body { margin: 0; padding: 0; overflow-x: hidden; }
+            .plotly-graph-div { width: 100vw !important; }
         </style>
         """
-        html_content = html_content.replace("</head>", f"{css_selection_fix}</head>")
+        html_content = html_content.replace("</head>", f"{css_responsive_fix}</head>")
         
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)

@@ -31,12 +31,12 @@ DAILY_PRODUCTIVITY_RATE = 1.8
 DASHBOARD_HEIGHT = 1200
 VERTICAL_SPACING = 0.1
 ROW_HEIGHTS = [0.22, 0.45, 0.33]
-GAUGE_TEXT_SIZE = 28
-DDAY_TEXT_SIZE = 40
+GAUGE_TEXT_SIZE = 34
+DDAY_TEXT_SIZE = 48
 
-# [Bilingual Labels]
+# [Bilingual Labels] (v3.0 Rebranded)
 LABELS = {
-    "title": "🚢 HANWHA OCEAN Smart Yard AX Command Center (v2.5)",
+    "title": "🚢 한화오션 Smart Yard AX Command Center (v3.0)",
     "subtitle_overall": "Overall Yard Process (야드 전체 공정률)",
     "subtitle_dday": "Projected Completion D-Day (예상 완공일)",
     "subtitle_bar": "Localized Yard Progress Status (도크별 진척 현황)",
