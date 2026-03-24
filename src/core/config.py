@@ -29,19 +29,19 @@ DAILY_PRODUCTIVITY_RATE = 1.8
 
 # [Dashboard UI Config]
 DASHBOARD_HEIGHT = 1200
-VERTICAL_SPACING = 0.12 # v3.1 Fine-tuned for multi-device readability
+VERTICAL_SPACING = 0.15 # v4.1 Increased for better row separation
 ROW_HEIGHTS = [0.22, 0.45, 0.33]
 GAUGE_TEXT_SIZE = 34
 DDAY_TEXT_SIZE = 48
 CHART_TICK_SIZE = 16 # v3.1 Extra Large for massive visibility
 
-# [Bilingual Labels] (v3.0 Rebranded)
+# [Bilingual Labels] (v4.1 Pure Hangeul Optimization)
 LABELS = {
-    "title": "🚢 한화오션 Smart Yard AX Command Center (v3.0)",
-    "subtitle_overall": "Overall Yard Process (야드 전체 공정률)",
-    "subtitle_dday": "Projected Completion D-Day (예상 완공일)",
-    "subtitle_bar": "Localized Yard Progress Status (도크별 진척 현황)",
-    "subtitle_safety": "Real-time Safety Alert Monitor (실시간 안전 감시)",
-    "subtitle_ai": "🤖 AI Decision Support Panel (AI 의사결정 지원)",
-    "header_ai_insight": "<b>AI Insight & Guidance (분석 결과 및 권장 조치)</b>"
+    "title": "🚢 한화오션 Smart Yard AX Command Center",
+    "subtitle_overall": "야드 전체 공정률",
+    "subtitle_dday": "예상 완공일",
+    "subtitle_bar": "도크별 진척 현황",
+    "subtitle_safety": "실시간 안전 감시",
+    "subtitle_ai": "🤖 AI 의사결정 지원",
+    "header_ai_insight": "<b>AI 분석 결과 및 권장 조치</b>"
 }
