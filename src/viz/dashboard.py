@@ -83,15 +83,15 @@ class DashboardEngine:
 
         # Spatial Rhythm Optimization (v4.0 Enterprise Pro)
         # Positioned with 'Golden Ratio' logic for elite hierarchy
-        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.93, showarrow=False, font=dict(size=26, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight="bold"))
-        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.38, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight="bold"))
-        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.38, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight="bold"))
+        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.93, showarrow=False, font=dict(size=26, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
+        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.38, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
+        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.38, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
 
         fig.update_layout(
             paper_bgcolor=self.config.COLOR_BACKGROUND, plot_bgcolor=self.config.COLOR_BACKGROUND, 
             font=dict(color=self.config.COLOR_TEXT, size=16, family="Noto Sans KR"), 
             title_text=self.config.LABELS["title"],
-            title_font=dict(size=44, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight="black"),
+            title_font=dict(size=44, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=900),
             title_x=0.5, title_y=0.98,
             height=self.config.DASHBOARD_HEIGHT + 200, 
             autosize=True,
