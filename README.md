@@ -1,6 +1,10 @@
-# 🚢 Hanwha Ocean Smart Yard AX Professional Portfolio (v2.5)
+# 🚢 Hanwha Ocean Smart Yard AX Professional Portfolio (v2.9.1)
 
 본 프로젝트는 한화오션의 **AX(AI Transformation) 전략**에 기반하여 개발된 **전사적 스마트 야드 실시간 통합 관제 시스템**입니다. 단순한 기능 구현을 넘어, 확장 가능한 모듈형 아키텍처와 전문적인 비즈니스 로직(공식 기반 연계)을 통해 기업형 프로젝트의 표준을 제시합니다.
+
+## 🔗 Live Deployment (실시간 웹 서비스)
+> **[한화오션 AX 커맨드 센터 바로가기](https://glory903-devsecops.github.io/hanwha-ocean-rpa/)**
+*(GitHub Actions를 통한 실시간 CI/CD 자동 배포 환경이 구축되어 있습니다.)*
 
 ## 🚀 Core Value Proposition (핵심 가치)
 본 프로젝트는 **'데이터가 보이는 야드, 예측 가능한 조업'**을 목표로 합니다.
@@ -11,10 +15,10 @@
 
 ---
 
-## 📸 Dashboard Preview (V2.5 Enterprise Edition)
+## 📸 Dashboard Preview (V2.9.1 Enterprise Edition)
 
-![AX Command Center V2.5](docs/dashboard_v25.png)
-*한영 병기 제목, AI Insight 패널, 가시성이 최적화된 하이엔드 대시보드입니다.*
+![AX Command Center V2.9.1](docs/dashboard_v25.png)
+*가로형 막대 그래프 최적화, 정밀 중앙 정렬, AI Insight 패널이 적용된 하이엔드 대시보드입니다.*
 
 ---
 
