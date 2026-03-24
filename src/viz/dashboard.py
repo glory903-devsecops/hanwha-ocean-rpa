@@ -81,50 +81,54 @@ class DashboardEngine:
             cells=dict(values=[ai_insights], fill_color="#1a1a1a", font=dict(color=self.config.COLOR_ACCENT, size=13), align='left', height=40)
         ), row=3, col=2)
 
-        # High-Visibility Annotations (v3.1 Spatial Optimization)
-        # Positioned with 'one-line' gap logic (y relative to row_heights)
-        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.91, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.36, showarrow=False, font=dict(size=20, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.36, showarrow=False, font=dict(size=20, color=self.config.COLOR_ORANGE))
+        # Spatial Rhythm Optimization (v4.0 Enterprise Pro)
+        # Positioned with 'Golden Ratio' logic for elite hierarchy
+        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.93, showarrow=False, font=dict(size=26, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight="bold"))
+        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.38, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight="bold"))
+        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.38, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight="bold"))
 
         fig.update_layout(
             paper_bgcolor=self.config.COLOR_BACKGROUND, plot_bgcolor=self.config.COLOR_BACKGROUND, 
-            font=dict(color=self.config.COLOR_TEXT, size=15),
+            font=dict(color=self.config.COLOR_TEXT, size=16, family="Noto Sans KR"), 
             title_text=self.config.LABELS["title"],
-            title_font=dict(size=36, color=self.config.COLOR_ORANGE, family="Pretendard, Inter"),
+            title_font=dict(size=44, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight="black"),
             title_x=0.5, title_y=0.98,
             height=self.config.DASHBOARD_HEIGHT + 200, 
             autosize=True,
             template="plotly_dark", showlegend=False,
-            margin=dict(t=120, b=60, l=40, r=40) 
+            margin=dict(t=130, b=70, l=40, r=40) 
         )
         
-        # Master Center Alignment (v3.1 Deep Domain Centering)
+        # Golden Ratio Center Alignment (v4.0 Precision)
         fig.update_xaxes(
-            range=[0, 150], 
-            domain=[0.25, 0.75], # Concentrated center for visual balance
-            row=2, col=1,
-            tickfont=dict(size=self.config.CHART_TICK_SIZE)
+            range=[0, 150], domain=[0.30, 0.70], row=2, col=1,
+            tickfont=dict(size=18, color='white', family="Noto Sans KR")
         ) 
         fig.update_yaxes(
-            tickfont=dict(size=16, color='white'), # Maximized for readability
-            row=2, col=1, 
-            autorange="reversed"
+            tickfont=dict(size=18, color='white', family="Noto Sans KR"),
+            row=2, col=1, autorange="reversed"
         ) 
 
         output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
         
         # Selection Fix (CSS Injection)
         html_content = fig.to_html(include_plotlyjs='cdn', full_html=True)
-        css_responsive_fix = """
+        css_enterprise_premium = """
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
         <style>
-            * { user-select: text !important; -webkit-user-select: text !important; }
+            * { user-select: text !important; -webkit-user-select: text !important; font-family: 'Noto Sans KR', sans-serif !important; letter-spacing: -0.01em; }
             .modebar { display: none !important; }
-            body { margin: 0; padding: 0; overflow-x: hidden; }
+            body { margin: 0; padding: 0; overflow-x: hidden; background-color: #121212; }
             .plotly-graph-div { width: 100vw !important; }
+            /* Card-like spacing rhythm */
+            .js-plotly-plot .plotly .main-svg { border-radius: 12px; }
+            /* Mobile responsiveness fine-tuning */
+            @media (max-width: 768px) {
+                .main-svg { transform: scale(0.9); }
+            }
         </style>
         """
-        html_content = html_content.replace("</head>", f"{css_responsive_fix}</head>")
+        html_content = html_content.replace("</head>", f"{css_enterprise_premium}</head>")
         
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)

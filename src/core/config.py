@@ -2,8 +2,8 @@ import os
 
 # [Project Identity]
 PROJECT_NAME = "Hanwha Ocean Smart Yard AX"
-VERSION = "2.5.0"
-AUTHOR = "Hanwha Ocean AX Team"
+VERSION = "4.0.0"
+AUTHOR = "한화오션 Smart Yard AX Team"
 
 # [Branding: Hanwha CI]
 COLOR_ORANGE = "#eb6e00"
