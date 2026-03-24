@@ -81,14 +81,15 @@ class DashboardEngine:
             cells=dict(values=[ai_insights], fill_color="#1a1a1a", font=dict(color=self.config.COLOR_ACCENT, size=13), align='left', height=40)
         ), row=3, col=2)
 
-        # High-Visibility Annotations (v3.0 Centered)
-        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.76, showarrow=False, font=dict(size=20, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.32, showarrow=False, font=dict(size=19, color=self.config.COLOR_ORANGE))
-        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.32, showarrow=False, font=dict(size=19, color=self.config.COLOR_ORANGE))
+        # High-Visibility Annotations (v3.1 Spatial Optimization)
+        # Positioned with 'one-line' gap logic (y relative to row_heights)
+        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.91, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE))
+        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.36, showarrow=False, font=dict(size=20, color=self.config.COLOR_ORANGE))
+        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.36, showarrow=False, font=dict(size=20, color=self.config.COLOR_ORANGE))
 
         fig.update_layout(
             paper_bgcolor=self.config.COLOR_BACKGROUND, plot_bgcolor=self.config.COLOR_BACKGROUND, 
-            font=dict(color=self.config.COLOR_TEXT, size=14),
+            font=dict(color=self.config.COLOR_TEXT, size=15),
             title_text=self.config.LABELS["title"],
             title_font=dict(size=36, color=self.config.COLOR_ORANGE, family="Pretendard, Inter"),
             title_x=0.5, title_y=0.98,
@@ -98,9 +99,18 @@ class DashboardEngine:
             margin=dict(t=120, b=60, l=40, r=40) 
         )
         
-        # Master Center Alignment (v3.0 Precision)
-        fig.update_xaxes(range=[0, 150], domain=[0.18, 0.82], row=2, col=1) 
-        fig.update_yaxes(tickfont=dict(size=14, color='white'), row=2, col=1, autorange="reversed") 
+        # Master Center Alignment (v3.1 Deep Domain Centering)
+        fig.update_xaxes(
+            range=[0, 150], 
+            domain=[0.25, 0.75], # Concentrated center for visual balance
+            row=2, col=1,
+            tickfont=dict(size=self.config.CHART_TICK_SIZE)
+        ) 
+        fig.update_yaxes(
+            tickfont=dict(size=16, color='white'), # Maximized for readability
+            row=2, col=1, 
+            autorange="reversed"
+        ) 
 
         output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
         

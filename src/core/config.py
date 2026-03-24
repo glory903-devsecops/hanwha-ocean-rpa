@@ -29,10 +29,11 @@ DAILY_PRODUCTIVITY_RATE = 1.8
 
 # [Dashboard UI Config]
 DASHBOARD_HEIGHT = 1200
-VERTICAL_SPACING = 0.1
+VERTICAL_SPACING = 0.12 # v3.1 Fine-tuned for multi-device readability
 ROW_HEIGHTS = [0.22, 0.45, 0.33]
 GAUGE_TEXT_SIZE = 34
 DDAY_TEXT_SIZE = 48
+CHART_TICK_SIZE = 16 # v3.1 Extra Large for massive visibility
 
 # [Bilingual Labels] (v3.0 Rebranded)
 LABELS = {
