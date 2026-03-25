@@ -2,7 +2,7 @@ import os
 
 # [Project Identity]
 PROJECT_NAME = "Hanwha Ocean Smart Yard AX"
-VERSION = "4.0.2"
+VERSION = "4.4.0"
 AUTHOR = "한화오션 Smart Yard AX Team"
 
 # [Branding: Hanwha CI]
@@ -29,11 +29,13 @@ DAILY_PRODUCTIVITY_RATE = 1.8
 
 # [Dashboard UI Config]
 DASHBOARD_HEIGHT = 1200
-VERTICAL_SPACING = 0.08 # v4.2.2 Precision gap
-ROW_HEIGHTS = [0.22, 0.40, 0.30] # v4.2.2 Balanced for Row 2 separation
-GAUGE_TEXT_SIZE = 34
-DDAY_TEXT_SIZE = 48
-CHART_TICK_SIZE = 16 # v3.1 Extra Large for massive visibility
+LAYOUT_PADDING = 25 # v4.4.0 Uniform spacing (px)
+TITLE_FONT_SIZE = 28 # v4.4.0 Bold Central Title
+VERTICAL_SPACING = 0.10 # v4.4.0 Increased for spatial rhythm
+ROW_HEIGHTS = [0.25, 0.40, 0.35] # v4.4.0 Balanced Grid
+GAUGE_TEXT_SIZE = 36
+DDAY_TEXT_SIZE = 50
+CHART_TICK_SIZE = 18 # v4.4.0 Higher visibility
 
 # [Bilingual Labels] (v4.3 Logo Branding)
 LABELS = {

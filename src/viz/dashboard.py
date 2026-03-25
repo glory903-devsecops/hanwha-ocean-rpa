@@ -27,35 +27,37 @@ class DashboardEngine:
         days_to_go, proj_date = self.analytics.predict_dday(avg_proc)
         ai_insights = self.analytics.generate_ai_insights(self.df_dock)
         
-        # Layout Setup (Manual Title Management for Absolute Control)
+        # Layout Setup: 3-Row Grid System (v4.4.0)
         fig = make_subplots(
             rows=3, cols=2,
             specs=[
-                [{"type": "indicator"}, {"type": "indicator"}],
-                [{"colspan": 2}, None],
-                [{"type": "table"}, {"type": "table"}]
+                [{"type": "indicator"}, {"type": "indicator"}], # Gauge (L) / Padding (R)
+                [{"colspan": 2}, None],                         # Pro Bar Chart (Center)
+                [{"type": "table"}, {"type": "table"}]          # Bimodal Analysis (L/R)
             ],
             vertical_spacing=self.config.VERTICAL_SPACING,
             row_heights=self.config.ROW_HEIGHTS
         )
 
         # Traces using Configured Branding & Integrated Design (v2.5.6)
-        # Row 1: Gauge & D-Day (Fixed Alignment)
+        # Row 1 Left: Overall Yard Progress Gauge
         fig.add_trace(go.Indicator(
             mode="gauge+number", value=avg_proc,
             number={'suffix': "%", 'font': {'color': self.config.COLOR_ORANGE, 'size': self.config.GAUGE_TEXT_SIZE}},
             gauge={'bar': {'color': self.config.COLOR_ORANGE}, 'bgcolor': "#333", 'axis': {'range': [0, 100], 'visible': False}},
-            title={'text': f"{self.config.LABELS['subtitle_overall']}<br><br>", 'font': {'size': 20, 'color': self.config.COLOR_ORANGE}, 'align': 'center'},
-            domain={'y': [0.1, 0.85], 'x': [0.15, 0.85]} 
+            title={'text': f"{self.config.LABELS['subtitle_overall']}", 'font': {'size': 22, 'color': self.config.COLOR_ORANGE, 'weight': 700}, 'align': 'center'},
+            domain={'y': [0.1, 0.9], 'x': [0.05, 0.35]} # Aligned Left
         ), row=1, col=1)
 
-        fig.add_trace(go.Indicator(
-            mode="number", value=days_to_go,
-            number={'prefix': "D-", 'font': {'color': self.config.COLOR_TEXT, 'size': self.config.DDAY_TEXT_SIZE}},
-            title={'text': f"{self.config.LABELS['subtitle_dday']}<br><span style='font-size:16px; color:#aaa'>Expected: {proj_date}</span><br><br>", 
-                   'font': {'size': 20, 'color': self.config.COLOR_ORANGE}, 'align': 'center'},
-            domain={'y': [0.1, 0.85], 'x': [0.15, 0.85]}
-        ), row=1, col=2)
+        # Header Right (Annotation for D-Day): Aligned with Main Title logic
+        fig.add_annotation(
+            text=f"<b>{self.config.LABELS['subtitle_dday']}</b><br><span style='font-size:18px; color:#aaa'>Expected: {proj_date}</span><br><span style='font-size:42px; color:white'>D-{int(days_to_go)}</span>",
+            xref="paper", yref="paper",
+            x=1.0, y=1.08, # Header Line
+            xanchor="right", yanchor="bottom",
+            showarrow=False,
+            align="right"
+        )
 
         # Refactored to Horizontal Bar Chart with 'Inside-End' numeric labels (v4.3)
         df_bar = self.df_dock.head(14)
@@ -84,25 +86,24 @@ class DashboardEngine:
             cells=dict(values=[ai_insights], fill_color="#1a1a1a", font=dict(color=self.config.COLOR_ACCENT, size=13), align='left', height=40)
         ), row=3, col=2)
 
-        # Spatial Rhythm Optimization (v4.3.0 Enterprise Pro)
-        # y positions fine-tuned for a 'one-line' visual gap without overlap
-        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.90, showarrow=False, font=dict(size=26, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
-        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.32, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
-        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.32, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
+        # Spatial Rhythm & Title Layout (v4.4.0 Centralized)
+        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.88, showarrow=False, font=dict(size=26, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
+        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.25, xanchor='center', y=0.35, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
+        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.75, xanchor='center', y=0.35, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
 
         fig.update_layout(
             paper_bgcolor=self.config.COLOR_BACKGROUND, plot_bgcolor=self.config.COLOR_BACKGROUND, 
             font=dict(color=self.config.COLOR_TEXT, size=16, family="Noto Sans KR"), 
-            title_text=self.config.LABELS["title"],
-            title_font=dict(size=44, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=900),
-            title_x=0.5, title_y=0.99,
+            title_text=f"<b>{self.config.LABELS['title']}</b>",
+            title_font=dict(size=self.config.TITLE_FONT_SIZE + 10, color=self.config.COLOR_ORANGE, family="Noto Sans KR"),
+            title_x=0.5, title_y=0.96, # Slightly lowered to match header line
             height=self.config.DASHBOARD_HEIGHT + 200, 
             autosize=True,
             template="plotly_dark", showlegend=False,
-            margin=dict(t=130, b=70, l=40, r=40) 
+            margin=dict(t=150, b=80, l=60, r=60) # Increased margins for 20px+ padding
         )
 
-        # Branding: Hanwha Ocean Logo Integration (v4.3.1)
+        # Branding: Hanwha Ocean Logo Integration (Header Align v4.4.0)
         logo_path = os.path.join(self.config.BASE_DIR, "docs", "logo_hanwha_ocean.png")
         if os.path.exists(logo_path):
             from PIL import Image
@@ -111,9 +112,9 @@ class DashboardEngine:
                 dict(
                     source=img,
                     xref="paper", yref="paper",
-                    x=0.08, y=1.05,
-                    sizex=0.15, sizey=0.15,
-                    xanchor="left", yanchor="top"
+                    x=0.0, y=1.08,
+                    sizex=0.12, sizey=0.12,
+                    xanchor="left", yanchor="bottom"
                 )
             )
         
