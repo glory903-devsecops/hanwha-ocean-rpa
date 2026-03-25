@@ -1,9 +1,9 @@
 import os
 
-# [Project Identity]
+# System & Branding Configuration (v4.5.0)
 PROJECT_NAME = "Hanwha Ocean Smart Yard AX"
-VERSION = "4.4.0"
-AUTHOR = "한화오션 Smart Yard AX Team"
+VERSION = "4.5.0"
+AUTHOR = "Hanwha Ocean AX Team"
 
 # [Branding: Hanwha CI]
 COLOR_ORANGE = "#eb6e00"
@@ -27,13 +27,13 @@ TASKS = ["선체 용접", "엔진 설치", "도장 작업", "시운전 준비", 
 # DAILY_PRODUCTIVITY_RATE: The estimated progress percentage completed per day for the entire yard.
 DAILY_PRODUCTIVITY_RATE = 1.8 
 
-# [Dashboard UI Config]
+# UI Layout & Spatial Rhythm Constants (v4.5.0 Precision)
 DASHBOARD_HEIGHT = 1200
-LAYOUT_PADDING = 25 # v4.4.0 Uniform spacing (px)
-TITLE_FONT_SIZE = 28 # v4.4.0 Bold Central Title
-VERTICAL_SPACING = 0.10 # v4.4.0 Increased for spatial rhythm
-ROW_HEIGHTS = [0.25, 0.40, 0.35] # v4.4.0 Balanced Grid
-GAUGE_TEXT_SIZE = 36
+LAYOUT_PADDING = 30 # Uniform margin/padding (20-30px range)
+TITLE_FONT_SIZE = 28
+VERTICAL_SPACING = 0.12 # Increased for "breathable" design
+ROW_HEIGHTS = [0.2, 0.5, 0.3] # Optimized for vertical scanning
+GAUGE_TEXT_SIZE = 48
 DDAY_TEXT_SIZE = 50
 CHART_TICK_SIZE = 18 # v4.4.0 Higher visibility
 

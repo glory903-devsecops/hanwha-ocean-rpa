@@ -39,24 +39,24 @@ class DashboardEngine:
             row_heights=self.config.ROW_HEIGHTS
         )
 
-        # Traces using Configured Branding & Integrated Design (v2.5.6)
-        # Row 1 Left: Overall Yard Progress Gauge
+        # Traces using Configured Branding & Integrated Design (v4.5.0 Centralized)
+        # Row 1 Center: Overall Yard Progress Gauge (Horizontally Centered)
         fig.add_trace(go.Indicator(
             mode="gauge+number", value=avg_proc,
             number={'suffix': "%", 'font': {'color': self.config.COLOR_ORANGE, 'size': self.config.GAUGE_TEXT_SIZE}},
             gauge={'bar': {'color': self.config.COLOR_ORANGE}, 'bgcolor': "#333", 'axis': {'range': [0, 100], 'visible': False}},
             title={'text': f"{self.config.LABELS['subtitle_overall']}", 'font': {'size': 22, 'color': self.config.COLOR_ORANGE, 'weight': 700}, 'align': 'center'},
-            domain={'y': [0.1, 0.9], 'x': [0.05, 0.35]} # Aligned Left
+            domain={'y': [0.1, 0.9], 'x': [0.35, 0.65]} # Perfectly Centered
         ), row=1, col=1)
 
-        # Header Right (Annotation for D-Day): Aligned with Main Title logic
+        # Header Center (Annotation for D-Day): Grouped with Title
         fig.add_annotation(
-            text=f"<b>{self.config.LABELS['subtitle_dday']}</b><br><span style='font-size:18px; color:#aaa'>Expected: {proj_date}</span><br><span style='font-size:42px; color:white'>D-{int(days_to_go)}</span>",
+            text=f"<b>{self.config.LABELS['subtitle_dday']}</b> | Expected: {proj_date} | <span style='color:white; font-weight:900'>D-{int(days_to_go)}</span>",
             xref="paper", yref="paper",
-            x=1.0, y=1.08, # Header Line
-            xanchor="right", yanchor="bottom",
+            x=0.5, y=1.04, # Positioned below title area in the margin
+            xanchor="center", yanchor="bottom",
             showarrow=False,
-            align="right"
+            font=dict(size=18, color="#aaa", family="Noto Sans KR")
         )
 
         # Refactored to Horizontal Bar Chart with 'Inside-End' numeric labels (v4.3)
@@ -86,41 +86,28 @@ class DashboardEngine:
             cells=dict(values=[ai_insights], fill_color="#1a1a1a", font=dict(color=self.config.COLOR_ACCENT, size=13), align='left', height=40)
         ), row=3, col=2)
 
-        # Spatial Rhythm & Title Layout (v4.4.0 Centralized)
+        # Spatial Rhythm & Title Layout (v4.5.0 Perfect Symmetric)
         fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.88, showarrow=False, font=dict(size=26, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
         fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.25, xanchor='center', y=0.35, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
         fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.75, xanchor='center', y=0.35, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
 
         fig.update_layout(
             paper_bgcolor=self.config.COLOR_BACKGROUND, plot_bgcolor=self.config.COLOR_BACKGROUND, 
-            font=dict(color=self.config.COLOR_TEXT, size=16, family="Noto Sans KR"), 
+            font=dict(color=self.config.COLOR_TEXT, size=18, family="Noto Sans KR"), # Min size 18px baseline
             title_text=f"<b>{self.config.LABELS['title']}</b>",
-            title_font=dict(size=self.config.TITLE_FONT_SIZE + 10, color=self.config.COLOR_ORANGE, family="Noto Sans KR"),
-            title_x=0.5, title_y=0.96, # Slightly lowered to match header line
+            title_font=dict(size=self.config.TITLE_FONT_SIZE + 6, color=self.config.COLOR_ORANGE, family="Noto Sans KR"),
+            title_x=0.5, title_y=0.98,
             height=self.config.DASHBOARD_HEIGHT + 200, 
             autosize=True,
             template="plotly_dark", showlegend=False,
-            margin=dict(t=150, b=80, l=60, r=60) # Increased margins for 20px+ padding
+            margin=dict(t=160, b=80, l=80, r=80) # Symmetric margins (30px range)
         )
 
-        # Branding: Hanwha Ocean Logo Integration (Header Align v4.4.0)
-        logo_path = os.path.join(self.config.BASE_DIR, "docs", "logo_hanwha_ocean.png")
-        if os.path.exists(logo_path):
-            from PIL import Image
-            img = Image.open(logo_path)
-            fig.add_layout_image(
-                dict(
-                    source=img,
-                    xref="paper", yref="paper",
-                    x=0.0, y=1.08,
-                    sizex=0.12, sizey=0.12,
-                    xanchor="left", yanchor="bottom"
-                )
-            )
+        # Branding: Logo Removed per User Request (v4.5.0)
         
-        # Golden Ratio Center Alignment (v4.0 Precision)
+        # Golden Ratio Center Alignment (v4.5 Precision)
         fig.update_xaxes(
-            range=[0, 150], domain=[0.30, 0.70], row=2, col=1,
+            range=[0, 150], domain=[0.20, 0.80], row=2, col=1, # Widened for central importance
             tickfont=dict(size=18, color='white', family="Noto Sans KR")
         ) 
         fig.update_yaxes(
@@ -130,20 +117,27 @@ class DashboardEngine:
 
         output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
         
-        # Selection Fix (CSS Injection)
+        # Selection Fix (CSS Injection v4.5.0 Responsive)
         html_content = fig.to_html(include_plotlyjs='cdn', full_html=True)
         css_enterprise_premium = """
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
         <style>
-            * { user-select: text !important; -webkit-user-select: text !important; font-family: 'Noto Sans KR', sans-serif !important; letter-spacing: -0.01em; }
+            * { user-select: text !important; -webkit-user-select: text !important; letter-spacing: -0.01em; }
+            html, body { 
+                margin: 0; padding: 0; overflow-x: hidden; background-color: #121212; 
+                font-family: 'Noto Sans KR', sans-serif !important;
+                font-size: clamp(18px, 1.2vw, 24px) !important; /* Responsive scaling with 18px min */
+            }
             .modebar { display: none !important; }
-            body { margin: 0; padding: 0; overflow-x: hidden; background-color: #121212; }
-            .plotly-graph-div { width: 100vw !important; }
-            /* Card-like spacing rhythm */
+            .plotly-graph-div { width: 100vw !important; margin: 0 auto; }
+            /* Enterprise Grid Rhythm */
             .js-plotly-plot .plotly .main-svg { border-radius: 12px; }
-            /* Mobile responsiveness fine-tuning */
+            /* Automatic Scaling for Mobile */
+            @media (max-width: 1024px) {
+                .main-svg { transform: scale(0.95); transform-origin: top center; }
+            }
             @media (max-width: 768px) {
-                .main-svg { transform: scale(0.9); }
+                .main-svg { transform: scale(0.85); transform-origin: top center; }
             }
         </style>
         """
