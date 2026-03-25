@@ -20,7 +20,7 @@ def main():
         viz = DashboardEngine()
         viz.render()
         
-        print("\n✅ Hanwha Ocean AX Pipeline Completed: v2.5.0")
+        print("\n✅ Hanwha Ocean AX Pipeline Completed: v4.0.2")
     except Exception as e:
         print(f"\n❌ Pipeline Failure: {e}")
 

@@ -2,7 +2,7 @@ import os
 
 # [Project Identity]
 PROJECT_NAME = "Hanwha Ocean Smart Yard AX"
-VERSION = "4.0.0"
+VERSION = "4.0.2"
 AUTHOR = "한화오션 Smart Yard AX Team"
 
 # [Branding: Hanwha CI]
@@ -29,15 +29,15 @@ DAILY_PRODUCTIVITY_RATE = 1.8
 
 # [Dashboard UI Config]
 DASHBOARD_HEIGHT = 1200
-VERTICAL_SPACING = 0.15 # v4.1 Increased for better row separation
-ROW_HEIGHTS = [0.22, 0.45, 0.33]
+VERTICAL_SPACING = 0.08 # v4.2.2 Precision gap
+ROW_HEIGHTS = [0.22, 0.40, 0.30] # v4.2.2 Balanced for Row 2 separation
 GAUGE_TEXT_SIZE = 34
 DDAY_TEXT_SIZE = 48
 CHART_TICK_SIZE = 16 # v3.1 Extra Large for massive visibility
 
-# [Bilingual Labels] (v4.1 Pure Hangeul Optimization)
+# [Bilingual Labels] (v4.3 Logo Branding)
 LABELS = {
-    "title": "🚢 한화오션 Smart Yard AX Command Center",
+    "title": "한화오션 Smart Yard AX Command Center",
     "subtitle_overall": "야드 전체 공정률",
     "subtitle_dday": "예상 완공일",
     "subtitle_bar": "도크별 진척 현황",

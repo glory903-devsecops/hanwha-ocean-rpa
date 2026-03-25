@@ -57,16 +57,19 @@ class DashboardEngine:
             domain={'y': [0.1, 0.85], 'x': [0.15, 0.85]}
         ), row=1, col=2)
 
-        # Refactored to Horizontal Bar Chart for better label visibility (v2.7)
-        df_bar = self.df_dock.head(18)
+        # Refactored to Horizontal Bar Chart with 'Inside-End' numeric labels (v4.3)
+        df_bar = self.df_dock.head(14)
         
         fig.add_trace(go.Bar(
             y=df_bar["구역/도크"] + " (" + df_bar["건립선종"] + ")",
             x=df_bar["공정률"],
             orientation='h',
             marker_color=self.config.COLOR_ORANGE,
-            text=df_bar["공정률"], textposition='outside',
-            textfont=dict(size=9)
+            text=df_bar["공정률"], 
+            textposition='inside',
+            insidetextanchor='end',
+            textfont=dict(size=16, color='white', family="Noto Sans KR", weight=900), # Unified bold look
+            width=0.7 # Bolder bars
         ), row=2, col=1)
 
         # Tables
@@ -81,23 +84,38 @@ class DashboardEngine:
             cells=dict(values=[ai_insights], fill_color="#1a1a1a", font=dict(color=self.config.COLOR_ACCENT, size=13), align='left', height=40)
         ), row=3, col=2)
 
-        # Spatial Rhythm Optimization (v4.0.2 Final Perfection)
+        # Spatial Rhythm Optimization (v4.3.0 Enterprise Pro)
         # y positions fine-tuned for a 'one-line' visual gap without overlap
-        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.92, showarrow=False, font=dict(size=26, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
-        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.35, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
-        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.35, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
+        fig.add_annotation(text=self.config.LABELS["subtitle_bar"], xref="paper", yref="paper", x=0.5, xanchor='center', y=0.90, showarrow=False, font=dict(size=26, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
+        fig.add_annotation(text=self.config.LABELS["subtitle_safety"], xref="paper", yref="paper", x=0.23, xanchor='center', y=0.32, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
+        fig.add_annotation(text=self.config.LABELS["subtitle_ai"], xref="paper", yref="paper", x=0.77, xanchor='center', y=0.32, showarrow=False, font=dict(size=22, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=700))
 
         fig.update_layout(
             paper_bgcolor=self.config.COLOR_BACKGROUND, plot_bgcolor=self.config.COLOR_BACKGROUND, 
             font=dict(color=self.config.COLOR_TEXT, size=16, family="Noto Sans KR"), 
             title_text=self.config.LABELS["title"],
             title_font=dict(size=44, color=self.config.COLOR_ORANGE, family="Noto Sans KR", weight=900),
-            title_x=0.5, title_y=0.98,
+            title_x=0.5, title_y=0.99,
             height=self.config.DASHBOARD_HEIGHT + 200, 
             autosize=True,
             template="plotly_dark", showlegend=False,
             margin=dict(t=130, b=70, l=40, r=40) 
         )
+
+        # Branding: Hanwha Ocean Logo Integration (v4.3.1)
+        logo_path = os.path.join(self.config.BASE_DIR, "docs", "logo_hanwha_ocean.png")
+        if os.path.exists(logo_path):
+            from PIL import Image
+            img = Image.open(logo_path)
+            fig.add_layout_image(
+                dict(
+                    source=img,
+                    xref="paper", yref="paper",
+                    x=0.08, y=1.05,
+                    sizex=0.15, sizey=0.15,
+                    xanchor="left", yanchor="top"
+                )
+            )
         
         # Golden Ratio Center Alignment (v4.0 Precision)
         fig.update_xaxes(

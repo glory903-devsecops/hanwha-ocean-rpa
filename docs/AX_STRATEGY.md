@@ -1,4 +1,4 @@
-# Hanwha Ocean AX Strategy & Roadmap (v2.5)
+# Hanwha Ocean AX Strategy & Roadmap (v4.0.2)
 
 한화오션의 AX(AI Transformation) 전략을 기반으로 한 스마트 야드 구축 로직 및 중장기 로드맵을 정의합니다.
 
@@ -15,8 +15,8 @@
 
 ## 3. Implementation Roadmap
 - **Phase 1 (v1.x)**: "Smart Data Acquisition" - RPA 기반 데이터 자동화 및 기초 대시보드. (완료)
-- **Phase 2 (v2.x)**: "Predictive Analytics" - AI 기반 D-Day 예측 및 의사결정 지원 가이드. (현재)
-- **Phase 3 (v3.x)**: "Total Digital Twin" - 3D 모델 및 IoT 센서 실시간 연동 고도화. (계획)
+- **Phase 2 (v2.x)**: "Predictive Analytics" - AI 기반 D-Day 예측 및 의사결정 지원 가이드. (완료)
+- **Phase 3 (v4.x)**: "Total Digital Twin" - 3D 모델 및 IoT 센서 실시간 연동 고도화 및 고도 분석 엔진. (현재)
 
 ## 4. Scalability Note 
 모든 코드는 모듈화(`src/core`, `src/viz`)되어 있어, 향후 실제 DB(Oracle/SAP) 커넥터나 강화학습 기반 리소스 최적화 AI 모델을 추가할 때 핵심 아키텍처의 변경 없이 확장이 가능합니다.
