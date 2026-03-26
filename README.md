@@ -2,8 +2,6 @@
 
 한화오션 야드 내 공정 자동화 현황을 실시간으로 분석하고 AI 최적화 알고리즘을 통해 공기를 단축하는 RPA 커맨드 센터입니다.
 
-![RPA Dashboard](docs/images/dashboard.png)
-
 ## ✨ 주요 특징
 - **프리미엄 UI/UX**: 다크 테마 및 글래스모피즘이 적용된 고해상도 공정 현황판
 - **AI 공정 분석**: 데이터 기반의 공정 지연 위험 요소 자동 감지 및 리소스 재배치 권장
@@ -22,10 +20,10 @@
 
 ---
 
-## 📸 Dashboard Preview (V4.5.0 Strictly Centered Edition)
+## 📸 Dashboard Preview (Mission Control Edition)
 
-![AX Command Center V4.5.0](docs/dashboard_v40.png)
-*로고 제거, 헤더(타이틀+D-Day) 완전 중앙 정렬, 및 12-그리드 대칭 레이아웃이 적용된 고도화된 대시보드입니다.*
+![AX Mission Control Center](docs/images/dashboard.png)
+*로고 기반 브랜드 헤더, 'Live Feed' 상태 감지, 및 다층적인 글래스모피즘 레이아웃이 적용된 미션 컨트롤 센터형 대시보드입니다.*
 
 ---
 

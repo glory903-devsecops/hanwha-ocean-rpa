@@ -3,93 +3,107 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPA 공정 모니터링 - 한화오션 AX</title>
+    <title>한화오션 Smart Yard RPA Mission Control</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #FF6B00;
-            --bg: #0F172A;
-            --card: rgba(30, 41, 59, 0.7);
+            --primary-glow: rgba(255, 107, 0, 0.4);
+            --bg: #020617;
+            --sidebar: #0f172a;
+            --card: rgba(30, 41, 59, 0.6);
             --text: #F8FAFC;
             --secondary: #94A3B8;
-            --border: rgba(255, 255, 255, 0.1);
+            --accent: #00F2FF;
+            --border: rgba(255, 255, 255, 0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', 'Noto Sans KR', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+        body { background-color: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-        .navbar {
-            height: 70px;
-            display: flex;
-            align-items: center;
-            padding: 0 40px;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            position: fixed;
-            top: 0; width: 100%; z-index: 1000;
-            justify-content: space-between;
-        }
+        /* Sidebar */
+        .sidebar { width: 80px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; z-index: 1001; }
+        .sidebar-item { width: 45px; height: 45px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; color: var(--secondary); cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
+        .sidebar-item:hover { color: var(--primary); background: rgba(255, 107, 0, 0.1); border-color: rgba(255, 107, 0, 0.2); }
+        .sidebar-item.active { color: var(--primary); background: rgba(255, 107, 0, 0.15); border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
 
-        .logo { font-weight: 900; font-size: 20px; color: var(--primary); letter-spacing: -0.5px; }
+        /* Main Content */
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; overflow-y: auto; background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%); }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 100px 20px 40px; }
+        .header { height: 80px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .live-badge { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--accent); background: rgba(0, 242, 255, 0.1); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(0, 242, 255, 0.2); letter-spacing: 1px; }
+        .pulse { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; box-shadow: 0 0 10px var(--accent); }
+        @keyframes pulse { 0% { opacity: 0.5; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.5; transform: scale(0.9); } }
 
-        .hero { margin-bottom: 40px; animation: fadeIn 0.8s ease-out; }
-        .badge { background: rgba(255, 107, 0, 0.1); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 15px; display: inline-block; }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .container { max-width: 1500px; margin: 0 auto; padding: 40px 20px; width: 100%; flex: 1; }
 
-        .dashboard-wrapper {
-            background: var(--card);
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            padding: 20px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(20px);
-        }
+        .hero { text-align: center; margin-bottom: 50px; }
+        .hero h1 { font-size: 44px; font-weight: 900; background: linear-gradient(to bottom, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        .hero p { color: var(--secondary); font-size: 18px; max-width: 700px; margin: 0 auto; line-height: 1.6; }
 
-        .plotly-graph-div { border-radius: 12px; overflow: hidden; }
-        
-        .footer { text-align: center; padding: 40px; color: var(--secondary); font-size: 12px; }
+        .dashboard-container { position: relative; z-index: 10; padding: 15px; background: rgba(255, 255, 255, 0.03); border-radius: 40px; border: 1px solid var(--border); box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8); overflow: hidden; }
+
+        .dashboard-wrapper { background: var(--card); border-radius: 30px; border: 1px solid var(--border); padding: 30px; backdrop-filter: blur(40px); }
+
+        .footer { text-align: center; padding: 60px 0 40px; color: #475569; font-size: 13px; font-weight: 600; letter-spacing: 1px; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">한화오션 RPA 커맨드 센터</div>
-        <div style="font-size: 14px; color: var(--secondary)">Smart Yard 2030 | AX Operations</div>
-    </nav>
+    <aside class="sidebar">
+        <div class="sidebar-item active">📊</div>
+        <div class="sidebar-item">⚓</div>
+        <div class="sidebar-item">🤖</div>
+        <div class="sidebar-item">🛡️</div>
+        <div class="sidebar-item">⚙️</div>
+    </aside>
 
-    <div class="container">
-        <div class="hero">
-            <span class="badge">RPA & AI 공정 최적화</span>
-            <h1 style="font-size: 40px; margin-bottom: 10px; font-weight: 900;">실시간 야드 공정 분석 대시보드</h1>
-            <p style="color: var(--secondary); font-size: 18px;">한화오션 거제 사업장 내 전 공정 자동화 현황 및 예상 완공 기일 모니터링</p>
+    <main class="main">
+        <header class="header">
+            <div class="logo-area">
+                <span style="font-weight: 900; font-size: 22px; color: var(--primary);">HANWHA OCEAN</span>
+                <span style="height: 20px; width: 1px; background: var(--border);"></span>
+                <span style="color: var(--secondary); font-weight: 600; font-size: 14px; letter-spacing: 1px;">AX OPERATIONS</span>
+            </div>
+            <div class="live-badge">
+                <div class="pulse"></div> LIVE FEED
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="hero">
+                <h1>스마트 야드 공정 최적화 시스템</h1>
+                <p>AI 기반 데이터 상호 운용을 통한 실시간 공정 지연 감지 및 RPA 자동화 의사결정 지원 시스템</p>
+            </div>
+
+            <div class="dashboard-container">
+                <div class="dashboard-wrapper">
+                    <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+                    <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.4.0.min.js" crossorigin="anonymous"></script>
+                    <div id="5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d" class="plotly-graph-div" style="height:1400px; width:100%;"></div>
+                    <script>
+                        window.PLOTLYENV=window.PLOTLYENV || {};
+                        if (document.getElementById("5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d")) {
+                            Plotly.newPlot(
+                                "5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d",
+                                [{"domain":{"x":[0.0,0.45],"y":[0.8460000000000001,1.0]},"gauge":{"axis":{"range":[0,100],"visible":false},"bar":{"color":"#FF6B00"},"bgcolor":"#0F172A"},"mode":"gauge+number","number":{"font":{"color":"#FF6B00","size":34},"suffix":"%"},"title":{"align":"center","font":{"color":"#FF6B00","size":20},"text":"야드 전체 공정률<br><br>"},"value":54.26,"type":"indicator"},{"domain":{"x":[0.55,1.0],"y":[0.8460000000000001,1.0]},"mode":"number","number":{"font":{"color":"#FFFFFF","size":48},"prefix":"D-"},"title":{"align":"center","font":{"color":"#FF6B00","size":20},"text":"예상 완공일<br><span style='font-size:16px; color:#94A3B8'>Expected: 2026-04-19</span><br><br>"},"value":25.41,"type":"indicator"},{"marker":{"color":"#FF6B00"},"orientation":"h","text":{"dtype":"f8","bdata":"ZmZmZmZmS0CamZmZmRlNQM3MzMzMzFVAzczMzMxMOEAzMzMzMzM1QAAAAAAAgDFAMzMzMzPzTEBmZmZmZkZWQDMzMzMzc0ZAAAAAAABgUkAzMzMzM7NMQJqZmZmZmVNAMzMzMzMzS0CamZmZmRk8QJqZmZmZGTxAAAAAAABAUkCamZmZmZk0QAAAAAAAIFZA"},"textfont":{"size":11,"color":"#F8FAFC"},"textposition":"outside","x":{"dtype":"f8","bdata":"ZmZmZmZmS0CamZmZmRlNQM3MzMzMzFVAzczMzMxMOEAzMzMzMzM1QAAAAAAAgDFAMzMzMzPzTEBmZmZmZkZWQDMzMzMzc0ZAAAAAAABgUkAzMzMzM7NMQJqZmZmZmVNAMzMzMzMzS0CamZmZmRk8QJqZmZmZGTxAAAAAAABAUkCamZmZmZk0QAAAAAAAIFZA"},"y":["거제 제1도크","옥포 특수선 구역","통영 야드 A","통영 야드 B","옥포 특수선 (C)","통영 야드 A (V)","통영 야드 B (L)","거제 제3도크","통영 야드 B (L2)","거제 제1도크 (A)","거제 제3도크 (A)","통영 야드 A (A)","옥포 특수선 (C2)","옥포 특수선 (S)","통영 야드 B (S)","통영 야드 B (S2)","거제 제3도크 (C)","거제 제3도크 (S)"],"type":"bar","xaxis":"x","yaxis":"y"},{"cells":{"fill":{"color":"#0F172A"},"font":{"color":"#F8FAFC"},"values":[["통영 야드 A","옥포 특수선","거제 제3도크","거제 제3도크","옥포 특수선","통영 야드 B","거제 제3도크","통영 야드 A"],["설계 검토","시운전 준비","설계 검토","엔진 설치","설계 검토","도장 작업","의장 작업","도장 작업"],["낙하물 주의","강풍 경보","강풍 경보","낙하물 주의","강풍 경보","강풍 경보","강풍 경보","낙하물 주의"]]},"header":{"fill":{"color":"#FF6B00"},"font":{"color":"white"},"values":["도크/구역","작업","이슈"]},"type":"table","domain":{"x":[0.0,0.45],"y":[0.0,0.23]}},{"cells":{"align":"left","fill":{"color":"#1E293B"},"font":{"color":"#00F2FF","size":14},"height":45,"values":[["🤖 <b>AI Optimizer</b>: 13개 구역에서 지연 위험 감지됨.","💡 <b>Action</b>: 인력 부족 구역인 '거제 제1도크'에 추가 리소스 투입 권장.","⚠️ <b>Risk Alert</b>: 통영 야드 A, 옥포 특수선 구역 특이사항 발생 (긴급 점검).","🎯 <b>Impact</b>: AI 조치 이행 시 전체 공정 3.5일 단축 예상."]]},"header":{"fill":{"color":"#020617"},"font":{"color":"#FF6B00","size":16},"values":["<b>AI 분석 결과 및 권장 조치</b>"]},"type":"table","domain":{"x":[0.55,1.0],"y":[0.0,0.23]}}],
+                                {"paper_bgcolor":"transparent","plot_bgcolor":"transparent","font":{"color":"#F8FAFC","family":"Outfit, Noto Sans KR"},"margin":{"t":150,"b":50,"l":50,"r":50},"title":{"font":{"size":32,"color":"#FF6B00","weight":900},"text":"⚓ 스마트 야드 공정 현황 (Live Monitoring)"},"height":1400,"autosize":true,"showlegend":false},
+                                {"responsive": true}
+                            );
+                        }
+                    </script>
+                </div>
+            </div>
+            <footer class="footer">
+                © 2026 HANWHA OCEAN AX MISSION CONTROL. ALL PROCESS DATA ANALYZED BY PROPRIETARY AI ALGORITHMS.
+            </footer>
         </div>
-
-        <div class="dashboard-wrapper">
-            <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-            <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.4.0.min.js" crossorigin="anonymous"></script>
-            <div id="5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d" class="plotly-graph-div" style="height:1400px; width:100%;"></div>
-            <script>
-                window.PLOTLYENV=window.PLOTLYENV || {};
-                if (document.getElementById("5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d")) {
-                    Plotly.newPlot(
-                        "5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d",
-                        [{"domain":{"x":[0.0,0.45],"y":[0.8460000000000001,1.0]},"gauge":{"axis":{"range":[0,100],"visible":false},"bar":{"color":"#FF6B00"},"bgcolor":"#1E293B"},"mode":"gauge+number","number":{"font":{"color":"#FF6B00","size":34},"suffix":"%"},"title":{"align":"center","font":{"color":"#FF6B00","size":20},"text":"야드 전체 공정률<br><br>"},"value":54.26,"type":"indicator"},{"domain":{"x":[0.55,1.0],"y":[0.8460000000000001,1.0]},"mode":"number","number":{"font":{"color":"#FFFFFF","size":48},"prefix":"D-"},"title":{"align":"center","font":{"color":"#FF6B00","size":20},"text":"예상 완공일<br><span style='font-size:16px; color:#94A3B8'>Expected: 2026-04-19</span><br><br>"},"value":25.41,"type":"indicator"},{"marker":{"color":"#FF6B00"},"orientation":"h","text":{"dtype":"f8","bdata":"ZmZmZmZmS0CamZmZmRlNQM3MzMzMzFVAzczMzMxMOEAzMzMzMzM1QAAAAAAAgDFAMzMzMzPzTEBmZmZmZkZWQDMzMzMzc0ZAAAAAAABgUkAzMzMzM7NMQJqZmZmZmVNAMzMzMzMzS0CamZmZmRk8QJqZmZmZGTxAAAAAAABAUkCamZmZmZk0QAAAAAAAIFZA"},"textfont":{"size":11,"color":"#F8FAFC"},"textposition":"outside","x":{"dtype":"f8","bdata":"ZmZmZmZmS0CamZmZmRlNQM3MzMzMzFVAzczMzMxMOEAzMzMzMzM1QAAAAAAAgDFAMzMzMzPzTEBmZmZmZkZWQDMzMzMzc0ZAAAAAAABgUkAzMzMzM7NMQJqZmZmZmVNAMzMzMzMzS0CamZmZmRk8QJqZmZmZGTxAAAAAAABAUkCamZmZmZk0QAAAAAAAIFZA"},"y":["거제 제1도크 (Submarine)","옥포 특수선 구역 (VLCC)","통영 야드 A (Ammonia)","통영 야드 B (Container)","옥포 특수선 구역 (Container)","통영 야드 A (VLCC)","통영 야드 B (LNGC)","거제 제3도크 (Ammonia)","통영 야드 B (LNGC)","거제 제1도크 (Ammonia)","거제 제3도크 (Ammonia)","통영 야드 A (Ammonia)","옥포 특수선 구역 (Container)","옥포 특수선 구역 (Submarine)","통영 야드 B (Submarine)","통영 야드 B (Submarine)","거제 제3도크 (Container)","거제 제3도크 (Submarine)"],"type":"bar","xaxis":"x","yaxis":"y"},{"cells":{"fill":{"color":"#0F172A"},"font":{"color":"#F8FAFC"},"values":[["통영 야드 A","옥포 특수선 구역","거제 제3도크","거제 제3도크","옥포 특수선 구역","통영 야드 B","거제 제3도크","통영 야드 A"],["설계 검토","시운전 준비","설계 검토","엔진 설치","설계 검토","도장 작업","의장 작업","도장 작업"],["낙하물 주의","강풍 경보","강풍 경보","낙하물 주의","강풍 경보","강풍 경보","강풍 경보","낙하물 주의"]]},"header":{"fill":{"color":"#FF6B00"},"font":{"color":"white"},"values":["도크/구역","작업","이슈"]},"type":"table","domain":{"x":[0.0,0.45],"y":[0.0,0.23]}},{"cells":{"align":"left","fill":{"color":"#1E293B"},"font":{"color":"#00FFFF","size":14},"height":45,"values":[["🤖 <b>AI Optimizer</b>: 13개 구역에서 지연 위험 감지됨.","💡 <b>Action</b>: 인력 부족 구역인 '거제 제1도크'에 추가 리소스 투입 권장.","⚠️ <b>Risk Alert</b>: 통영 야드 A, 옥포 특수선 구역 특이사항 발생 (긴급 점검).","🎯 <b>Impact</b>: AI 조치 이행 시 전체 공정 3.5일 단축 예상."]]},"header":{"fill":{"color":"#0F172A"},"font":{"color":"#FF6B00","size":16},"values":["<b>AI 분석 결과 및 권장 조치</b>"]},"type":"table","domain":{"x":[0.55,1.0],"y":[0.0,0.23]}}],
-                        {"paper_bgcolor":"transparent","plot_bgcolor":"transparent","font":{"color":"#F8FAFC","family":"Outfit, Noto Sans KR"},"margin":{"t":150,"b":50,"l":50,"r":50},"title":{"font":{"size":32,"color":"#FF6B00","weight":900},"text":"⚓ 스마트 야드 공정 현황 (Live)"},"height":1400,"autosize":true,"showlegend":false},
-                        {"responsive": true}
-                    );
-                }
-            </script>
-        </div>
-    </div>
-
-    <footer class="footer">
-        © 2026 한화오션 AX RPA Operations. All process data processed by Hanwha AI Engine.
-    </footer>
+    </main>
 </body>
 </html>
