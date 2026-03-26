@@ -1,21 +1,95 @@
-<html>
-<head><meta charset="utf-8" />
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
-        <style>
-            * { user-select: text !important; -webkit-user-select: text !important; font-family: 'Noto Sans KR', sans-serif !important; letter-spacing: -0.01em; }
-            .modebar { display: none !important; }
-            body { margin: 0; padding: 0; overflow-x: hidden; background-color: #121212; }
-            .plotly-graph-div { width: 100vw !important; }
-            /* Card-like spacing rhythm */
-            .js-plotly-plot .plotly .main-svg { border-radius: 12px; }
-            /* Mobile responsiveness fine-tuning */
-            @media (max-width: 768px) {
-                .main-svg { transform: scale(0.9); }
-            }
-        </style>
-        </head>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPA 공정 모니터링 - 한화오션 AX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B00;
+            --bg: #0F172A;
+            --card: rgba(30, 41, 59, 0.7);
+            --text: #F8FAFC;
+            --secondary: #94A3B8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', 'Noto Sans KR', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+
+        .navbar {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0; width: 100%; z-index: 1000;
+            justify-content: space-between;
+        }
+
+        .logo { font-weight: 900; font-size: 20px; color: var(--primary); letter-spacing: -0.5px; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 100px 20px 40px; }
+
+        .hero { margin-bottom: 40px; animation: fadeIn 0.8s ease-out; }
+        .badge { background: rgba(255, 107, 0, 0.1); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 15px; display: inline-block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-wrapper {
+            background: var(--card);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .plotly-graph-div { border-radius: 12px; overflow: hidden; }
+        
+        .footer { text-align: center; padding: 40px; color: var(--secondary); font-size: 12px; }
+    </style>
+</head>
 <body>
-    <div>                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.4.0.min.js" integrity="sha256-KEmPoupLpFyGMyGAiOsiNDbKDKAvxXAn/W+oQa0ZAfk=" crossorigin="anonymous"></script>                <div id="5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d" class="plotly-graph-div" style="height:1400px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d")) {                    Plotly.newPlot(                        "5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d",                        [{"domain":{"x":[0.0,0.45],"y":[0.8460000000000001,1.0]},"gauge":{"axis":{"range":[0,100],"visible":false},"bar":{"color":"#eb6e00"},"bgcolor":"#333"},"mode":"gauge+number","number":{"font":{"color":"#eb6e00","size":34},"suffix":"%"},"title":{"align":"center","font":{"color":"#eb6e00","size":20},"text":"\uc57c\ub4dc \uc804\uccb4 \uacf5\uc815\ub960\u003cbr\u003e\u003cbr\u003e"},"value":54.25999999999999,"type":"indicator"},{"domain":{"x":[0.55,1.0],"y":[0.8460000000000001,1.0]},"mode":"number","number":{"font":{"color":"#FFFFFF","size":48},"prefix":"D-"},"title":{"align":"center","font":{"color":"#eb6e00","size":20},"text":"\uc608\uc0c1 \uc644\uacf5\uc77c\u003cbr\u003e\u003cspan style='font-size:16px; color:#aaa'\u003eExpected: 2026-04-19\u003c\u002fspan\u003e\u003cbr\u003e\u003cbr\u003e"},"value":25.41,"type":"indicator"},{"marker":{"color":"#eb6e00"},"orientation":"h","text":{"dtype":"f8","bdata":"ZmZmZmZmS0CamZmZmRlNQM3MzMzMzFVAzczMzMxMOEAzMzMzMzM1QAAAAAAAgDFAMzMzMzPzTEBmZmZmZkZWQDMzMzMzc0ZAAAAAAABgUkAzMzMzM7NMQJqZmZmZmVNAMzMzMzMzS0CamZmZmRk8QJqZmZmZGTxAAAAAAABAUkCamZmZmZk0QAAAAAAAIFZA"},"textfont":{"size":9},"textposition":"outside","x":{"dtype":"f8","bdata":"ZmZmZmZmS0CamZmZmRlNQM3MzMzMzFVAzczMzMxMOEAzMzMzMzM1QAAAAAAAgDFAMzMzMzPzTEBmZmZmZkZWQDMzMzMzc0ZAAAAAAABgUkAzMzMzM7NMQJqZmZmZmVNAMzMzMzMzS0CamZmZmRk8QJqZmZmZGTxAAAAAAABAUkCamZmZmZk0QAAAAAAAIFZA"},"y":["\uac70\uc81c \uc81c1\ub3c4\ud06c (Submarine (\uc7a0\uc218\ud568))","\uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed (VLCC (\ucd08\ub300\ud615 \uc6d0\uc720\uc6b4\ubc18\uc120))","\ud1b5\uc601 \uc57c\ub4dc A (Ammonia Carrier)","\ud1b5\uc601 \uc57c\ub4dc B (Container (\ucee8\ud14c\uc774\ub108\uc120))","\uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed (Container (\ucee8\ud14c\uc774\ub108\uc120))","\ud1b5\uc601 \uc57c\ub4dc A (VLCC (\ucd08\ub300\ud615 \uc6d0\uc720\uc6b4\ubc18\uc120))","\ud1b5\uc601 \uc57c\ub4dc B (LNGC (LNG \uc6b4\ubc18\uc120))","\uac70\uc81c \uc81c3\ub3c4\ud06c (Ammonia Carrier)","\ud1b5\uc601 \uc57c\ub4dc B (LNGC (LNG \uc6b4\ubc18\uc120))","\uac70\uc81c \uc81c1\ub3c4\ud06c (Ammonia Carrier)","\uac70\uc81c \uc81c3\ub3c4\ud06c (Ammonia Carrier)","\ud1b5\uc601 \uc57c\ub4dc A (Ammonia Carrier)","\uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed (Container (\ucee8\ud14c\uc774\ub108\uc120))","\uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed (Submarine (\uc7a0\uc218\ud568))","\ud1b5\uc601 \uc57c\ub4dc B (Submarine (\uc7a0\uc218\ud568))","\ud1b5\uc601 \uc57c\ub4dc B (Submarine (\uc7a0\uc218\ud568))","\uac70\uc81c \uc81c3\ub3c4\ud06c (Container (\ucee8\ud14c\uc774\ub108\uc120))","\uac70\uc81c \uc81c3\ub3c4\ud06c (Submarine (\uc7a0\uc218\ud568))"],"type":"bar","xaxis":"x","yaxis":"y"},{"cells":{"fill":{"color":"#121212"},"font":{"color":"white"},"values":[["\ud1b5\uc601 \uc57c\ub4dc A","\uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed","\uac70\uc81c \uc81c3\ub3c4\ud06c","\uac70\uc81c \uc81c3\ub3c4\ud06c","\uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed","\ud1b5\uc601 \uc57c\ub4dc B","\uac70\uc81c \uc81c3\ub3c4\ud06c","\ud1b5\uc601 \uc57c\ub4dc A"],["\uc124\uacc4 \uac80\ud1a0","\uc2dc\uc6b4\uc804 \uc900\ube44","\uc124\uacc4 \uac80\ud1a0","\uc5d4\uc9c4 \uc124\uce58","\uc124\uacc4 \uac80\ud1a0","\ub3c4\uc7a5 \uc791\uc5c5","\uc758\uc7a5 \uc791\uc5c5","\ub3c4\uc7a5 \uc791\uc5c5"],["\ub099\ud558\ubb3c \uc8fc\uc758","\uac15\ud48d \uacbd\ubcf4","\uac15\ud48d \uacbd\ubcf4","\ub099\ud558\ubb3c \uc8fc\uc758","\uac15\ud48d \uacbd\ubcf4","\uac15\ud48d \uacbd\ubcf4","\uac15\ud48d \uacbd\ubcf4","\ub099\ud558\ubb3c \uc8fc\uc758"]]},"header":{"fill":{"color":"#eb6e00"},"font":{"color":"white"},"values":["\ub3c4\ud06c\u002f\uad6c\uc5ed","\uc791\uc5c5","\uc774\uc288"]},"type":"table","domain":{"x":[0.0,0.45],"y":[0.0,0.23099999999999998]}},{"cells":{"align":"left","fill":{"color":"#1a1a1a"},"font":{"color":"#00FFFF","size":13},"height":40,"values":[["\ud83e\udd16 \u003cb\u003eAI Optimizer\u003c\u002fb\u003e: 13\uac1c \uad6c\uc5ed\uc5d0\uc11c \uc9c0\uc5f0 \uc704\ud5d8 \uac10\uc9c0\ub428.","\ud83d\udca1 \u003cb\u003eAction\u003c\u002fb\u003e: \uc778\ub825 \ubd80\uc871 \uad6c\uc5ed\uc778 '\uac70\uc81c \uc81c1\ub3c4\ud06c'\uc5d0 \ucd94\uac00 \ub9ac\uc18c\uc2a4 \ud22c\uc785 \uad8c\uc7a5.","\u26a0\ufe0f \u003cb\u003eRisk Alert\u003c\u002fb\u003e: \ud1b5\uc601 \uc57c\ub4dc A, \uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed \uc57c\ub4dc \ud2b9\uc774\uc0ac\ud56d \ubc1c\uc0dd (\uae34\uae09 \uc810\uac80).","\ud83c\udfaf \u003cb\u003eImpact\u003c\u002fb\u003e: AI \uc870\uce58 \uc774\ud589 \uc2dc \uc804\uccb4 \uacf5\uc815 3.5\uc77c \ub2e8\ucd95 \uc608\uc0c1."]]},"header":{"fill":{"color":"#002c5f"},"font":{"color":"white"},"values":["\u003cb\u003eAI \ubd84\uc11d \uacb0\uacfc \ubc0f \uad8c\uc7a5 \uc870\uce58\u003c\u002fb\u003e"]},"type":"table","domain":{"x":[0.55,1.0],"y":[0.0,0.23099999999999998]}}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"rgb(17,17,17)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#f2f5fa"},"error_y":{"color":"#f2f5fa"},"marker":{"line":{"color":"rgb(17,17,17)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#A2B1C6","gridcolor":"#506784","linecolor":"#506784","minorgridcolor":"#506784","startlinecolor":"#A2B1C6"},"baxis":{"endlinecolor":"#A2B1C6","gridcolor":"#506784","linecolor":"#506784","minorgridcolor":"#506784","startlinecolor":"#A2B1C6"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"line":{"color":"#283442"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"marker":{"line":{"color":"#283442"}},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#506784"},"line":{"color":"rgb(17,17,17)"}},"header":{"fill":{"color":"#2a3f5f"},"line":{"color":"rgb(17,17,17)"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#f2f5fa","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#f2f5fa"},"geo":{"bgcolor":"rgb(17,17,17)","lakecolor":"rgb(17,17,17)","landcolor":"rgb(17,17,17)","showlakes":true,"showland":true,"subunitcolor":"#506784"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"dark"},"paper_bgcolor":"rgb(17,17,17)","plot_bgcolor":"rgb(17,17,17)","polar":{"angularaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"bgcolor":"rgb(17,17,17)","radialaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"},"yaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"},"zaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"}},"shapedefaults":{"line":{"color":"#f2f5fa"}},"sliderdefaults":{"bgcolor":"#C8D4E3","bordercolor":"rgb(17,17,17)","borderwidth":1,"tickwidth":0},"ternary":{"aaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"baxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"bgcolor":"rgb(17,17,17)","caxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""}},"title":{"x":0.05},"updatemenudefaults":{"bgcolor":"#506784","borderwidth":0},"xaxis":{"automargin":true,"gridcolor":"#283442","linecolor":"#506784","ticks":"","title":{"standoff":15},"zerolinecolor":"#283442","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#283442","linecolor":"#506784","ticks":"","title":{"standoff":15},"zerolinecolor":"#283442","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.3,0.7],"tickfont":{"size":18,"color":"white","family":"Noto Sans KR"},"range":[0,150]},"yaxis":{"anchor":"x","domain":[0.381,0.696],"tickfont":{"size":18,"color":"white","family":"Noto Sans KR"},"autorange":"reversed"},"annotations":[{"font":{"color":"#eb6e00","family":"Noto Sans KR","size":26,"weight":700},"showarrow":false,"text":"\ub3c4\ud06c\ubcc4 \uc9c4\ucc99 \ud604\ud669","x":0.5,"xanchor":"center","xref":"paper","y":0.92,"yref":"paper"},{"font":{"color":"#eb6e00","family":"Noto Sans KR","size":22,"weight":700},"showarrow":false,"text":"\uc2e4\uc2dc\uac04 \uc548\uc804 \uac10\uc2dc","x":0.23,"xanchor":"center","xref":"paper","y":0.35,"yref":"paper"},{"font":{"color":"#eb6e00","family":"Noto Sans KR","size":22,"weight":700},"showarrow":false,"text":"\ud83e\udd16 AI \uc758\uc0ac\uacb0\uc815 \uc9c0\uc6d0","x":0.77,"xanchor":"center","xref":"paper","y":0.35,"yref":"paper"}],"font":{"color":"#FFFFFF","size":16,"family":"Noto Sans KR"},"title":{"font":{"size":44,"color":"#eb6e00","family":"Noto Sans KR","weight":900},"text":"\ud83d\udea2 \ud55c\ud654\uc624\uc158 Smart Yard AX Command Center","x":0.5,"y":0.98},"margin":{"t":130,"b":70,"l":40,"r":40},"paper_bgcolor":"#121212","plot_bgcolor":"#121212","height":1400,"autosize":true,"showlegend":false},                        {"responsive": true}                    )                };            </script>        </div>
+    <nav class="navbar">
+        <div class="logo">한화오션 RPA 커맨드 센터</div>
+        <div style="font-size: 14px; color: var(--secondary)">Smart Yard 2030 | AX Operations</div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <span class="badge">RPA & AI 공정 최적화</span>
+            <h1 style="font-size: 40px; margin-bottom: 10px; font-weight: 900;">실시간 야드 공정 분석 대시보드</h1>
+            <p style="color: var(--secondary); font-size: 18px;">한화오션 거제 사업장 내 전 공정 자동화 현황 및 예상 완공 기일 모니터링</p>
+        </div>
+
+        <div class="dashboard-wrapper">
+            <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+            <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.4.0.min.js" crossorigin="anonymous"></script>
+            <div id="5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d" class="plotly-graph-div" style="height:1400px; width:100%;"></div>
+            <script>
+                window.PLOTLYENV=window.PLOTLYENV || {};
+                if (document.getElementById("5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d")) {
+                    Plotly.newPlot(
+                        "5b4eb6c0-a3ac-4c1f-8e40-47f14bac3d2d",
+                        [{"domain":{"x":[0.0,0.45],"y":[0.8460000000000001,1.0]},"gauge":{"axis":{"range":[0,100],"visible":false},"bar":{"color":"#FF6B00"},"bgcolor":"#1E293B"},"mode":"gauge+number","number":{"font":{"color":"#FF6B00","size":34},"suffix":"%"},"title":{"align":"center","font":{"color":"#FF6B00","size":20},"text":"야드 전체 공정률<br><br>"},"value":54.26,"type":"indicator"},{"domain":{"x":[0.55,1.0],"y":[0.8460000000000001,1.0]},"mode":"number","number":{"font":{"color":"#FFFFFF","size":48},"prefix":"D-"},"title":{"align":"center","font":{"color":"#FF6B00","size":20},"text":"예상 완공일<br><span style='font-size:16px; color:#94A3B8'>Expected: 2026-04-19</span><br><br>"},"value":25.41,"type":"indicator"},{"marker":{"color":"#FF6B00"},"orientation":"h","text":{"dtype":"f8","bdata":"ZmZmZmZmS0CamZmZmRlNQM3MzMzMzFVAzczMzMxMOEAzMzMzMzM1QAAAAAAAgDFAMzMzMzPzTEBmZmZmZkZWQDMzMzMzc0ZAAAAAAABgUkAzMzMzM7NMQJqZmZmZmVNAMzMzMzMzS0CamZmZmRk8QJqZmZmZGTxAAAAAAABAUkCamZmZmZk0QAAAAAAAIFZA"},"textfont":{"size":11,"color":"#F8FAFC"},"textposition":"outside","x":{"dtype":"f8","bdata":"ZmZmZmZmS0CamZmZmRlNQM3MzMzMzFVAzczMzMxMOEAzMzMzMzM1QAAAAAAAgDFAMzMzMzPzTEBmZmZmZkZWQDMzMzMzc0ZAAAAAAABgUkAzMzMzM7NMQJqZmZmZmVNAMzMzMzMzS0CamZmZmRk8QJqZmZmZGTxAAAAAAABAUkCamZmZmZk0QAAAAAAAIFZA"},"y":["거제 제1도크 (Submarine)","옥포 특수선 구역 (VLCC)","통영 야드 A (Ammonia)","통영 야드 B (Container)","옥포 특수선 구역 (Container)","통영 야드 A (VLCC)","통영 야드 B (LNGC)","거제 제3도크 (Ammonia)","통영 야드 B (LNGC)","거제 제1도크 (Ammonia)","거제 제3도크 (Ammonia)","통영 야드 A (Ammonia)","옥포 특수선 구역 (Container)","옥포 특수선 구역 (Submarine)","통영 야드 B (Submarine)","통영 야드 B (Submarine)","거제 제3도크 (Container)","거제 제3도크 (Submarine)"],"type":"bar","xaxis":"x","yaxis":"y"},{"cells":{"fill":{"color":"#0F172A"},"font":{"color":"#F8FAFC"},"values":[["통영 야드 A","옥포 특수선 구역","거제 제3도크","거제 제3도크","옥포 특수선 구역","통영 야드 B","거제 제3도크","통영 야드 A"],["설계 검토","시운전 준비","설계 검토","엔진 설치","설계 검토","도장 작업","의장 작업","도장 작업"],["낙하물 주의","강풍 경보","강풍 경보","낙하물 주의","강풍 경보","강풍 경보","강풍 경보","낙하물 주의"]]},"header":{"fill":{"color":"#FF6B00"},"font":{"color":"white"},"values":["도크/구역","작업","이슈"]},"type":"table","domain":{"x":[0.0,0.45],"y":[0.0,0.23]}},{"cells":{"align":"left","fill":{"color":"#1E293B"},"font":{"color":"#00FFFF","size":14},"height":45,"values":[["🤖 <b>AI Optimizer</b>: 13개 구역에서 지연 위험 감지됨.","💡 <b>Action</b>: 인력 부족 구역인 '거제 제1도크'에 추가 리소스 투입 권장.","⚠️ <b>Risk Alert</b>: 통영 야드 A, 옥포 특수선 구역 특이사항 발생 (긴급 점검).","🎯 <b>Impact</b>: AI 조치 이행 시 전체 공정 3.5일 단축 예상."]]},"header":{"fill":{"color":"#0F172A"},"font":{"color":"#FF6B00","size":16},"values":["<b>AI 분석 결과 및 권장 조치</b>"]},"type":"table","domain":{"x":[0.55,1.0],"y":[0.0,0.23]}}],
+                        {"paper_bgcolor":"transparent","plot_bgcolor":"transparent","font":{"color":"#F8FAFC","family":"Outfit, Noto Sans KR"},"margin":{"t":150,"b":50,"l":50,"r":50},"title":{"font":{"size":32,"color":"#FF6B00","weight":900},"text":"⚓ 스마트 야드 공정 현황 (Live)"},"height":1400,"autosize":true,"showlegend":false},
+                        {"responsive": true}
+                    );
+                }
+            </script>
+        </div>
+    </div>
+
+    <footer class="footer">
+        © 2026 한화오션 AX RPA Operations. All process data processed by Hanwha AI Engine.
+    </footer>
 </body>
 </html>
