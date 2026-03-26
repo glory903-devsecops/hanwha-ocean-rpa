@@ -1,6 +1,13 @@
-# <img src="docs/logo_hanwha_ocean.png" width="40" vertical-align="middle"> Hanwha Ocean Smart Yard AX Professional Portfolio (v4.5.0)
+# 한화오션 Smart Yard RPA 공정 최적화 시스템
 
-본 프로젝트는 한화오션의 **AX(AI Transformation) 전략**에 기반하여 개발된 **전사적 스마트 야드 실시간 통합 관제 시스템**입니다. 단순한 기능 구현을 넘어, 확장 가능한 모듈형 아키텍처와 전문적인 비즈니스 로직(공식 기반 연계)을 통해 기업형 프로젝트의 표준을 제시합니다.
+한화오션 야드 내 공정 자동화 현황을 실시간으로 분석하고 AI 최적화 알고리즘을 통해 공기를 단축하는 RPA 커맨드 센터입니다.
+
+![RPA Dashboard](file:///C:/Users/glory/.gemini/antigravity/brain/997e0dfa-e5f0-4966-a6c0-bd3b25a55a55/rpa_dashboard_upgraded_1774511726105.png)
+
+## ✨ 주요 특징
+- **프리미엄 UI/UX**: 다크 테마 및 글래스모피즘이 적용된 고해상도 공정 현황판
+- **AI 공정 분석**: 데이터 기반의 공정 지연 위험 요소 자동 감지 및 리소스 재배치 권장
+- **실시간 모니터링**: 도크별 진척도 및 예상 완공일(D-Day) 실시간 대시보드
 
 ## 🔗 Live Deployment (실시간 웹 서비스)
 > **[한화오션 AX 커맨드 센터 바로가기](https://glory903-devsecops.github.io/hanwha-ocean-rpa/)**
