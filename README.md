@@ -2,7 +2,7 @@
 
 한화오션 야드 내 공정 자동화 현황을 실시간으로 분석하고 AI 최적화 알고리즘을 통해 공기를 단축하는 RPA 커맨드 센터입니다.
 
-![RPA Dashboard](file:///C:/Users/glory/.gemini/antigravity/brain/997e0dfa-e5f0-4966-a6c0-bd3b25a55a55/rpa_dashboard_upgraded_1774511726105.png)
+![RPA Dashboard](docs/images/dashboard.png)
 
 ## ✨ 주요 특징
 - **프리미엄 UI/UX**: 다크 테마 및 글래스모피즘이 적용된 고해상도 공정 현황판
