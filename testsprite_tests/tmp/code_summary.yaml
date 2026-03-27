@@ -1,0 +1,19 @@
+tech_stacks:
+  - Python
+  - FastAPI
+  - Pandas
+  - Plotly
+  - Tailwind CSS
+  - Uvicorn
+features:
+  - name: Update Dock Status
+    description: Receives dock progress and safety data via POST /api/v1/update-dock and saves to CSV.
+    endpoints:
+      - method: POST
+        path: /api/v1/update-dock
+  - name: Dashboard Generation
+    description: Automatically re-generates the Tailwind-based smart yard dashboard HTML when data is updated.
+  - name: AX Analytics
+    description: Provides business intelligence such as D-Day prediction and AI-driven resource optimization insights.
+  - name: Report Export
+    description: Export processed dock data as a CSV report via a dashboard button.

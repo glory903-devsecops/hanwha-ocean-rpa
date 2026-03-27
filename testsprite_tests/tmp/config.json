@@ -1,0 +1,21 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:8082",
+  "backendAuthType": "API key",
+  "backendApiKey": "Antigravity",
+  "backendApiValue": "sk-user-7NjWyvWwmm8tAk2EOdjilY9H30jLc64qrMxvkVREmN8p_FLprSCbzgvceeFYWu21Ja4jvOwI2PwOQrFH-ybWkMq4JqYnRO_Y-zfOb8UjDS3NWSm2R11ai859htR_iFkKuCc",
+  "executionArgs": {
+    "projectName": "hanwha-ocean-rpa",
+    "projectPath": "g:/내 드라이브/99.Develop/한화오션/hanwha-ocean-rpa",
+    "testIds": [],
+    "additionalInstruction": "Verify the /api/v1/update-dock endpoint. Ensure it correctly updates the dock_status.csv file and triggers the dashboard re-rendering. No authentication is required.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-7NjWyvWwmm8tAk2EOdjilY9H30jLc64qrMxvkVREmN8p_FLprSCbzgvceeFYWu21Ja4jvOwI2PwOQrFH-ybWkMq4JqYnRO_Y-zfOb8UjDS3NWSm2R11ai859htR_iFkKuCc"
+    }
+  },
+  "serverPort": 1576,
+  "proxy": "http://d7658139-0803-485f-8dac-774b10f11dd3:7j8KFyJzGZdRbEVpRAm4Ryg6Bx0JnvIn@tun.testsprite.com:8080"
+}

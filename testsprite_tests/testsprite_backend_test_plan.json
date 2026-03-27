@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "post api v1 update dock with valid payload",
+    "description": "Test the POST /api/v1/update-dock endpoint with a valid JSON payload containing dock_id, progress, safety_issue, current_task, and timestamp. Verify that the response status is 200 OK, the response body confirms the CSV file update with the correct file path and updated record count, and that the dock_status.csv file is updated accordingly."
+  },
+  {
+    "id": "TC002",
+    "title": "post api v1 update dock with missing required fields",
+    "description": "Test the POST /api/v1/update-dock endpoint with a JSON payload missing required fields such as progress. Verify that the response status is 400 Bad Request and the response body contains validation error details. Also verify that the dock_status.csv file remains unchanged."
+  },
+  {
+    "id": "TC003",
+    "title": "get api v1 dashboard status returns updated dock record",
+    "description": "Test the GET /api/v1/dashboard-status endpoint with a valid dock_id after a successful update. Verify that the response status is 200 OK and the JSON response contains the newly updated dock record reflecting the latest data."
+  },
+  {
+    "id": "TC004",
+    "title": "get dashboard serves updated tailwind html",
+    "description": "Test the GET /dashboard endpoint after a successful dock data update. Verify that the response status is 200 OK and the HTML body contains the updated metrics and a recent generation timestamp indicating the dashboard was regenerated automatically."
+  },
+  {
+    "id": "TC005",
+    "title": "get dashboard handles generation failure and logs error",
+    "description": "Test the GET /dashboard endpoint when the dashboard generation fails after a dock data update. Verify that the response status is 500 Internal Server Error with a generation failure page. Then test GET /api/v1/logs?source=dashboard-generate to confirm that the error logs are returned with details describing the generation failure."
+  },
+  {
+    "id": "TC006",
+    "title": "get api v1 analytics returns d day prediction and recommendations",
+    "description": "Test the GET /api/v1/analytics endpoint with a valid dock_id. Verify that the response status is 200 OK and the JSON response contains dock_id, d_day prediction date, daily_rate, risk_level, and an array of AI-driven recommendations."
+  },
+  {
+    "id": "TC007",
+    "title": "get api v1 analytics explain returns model explanation",
+    "description": "Test the GET /api/v1/analytics/explain endpoint with a valid dock_id. Verify that the response status is 200 OK and the JSON response contains an explanation of the AI model factors and rule-based decisions used for the analytics."
+  },
+  {
+    "id": "TC008",
+    "title": "get api v1 analytics returns 404 for unknown dock id",
+    "description": "Test the GET /api/v1/analytics endpoint with an unknown dock_id. Verify that the response status is 404 Not Found and the JSON response contains an error message indicating the dock was not found."
+  },
+  {
+    "id": "TC009",
+    "title": "get api v1 export report returns csv data",
+    "description": "Test the GET /api/v1/export-report endpoint with format=csv and a valid since date. Verify that the response status is 200 OK, the Content-Type header is text/csv, and the response body contains the CSV payload of processed dock records matching the requested date range."
+  },
+  {
+    "id": "TC010",
+    "title": "get api v1 export report handles unsupported format and no content",
+    "description": "Test the GET /api/v1/export-report endpoint with an unsupported format such as xml. Verify that the response status is 400 Bad Request with an error message indicating unsupported format. Also test with format=csv and a since date that matches no records, verifying a 204 No Content response."
+  }
+]

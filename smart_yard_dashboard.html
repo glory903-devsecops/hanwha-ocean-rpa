@@ -1,28 +1,1056 @@
-<html>
-<head><meta charset="utf-8" />
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
-        <style>
-            * { user-select: text !important; -webkit-user-select: text !important; letter-spacing: -0.01em; }
-            html, body { 
-                margin: 0; padding: 0; overflow-x: hidden; background-color: #121212; 
-                font-family: 'Noto Sans KR', sans-serif !important;
-                font-size: clamp(18px, 1.2vw, 24px) !important; /* Responsive scaling with 18px min */
+
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한화오션 Smart Yard AX Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Pretendard', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="bg-[#0B0F12] text-white selection:bg-orange-500/30">
+    <!-- Header -->
+    <header class="border-b border-gray-800 glass sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center font-bold text-xl">H</div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tighter">HANWHA OCEAN <span class="text-orange-500">AX COMMAND CENTER</span></h1>
+                    <p class="text-xs text-gray-500">Smart Yard Monitoring System v4.5.0</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-right">
+                    <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Expected Completion</p>
+                    <p class="text-lg font-bold text-orange-500">2026-04-22 <span class="text-sm text-gray-400 font-normal">(D-25)</span></p>
+                </div>
+                <button onclick="downloadCSV()" class="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-orange-600/20 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    보고서 다운로드 (CSV)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1600px] mx-auto p-8 grid grid-cols-12 gap-8">
+        <!-- Top Stats Overlay -->
+        <div class="col-span-12 grid grid-cols-4 gap-6 mb-4">
+            <div class="bg-gray-900/50 border border-gray-800 p-6 rounded-3xl">
+                <p class="text-gray-500 text-sm font-semibold mb-1">전체 공정률</p>
+                <p class="text-4xl font-extrabold text-white">54.5%</p>
+            </div>
+            <div class="bg-gray-900/50 border border-gray-800 p-6 rounded-3xl">
+                <p class="text-gray-500 text-sm font-semibold mb-1">활성 도크 수</p>
+                <p class="text-4xl font-extrabold text-white">49</p>
+            </div>
+            <div class="bg-gray-900/50 border border-gray-800 p-6 rounded-3xl">
+                <p class="text-gray-500 text-sm font-semibold mb-1">안전 경보</p>
+                <p class="text-4xl font-extrabold text-red-500">40건</p>
+            </div>
+            <div class="bg-gray-900/50 border border-gray-800 p-6 rounded-3xl">
+                <p class="text-gray-500 text-sm font-semibold mb-1">생산성 지표</p>
+                <p class="text-4xl font-extrabold text-emerald-500">우수</p>
+            </div>
+        </div>
+
+        <!-- Left: Visualization -->
+        <div class="col-span-8 flex flex-col gap-8">
+            <div class="bg-gray-900/40 border border-gray-800 rounded-3xl p-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10">
+                    <svg class="w-64 h-64 text-orange-500" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14H11V21L20 10H13Z"/></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-orange-500 rounded-full"></span>
+                    도크별 진척 현황
+                </h3>
+                <div class="w-full flex justify-center">
+                    <div>                            <div id="73a2dd54-9720-43e0-9c85-936ae1b5676f" class="plotly-graph-div" style="height:600px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("73a2dd54-9720-43e0-9c85-936ae1b5676f")) {                    Plotly.newPlot(                        "73a2dd54-9720-43e0-9c85-936ae1b5676f",                        [{"marker":{"color":"#FF6A00"},"orientation":"h","text":["0.0%","0.0%","16.7%","17.8%","21.2%","22.9%","23.7%","23.9%","24.3%","26.2%","27.4%","29.1%","34.7%","35.5%","36.0%","38.4%","39.1%","42.6%","42.7%","47.6%","50.0%","50.0%","54.4%","55.5%","56.9%","59.8%","63.2%","63.5%","63.6%","64.2%","70.0%","70.0%","72.0%","73.2%","75.0%","75.0%","75.0%","75.0%","80.5%","82.6%","83.4%","83.6%","84.4%","85.0%","85.5%","88.7%","91.3%","93.0%","94.1%"],"textfont":{"color":"white","weight":700},"textposition":"inside","x":{"dtype":"f8","bdata":"AAAAAAAAAAAAAAAAAAAAADMzMzMzszBAzczMzMzMMUAzMzMzMzM1QGZmZmZm5jZAMzMzMzOzN0BmZmZmZuY3QM3MzMzMTDhAMzMzMzMzOkBmZmZmZmY7QJqZmZmZGT1AmpmZmZlZQUAAAAAAAMBBQAAAAAAAAEJAMzMzMzMzQ0DNzMzMzIxDQM3MzMzMTEVAmpmZmZlZRUDNzMzMzMxHQAAAAAAAAElAAAAAAAAASUAzMzMzMzNLQAAAAAAAwEtAMzMzMzNzTEBmZmZmZuZNQJqZmZmZmU9AAAAAAADAT0DNzMzMzMxPQM3MzMzMDFBAAAAAAACAUUAAAAAAAIBRQAAAAAAAAFJAzczMzMxMUkAAAAAAAMBSQAAAAAAAwFJAAAAAAADAUkAAAAAAAMBSQAAAAAAAIFRAZmZmZmamVECamZmZmdlUQGZmZmZm5lRAmpmZmZkZVUAAAAAAAEBVQAAAAAAAYFVAzczMzMwsVkAzMzMzM9NWQAAAAAAAQFdAZmZmZmaGV0A="},"y":["test-dock-e0aafd92-31e4-4dc1-97fa-7e54a630c249","test-dock-8ca04258-7f29-48ee-bc9f-bf63aa903391","\uac70\uc81c \uc81c2\uc548\ubcbd","\uc120\ud589 \ub3c4\uc7a5 \uacf5\uc7a5","\uc2a4\ub9c8\ud2b8 \uc2dc\uc6b4\uc804 \uc13c\ud130","\uac70\uc81c \uc81c3\ub3c4\ud06c","\uc5d0\ub108\uc9c0 \uc2dc\uc2a4\ud15c \uc2e4\ud5d8 \uc13c\ud130","\uac70\uc81c \uc81c2\uc548\ubcbd","\uac70\uc81c \uc81c2\ub3c4\ud06c (VLCC)","\uac70\uc81c \uc81c2\ub3c4\ud06c (VLCC)","\uac70\uc81c \uc81c2\ub3c4\ud06c (VLCC)","\uc5d0\ub108\uc9c0 \uc2dc\uc2a4\ud15c \uc2e4\ud5d8 \uc13c\ud130","\ud1b5\uc601 \uc57c\ub4dc B-1","\ub514\uc9c0\ud138 \uc0dd\uc0b0 \uc13c\ud130","\uc5d0\ub108\uc9c0 \uc2dc\uc2a4\ud15c \uc2e4\ud5d8 \uc13c\ud130","\ud1b5\uc601 \uc57c\ub4dc B-1","\uac70\uc81c \uc81c1\ub3c4\ud06c (LNG)","\ub514\uc9c0\ud138 \uc0dd\uc0b0 \uc13c\ud130","\uac70\uc81c \uc81c1\uc548\ubcbd","\uc2a4\ub9c8\ud2b8 \uc2dc\uc6b4\uc804 \uc13c\ud130","test-dock-tc006-20260327105642","test-dock-tc006-20260327105704","\uc2a4\ub9c8\ud2b8 \uc57c\ub4dc \uc2e4\uc99d \uc13c\ud130","\uc2a4\ub9c8\ud2b8 \uc57c\ub4dc \uc2e4\uc99d \uc13c\ud130","\uac70\uc81c \uc81c2\uc548\ubcbd","\uac70\uc81c \uc81c1\uc548\ubcbd","\uc790\ub3d9 \ubc30\uc120 \uc791\uc5c5\uc7a5","\uc2a4\ub9c8\ud2b8 \uc57c\ub4dc \uc2e4\uc99d \uc13c\ud130","\uc2a4\ub9c8\ud2b8 \uc2dc\uc6b4\uc804 \uc13c\ud130","\uac70\uc81c \uc81c2\uc548\ubcbd","test-dock-999","\uc2a4\ub9c8\ud2b8 \uc2dc\uc6b4\uc804 \uc13c\ud130","\uac70\uc81c \uc81c3\ub3c4\ud06c","\uc5d0\ub108\uc9c0 \uc2dc\uc2a4\ud15c \uc2e4\ud5d8 \uc13c\ud130","b800911f-9b3f-4eeb-a5f4-a9a52233c896","test-dock-001","bf5c7a95-afd9-42df-a353-2c1697b54673","dock_test_123","\uac70\uc81c \uc81c2\uc548\ubcbd","\uc120\ud589 \ub3c4\uc7a5 \uacf5\uc7a5","\uc790\ub3d9 \ubc30\uc120 \uc791\uc5c5\uc7a5","\ud2b9\uc218\uc120 \uc804\uc6a9 \ub3c4\ud06c","\ud1b5\uc601 \uc57c\ub4dc B-1","\uc2a4\ub9c8\ud2b8 \uc2dc\uc6b4\uc804 \uc13c\ud130","\ud2b9\uc218\uc120 \uc804\uc6a9 \ub3c4\ud06c","\uac70\uc81c \uc81c2\ub3c4\ud06c (VLCC)","\ud1b5\uc601 \uc57c\ub4dc A-1","\ud2b9\uc218\uc120 \uc804\uc6a9 \ub3c4\ud06c","\uac70\uc81c \uc81c3\ub3c4\ud06c"],"type":"bar"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"font":{"color":"white"},"margin":{"l":200,"r":50,"t":50,"b":50},"xaxis":{"range":[0,100],"showgrid":true,"gridcolor":"rgba(255,255,255,0.1)"},"yaxis":{"showgrid":false},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(0,0,0,0)","height":600},                        {"displayModeBar": false, "responsive": true}                    )                };            </script>        </div>
+                </div>
+            </div>
+
+            <!-- Detailed Table -->
+            <div class="bg-gray-900/40 border border-gray-800 rounded-3xl overflow-hidden">
+                <div class="p-8 border-b border-gray-800 flex justify-between items-center">
+                    <h3 class="text-xl font-bold flex items-center gap-2">
+                        <span class="w-2 h-6 bg-orange-500 rounded-full"></span>
+                        상세 작업 현황
+                    </h3>
+                    <span class="text-xs text-gray-500 bg-gray-800 px-3 py-1 rounded-full uppercase tracking-tighter">Live Database Connection</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-800/30 text-gray-400 text-xs font-bold uppercase tracking-widest">
+                            <tr>
+                                <th class="py-4 px-6">구역/도크</th>
+                                <th class="py-4 px-6">진척도</th>
+                                <th class="py-4 px-6">현재 작업</th>
+                                <th class="py-4 px-6">안전 상태</th>
+                                <th class="py-4 px-6">업데이트 시간</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제3도크</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 72.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">72.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">엔진 설치</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">에너지 시스템 실험 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 23.7%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">23.7% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">탑재 공정</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">자동 배선 작업장</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 83.4%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">83.4% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">비파괴 검사</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        낙하물 주의
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">스마트 시운전 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 21.2%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">21.2% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">선체 용접</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        낙하물 주의
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제1안벽</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 59.8%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">59.8% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">도장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">특수선 전용 도크</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 93.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">93.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">엔진 설치</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        강풍 경보
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제1안벽</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 42.7%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">42.7% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">의장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        강풍 경보
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">스마트 야드 실증 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 63.5%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">63.5% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">선체 용접</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">스마트 시운전 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 47.6%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">47.6% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">시운전</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        강풍 경보
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제2안벽</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 56.9%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">56.9% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">안전 점검</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">에너지 시스템 실험 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 36.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">36.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">도장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제2안벽</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 23.9%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">23.9% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">선체 용접</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        낙하물 주의
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제2도크 (VLCC)</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 27.4%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">27.4% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">의장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">스마트 시운전 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 85.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">85.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">도장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">스마트 시운전 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 70.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">70.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">비파괴 검사</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">자동 배선 작업장</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 63.2%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">63.2% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">의장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">선행 도장 공장</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 17.8%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">17.8% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">시운전</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">디지털 생산 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 42.6%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">42.6% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">비파괴 검사</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        낙하물 주의
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">에너지 시스템 실험 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 29.1%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">29.1% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">비파괴 검사</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        강풍 경보
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제3도크</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 94.1%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">94.1% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">의장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">특수선 전용 도크</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 83.6%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">83.6% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">블록 배치</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">특수선 전용 도크</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 85.5%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">85.5% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">비파괴 검사</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        낙하물 주의
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">통영 야드 B-1</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 38.4%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">38.4% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">탑재 공정</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        낙하물 주의
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">통영 야드 B-1</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 84.4%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">84.4% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">시운전</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제2안벽</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 16.7%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">16.7% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">시운전</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제2도크 (VLCC)</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 24.3%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">24.3% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">시운전</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제2안벽</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 80.5%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">80.5% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">도장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제1도크 (LNG)</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 39.1%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">39.1% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">엔진 설치</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제3도크</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 22.9%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">22.9% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">안전 점검</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        강풍 경보
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">에너지 시스템 실험 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 73.2%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">73.2% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">블록 배치</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">통영 야드 B-1</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 34.7%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">34.7% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">시운전</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">스마트 시운전 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 63.6%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">63.6% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">비파괴 검사</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제2도크 (VLCC)</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 26.2%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">26.2% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">시운전</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제2안벽</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 64.2%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">64.2% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">도장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        강풍 경보
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">선행 도장 공장</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 82.6%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">82.6% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">블록 배치</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        낙하물 주의
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">거제 제2도크 (VLCC)</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 88.7%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">88.7% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">블록 배치</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">디지털 생산 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 35.5%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">35.5% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">도장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        낙하물 주의
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">통영 야드 A-1</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 91.3%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">91.3% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">엔진 설치</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">스마트 야드 실증 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 55.5%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">55.5% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">블록 배치</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        없음
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">스마트 야드 실증 센터</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 54.4%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">54.4% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">도장 작업</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                        낙하물 주의
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27 19:53:59</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">dock_test_123</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 75.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">75.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">Welding</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                        안전
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27T15:30:00Z</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">test-dock-999</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 70.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">70.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">Loading containers</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                        안전
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27T12:00:00Z</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">test-dock-tc006-20260327105642</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 50.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">50.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">Loading</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                        안전
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27T10:56:42.790270</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">test-dock-001</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 75.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">75.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">Loading containers</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                        안전
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27T10:56:45.900643Z</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">b800911f-9b3f-4eeb-a5f4-a9a52233c896</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 75.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">75.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">loading</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                        안전
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">1774609012</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">test-dock-tc006-20260327105704</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 50.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">50.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">Loading</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                        안전
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27T10:57:04.734082</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">bf5c7a95-afd9-42df-a353-2c1697b54673</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 75.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">75.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">loading</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                        안전
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">1774609027</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">test-dock-8ca04258-7f29-48ee-bc9f-bf63aa903391</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 0.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">0.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">Cleanup</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                        안전
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27T10:57:21Z</td>
+            </tr>
+            
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                <td class="py-4 px-6 font-medium">test-dock-e0aafd92-31e4-4dc1-97fa-7e54a630c249</td>
+                <td class="py-4 px-6">
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: 0.0%"></div>
+                    </div>
+                    <span class="text-xs text-gray-400 mt-1 block">0.0% 완료</span>
+                </td>
+                <td class="py-4 px-6 text-gray-300">Cleanup</td>
+                <td class="py-4 px-6">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                        안전
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-sm text-gray-500">2026-03-27T10:57:45Z</td>
+            </tr>
+            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Insights & Global Status -->
+        <div class="col-span-4 flex flex-col gap-8">
+            <!-- Overall Gauge -->
+            <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 flex flex-col items-center">
+                <h3 class="text-lg font-bold mb-4 text-gray-400 self-start">종합 공정률</h3>
+                <div class="relative">
+                    <div>                            <div id="390a4fad-06bb-4605-9387-7016e8d9a205" class="plotly-graph-div" style="height:300px; width:300px;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("390a4fad-06bb-4605-9387-7016e8d9a205")) {                    Plotly.newPlot(                        "390a4fad-06bb-4605-9387-7016e8d9a205",                        [{"hole":0.8,"hoverinfo":"none","marker":{"colors":["#FF6A00","#1f2937"]},"showlegend":false,"textinfo":"none","values":[54.453061224489794,45.546938775510206],"type":"pie"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"margin":{"t":0,"b":0,"l":0,"r":0},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(0,0,0,0)","height":300,"width":300},                        {"displayModeBar": false, "responsive": true}                    )                };            </script>        </div>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span class="text-sm text-gray-500 font-bold uppercase tracking-widest">Total</span>
+                        <span class="text-5xl font-black text-white">54.5%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Insights -->
+            <div class="bg-orange-600/10 border border-orange-500/20 rounded-3xl p-8">
+                <h3 class="text-xl font-bold mb-6 text-orange-500 flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14H11V21L20 10H13Z"/></svg>
+                    AI AX INSIGHTS
+                </h3>
+                <ul class="text-sm text-gray-300">
+                    <li class="mb-2 flex items-start"><span class="mr-2 text-orange-500">•</span>🤖 <b>AI Optimizer</b>: 12개 구역에서 지연 위험 감지됨.</li><li class="mb-2 flex items-start"><span class="mr-2 text-orange-500">•</span>💡 <b>Action</b>: 인력 부족 구역인 '거제 제3도크'에 추가 리소스 투입 권장.</li><li class="mb-2 flex items-start"><span class="mr-2 text-orange-500">•</span>⚠️ <b>Risk Alert</b>: 자동 배선 작업장, 스마트 시운전 센터 야드 특이사항 발생 (긴급 점검).</li><li class="mb-2 flex items-start"><span class="mr-2 text-orange-500">•</span>🎯 <b>Impact</b>: AI 조치 이행 시 전체 공정 3.5일 단축 예상.</li>
+                </ul>
+                <div class="mt-6 p-4 bg-orange-600/20 rounded-2xl border border-orange-500/30 text-xs text-orange-200 leading-relaxed italic">
+                    "AI 분석 결과에 따라 생산 자원을 최적 배치하고 있습니다. 추천 액션을 확인하십시오."
+                </div>
+            </div>
+
+            <!-- Quick Info -->
+            <div class="bg-blue-600/10 border border-blue-500/20 rounded-3xl p-8 text-blue-400">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    공지사항
+                </h3>
+                <p class="text-sm mb-4">내일 오전 2도크에서 로봇 팔 자동 배선 작업 시연이 예정되어 있습니다.</p>
+                <div class="text-xs text-blue-500/70 border-t border-blue-500/10 pt-4">© 2026 Hanwha Ocean AX Team. All rights reserved.</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function downloadCSV() {
+            const rows = [
+                ["구역/도크", "공정률", "현재작업", "안전이슈", "마지막업데이트"],
+                ["거제 제3도크", "72.0", "엔진 설치", "없음", "2026-03-27 19:53:59"],
+["에너지 시스템 실험 센터", "23.7", "탑재 공정", "없음", "2026-03-27 19:53:59"],
+["자동 배선 작업장", "83.4", "비파괴 검사", "낙하물 주의", "2026-03-27 19:53:59"],
+["스마트 시운전 센터", "21.2", "선체 용접", "낙하물 주의", "2026-03-27 19:53:59"],
+["거제 제1안벽", "59.8", "도장 작업", "없음", "2026-03-27 19:53:59"],
+["특수선 전용 도크", "93.0", "엔진 설치", "강풍 경보", "2026-03-27 19:53:59"],
+["거제 제1안벽", "42.7", "의장 작업", "강풍 경보", "2026-03-27 19:53:59"],
+["스마트 야드 실증 센터", "63.5", "선체 용접", "없음", "2026-03-27 19:53:59"],
+["스마트 시운전 센터", "47.6", "시운전", "강풍 경보", "2026-03-27 19:53:59"],
+["거제 제2안벽", "56.9", "안전 점검", "없음", "2026-03-27 19:53:59"],
+["에너지 시스템 실험 센터", "36.0", "도장 작업", "없음", "2026-03-27 19:53:59"],
+["거제 제2안벽", "23.9", "선체 용접", "낙하물 주의", "2026-03-27 19:53:59"],
+["거제 제2도크 (VLCC)", "27.4", "의장 작업", "없음", "2026-03-27 19:53:59"],
+["스마트 시운전 센터", "85.0", "도장 작업", "없음", "2026-03-27 19:53:59"],
+["스마트 시운전 센터", "70.0", "비파괴 검사", "없음", "2026-03-27 19:53:59"],
+["자동 배선 작업장", "63.2", "의장 작업", "없음", "2026-03-27 19:53:59"],
+["선행 도장 공장", "17.8", "시운전", "없음", "2026-03-27 19:53:59"],
+["디지털 생산 센터", "42.6", "비파괴 검사", "낙하물 주의", "2026-03-27 19:53:59"],
+["에너지 시스템 실험 센터", "29.1", "비파괴 검사", "강풍 경보", "2026-03-27 19:53:59"],
+["거제 제3도크", "94.1", "의장 작업", "없음", "2026-03-27 19:53:59"],
+["특수선 전용 도크", "83.6", "블록 배치", "없음", "2026-03-27 19:53:59"],
+["특수선 전용 도크", "85.5", "비파괴 검사", "낙하물 주의", "2026-03-27 19:53:59"],
+["통영 야드 B-1", "38.4", "탑재 공정", "낙하물 주의", "2026-03-27 19:53:59"],
+["통영 야드 B-1", "84.4", "시운전", "없음", "2026-03-27 19:53:59"],
+["거제 제2안벽", "16.7", "시운전", "없음", "2026-03-27 19:53:59"],
+["거제 제2도크 (VLCC)", "24.3", "시운전", "없음", "2026-03-27 19:53:59"],
+["거제 제2안벽", "80.5", "도장 작업", "없음", "2026-03-27 19:53:59"],
+["거제 제1도크 (LNG)", "39.1", "엔진 설치", "없음", "2026-03-27 19:53:59"],
+["거제 제3도크", "22.9", "안전 점검", "강풍 경보", "2026-03-27 19:53:59"],
+["에너지 시스템 실험 센터", "73.2", "블록 배치", "없음", "2026-03-27 19:53:59"],
+["통영 야드 B-1", "34.7", "시운전", "없음", "2026-03-27 19:53:59"],
+["스마트 시운전 센터", "63.6", "비파괴 검사", "없음", "2026-03-27 19:53:59"],
+["거제 제2도크 (VLCC)", "26.2", "시운전", "없음", "2026-03-27 19:53:59"],
+["거제 제2안벽", "64.2", "도장 작업", "강풍 경보", "2026-03-27 19:53:59"],
+["선행 도장 공장", "82.6", "블록 배치", "낙하물 주의", "2026-03-27 19:53:59"],
+["거제 제2도크 (VLCC)", "88.7", "블록 배치", "없음", "2026-03-27 19:53:59"],
+["디지털 생산 센터", "35.5", "도장 작업", "낙하물 주의", "2026-03-27 19:53:59"],
+["통영 야드 A-1", "91.3", "엔진 설치", "없음", "2026-03-27 19:53:59"],
+["스마트 야드 실증 센터", "55.5", "블록 배치", "없음", "2026-03-27 19:53:59"],
+["스마트 야드 실증 센터", "54.4", "도장 작업", "낙하물 주의", "2026-03-27 19:53:59"],
+["dock_test_123", "75.0", "Welding", "안전", "2026-03-27T15:30:00Z"],
+["test-dock-999", "70.0", "Loading containers", "안전", "2026-03-27T12:00:00Z"],
+["test-dock-tc006-20260327105642", "50.0", "Loading", "안전", "2026-03-27T10:56:42.790270"],
+["test-dock-001", "75.0", "Loading containers", "안전", "2026-03-27T10:56:45.900643Z"],
+["b800911f-9b3f-4eeb-a5f4-a9a52233c896", "75.0", "loading", "안전", "1774609012"],
+["test-dock-tc006-20260327105704", "50.0", "Loading", "안전", "2026-03-27T10:57:04.734082"],
+["bf5c7a95-afd9-42df-a353-2c1697b54673", "75.0", "loading", "안전", "1774609027"],
+["test-dock-8ca04258-7f29-48ee-bc9f-bf63aa903391", "0.0", "Cleanup", "안전", "2026-03-27T10:57:21Z"],
+["test-dock-e0aafd92-31e4-4dc1-97fa-7e54a630c249", "0.0", "Cleanup", "안전", "2026-03-27T10:57:45Z"]
+            ];
+            
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            rows.forEach(function(rowArray) {
+                let row = rowArray.join(",");
+                csvContent += row + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "hanwha_ocean_rpa_report.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        window.addEventListener('resize', function() {
+            const plots = document.getElementsByClassName('plotly-graph-div');
+            for (let i = 0; i < plots.length; i++) {
+                Plotly.Plots.resize(plots[i]);
             }
-            .modebar { display: none !important; }
-            .plotly-graph-div { width: 100vw !important; margin: 0 auto; }
-            /* Enterprise Grid Rhythm */
-            .js-plotly-plot .plotly .main-svg { border-radius: 12px; }
-            /* Automatic Scaling for Mobile */
-            @media (max-width: 1024px) {
-                .main-svg { transform: scale(0.95); transform-origin: top center; }
-            }
-            @media (max-width: 768px) {
-                .main-svg { transform: scale(0.85); transform-origin: top center; }
-            }
-        </style>
-        </head>
-<body>
-    <div>                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.4.0.min.js" integrity="sha256-KEmPoupLpFyGMyGAiOsiNDbKDKAvxXAn/W+oQa0ZAfk=" crossorigin="anonymous"></script>                <div id="100e3e02-1d3a-4066-bfb8-adb65f5ff42a" class="plotly-graph-div" style="height:1400px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("100e3e02-1d3a-4066-bfb8-adb65f5ff42a")) {                    Plotly.newPlot(                        "100e3e02-1d3a-4066-bfb8-adb65f5ff42a",                        [{"domain":{"x":[0.0,0.45],"y":[0.848,1.0]},"gauge":{"axis":{"range":[0,100],"visible":false},"bar":{"color":"#eb6e00"},"bgcolor":"#333"},"mode":"gauge+number","number":{"font":{"color":"#eb6e00","size":48},"suffix":"%"},"title":{"align":"center","font":{"color":"#eb6e00","size":22,"weight":700},"text":"\uc57c\ub4dc \uc804\uccb4 \uacf5\uc815\ub960"},"value":52.120000000000005,"type":"indicator"},{"insidetextanchor":"end","marker":{"color":"#eb6e00"},"orientation":"h","text":{"dtype":"f8","bdata":"ZmZmZmZGUUAAAAAAAKBRQDMzMzMzszpAZmZmZmZmVkDNzMzMzMw1QM3MzMzMzDZAmpmZmZmZLkCamZmZmRk+QGZmZmZmJk9AZmZmZmYmTUDNzMzMzExFQJqZmZmZGVdAZmZmZmZmNUCamZmZmRlEQA=="},"textfont":{"color":"white","family":"Noto Sans KR","size":16,"weight":900},"textposition":"inside","width":0.7,"x":{"dtype":"f8","bdata":"ZmZmZmZGUUAAAAAAAKBRQDMzMzMzszpAZmZmZmZmVkDNzMzMzMw1QM3MzMzMzDZAmpmZmZmZLkCamZmZmRk+QGZmZmZmJk9AZmZmZmYmTUDNzMzMzExFQJqZmZmZGVdAZmZmZmZmNUCamZmZmRlEQA=="},"y":["\uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed (LNGC (LNG \uc6b4\ubc18\uc120))","\uac70\uc81c \uc81c1\ub3c4\ud06c (Container (\ucee8\ud14c\uc774\ub108\uc120))","\uac70\uc81c \uc81c1\ub3c4\ud06c (Container (\ucee8\ud14c\uc774\ub108\uc120))","\uac70\uc81c \uc81c3\ub3c4\ud06c (Ammonia Carrier)","\uac70\uc81c \uc81c3\ub3c4\ud06c (VLCC (\ucd08\ub300\ud615 \uc6d0\uc720\uc6b4\ubc18\uc120))","\uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed (LNGC (LNG \uc6b4\ubc18\uc120))","\uac70\uc81c \uc81c1\ub3c4\ud06c (VLCC (\ucd08\ub300\ud615 \uc6d0\uc720\uc6b4\ubc18\uc120))","\uac70\uc81c \uc81c3\ub3c4\ud06c (VLCC (\ucd08\ub300\ud615 \uc6d0\uc720\uc6b4\ubc18\uc120))","\ud1b5\uc601 \uc57c\ub4dc A (VLCC (\ucd08\ub300\ud615 \uc6d0\uc720\uc6b4\ubc18\uc120))","\uac70\uc81c \uc81c1\ub3c4\ud06c (Submarine (\uc7a0\uc218\ud568))","\uac70\uc81c \uc81c3\ub3c4\ud06c (VLCC (\ucd08\ub300\ud615 \uc6d0\uc720\uc6b4\ubc18\uc120))","\uac70\uc81c \uc81c2\ub3c4\ud06c (Container (\ucee8\ud14c\uc774\ub108\uc120))","\uac70\uc81c \uc81c2\ub3c4\ud06c (Container (\ucee8\ud14c\uc774\ub108\uc120))","\uac70\uc81c \uc81c2\ub3c4\ud06c (Ammonia Carrier)"],"type":"bar","xaxis":"x","yaxis":"y"},{"cells":{"fill":{"color":"#121212"},"font":{"color":"white"},"values":[["\uac70\uc81c \uc81c3\ub3c4\ud06c","\uac70\uc81c \uc81c1\ub3c4\ud06c","\uac70\uc81c \uc81c2\ub3c4\ud06c","\uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed","\uac70\uc81c \uc81c3\ub3c4\ud06c","\uac70\uc81c \uc81c3\ub3c4\ud06c","\ud1b5\uc601 \uc57c\ub4dc B","\ud1b5\uc601 \uc57c\ub4dc A"],["\uc2dc\uc6b4\uc804 \uc900\ube44","\uc2dc\uc6b4\uc804 \uc900\ube44","\uc758\uc7a5 \uc791\uc5c5","\uc2dc\uc6b4\uc804 \uc900\ube44","\ud0d1\uc7ac \uacf5\uc815","\uc120\uccb4 \uc6a9\uc811","\uc120\uccb4 \uc6a9\uc811","\uc120\uccb4 \uc6a9\uc811"],["\ub099\ud558\ubb3c \uc8fc\uc758","\ub099\ud558\ubb3c \uc8fc\uc758","\ub099\ud558\ubb3c \uc8fc\uc758","\ub099\ud558\ubb3c \uc8fc\uc758","\uac15\ud48d \uacbd\ubcf4","\ub099\ud558\ubb3c \uc8fc\uc758","\uac15\ud48d \uacbd\ubcf4","\ub099\ud558\ubb3c \uc8fc\uc758"]]},"header":{"fill":{"color":"#eb6e00"},"font":{"color":"white"},"values":["\ub3c4\ud06c\u002f\uad6c\uc5ed","\uc791\uc5c5","\uc774\uc288"]},"type":"table","domain":{"x":[0.0,0.45],"y":[0.0,0.22799999999999998]}},{"cells":{"align":"left","fill":{"color":"#1a1a1a"},"font":{"color":"#00FFFF","size":13},"height":40,"values":[["\ud83e\udd16 \u003cb\u003eAI Optimizer\u003c\u002fb\u003e: 10\uac1c \uad6c\uc5ed\uc5d0\uc11c \uc9c0\uc5f0 \uc704\ud5d8 \uac10\uc9c0\ub428.","\ud83d\udca1 \u003cb\u003eAction\u003c\u002fb\u003e: \uc778\ub825 \ubd80\uc871 \uad6c\uc5ed\uc778 '\uc625\ud3ec \ud2b9\uc218\uc120 \uad6c\uc5ed'\uc5d0 \ucd94\uac00 \ub9ac\uc18c\uc2a4 \ud22c\uc785 \uad8c\uc7a5.","\u26a0\ufe0f \u003cb\u003eRisk Alert\u003c\u002fb\u003e: \uac70\uc81c \uc81c3\ub3c4\ud06c, \uac70\uc81c \uc81c1\ub3c4\ud06c \uc57c\ub4dc \ud2b9\uc774\uc0ac\ud56d \ubc1c\uc0dd (\uae34\uae09 \uc810\uac80).","\ud83c\udfaf \u003cb\u003eImpact\u003c\u002fb\u003e: AI \uc870\uce58 \uc774\ud589 \uc2dc \uc804\uccb4 \uacf5\uc815 3.5\uc77c \ub2e8\ucd95 \uc608\uc0c1."]]},"header":{"fill":{"color":"#002c5f"},"font":{"color":"white"},"values":["\u003cb\u003eAI \ubd84\uc11d \uacb0\uacfc \ubc0f \uad8c\uc7a5 \uc870\uce58\u003c\u002fb\u003e"]},"type":"table","domain":{"x":[0.55,1.0],"y":[0.0,0.22799999999999998]}}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"rgb(17,17,17)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#f2f5fa"},"error_y":{"color":"#f2f5fa"},"marker":{"line":{"color":"rgb(17,17,17)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#A2B1C6","gridcolor":"#506784","linecolor":"#506784","minorgridcolor":"#506784","startlinecolor":"#A2B1C6"},"baxis":{"endlinecolor":"#A2B1C6","gridcolor":"#506784","linecolor":"#506784","minorgridcolor":"#506784","startlinecolor":"#A2B1C6"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"line":{"color":"#283442"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"marker":{"line":{"color":"#283442"}},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#506784"},"line":{"color":"rgb(17,17,17)"}},"header":{"fill":{"color":"#2a3f5f"},"line":{"color":"rgb(17,17,17)"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#f2f5fa","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#f2f5fa"},"geo":{"bgcolor":"rgb(17,17,17)","lakecolor":"rgb(17,17,17)","landcolor":"rgb(17,17,17)","showlakes":true,"showland":true,"subunitcolor":"#506784"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"dark"},"paper_bgcolor":"rgb(17,17,17)","plot_bgcolor":"rgb(17,17,17)","polar":{"angularaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"bgcolor":"rgb(17,17,17)","radialaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"},"yaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"},"zaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"}},"shapedefaults":{"line":{"color":"#f2f5fa"}},"sliderdefaults":{"bgcolor":"#C8D4E3","bordercolor":"rgb(17,17,17)","borderwidth":1,"tickwidth":0},"ternary":{"aaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"baxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"bgcolor":"rgb(17,17,17)","caxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""}},"title":{"x":0.05},"updatemenudefaults":{"bgcolor":"#506784","borderwidth":0},"xaxis":{"automargin":true,"gridcolor":"#283442","linecolor":"#506784","ticks":"","title":{"standoff":15},"zerolinecolor":"#283442","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#283442","linecolor":"#506784","ticks":"","title":{"standoff":15},"zerolinecolor":"#283442","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.2,0.8],"tickfont":{"size":18,"color":"white","family":"Noto Sans KR"},"range":[0,150]},"yaxis":{"anchor":"x","domain":[0.348,0.728],"tickfont":{"size":18,"color":"white","family":"Noto Sans KR"},"autorange":"reversed"},"annotations":[{"font":{"color":"#aaa","family":"Noto Sans KR","size":18},"showarrow":false,"text":"\u003cb\u003e\uc608\uc0c1 \uc644\uacf5\uc77c\u003c\u002fb\u003e | Expected: 2026-04-21 | \u003cspan style='color:white; font-weight:900'\u003eD-26\u003c\u002fspan\u003e","x":0.5,"xanchor":"center","xref":"paper","y":1.04,"yanchor":"bottom","yref":"paper"},{"font":{"color":"#eb6e00","family":"Noto Sans KR","size":26,"weight":700},"showarrow":false,"text":"\ub3c4\ud06c\ubcc4 \uc9c4\ucc99 \ud604\ud669","x":0.5,"xanchor":"center","xref":"paper","y":0.88,"yref":"paper"},{"font":{"color":"#eb6e00","family":"Noto Sans KR","size":22,"weight":700},"showarrow":false,"text":"\uc2e4\uc2dc\uac04 \uc548\uc804 \uac10\uc2dc","x":0.25,"xanchor":"center","xref":"paper","y":0.35,"yref":"paper"},{"font":{"color":"#eb6e00","family":"Noto Sans KR","size":22,"weight":700},"showarrow":false,"text":"\ud83e\udd16 AI \uc758\uc0ac\uacb0\uc815 \uc9c0\uc6d0","x":0.75,"xanchor":"center","xref":"paper","y":0.35,"yref":"paper"}],"font":{"color":"#FFFFFF","size":18,"family":"Noto Sans KR"},"title":{"font":{"size":34,"color":"#eb6e00","family":"Noto Sans KR"},"text":"\u003cb\u003e\ud55c\ud654\uc624\uc158 Smart Yard AX Command Center\u003c\u002fb\u003e","x":0.5,"y":0.98},"margin":{"t":160,"b":80,"l":80,"r":80},"paper_bgcolor":"#121212","plot_bgcolor":"#121212","height":1400,"autosize":true,"showlegend":false},                        {"responsive": true}                    )                };            </script>        </div>
+        });
+    </script>
 </body>
 </html>
+        

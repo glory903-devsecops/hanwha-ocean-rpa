@@ -81,21 +81,12 @@
 
 ## 🚀 실행 가이드
 
-```bash
-# 1. 저장소 폴더로 이동
-cd hanwha-ocean-rpa
-
-# 2. 파이프라인 엔진 실행 (데이터 생성 및 분석)
+# 1. 파이프라인 엔진 실행 (데이터 생성 및 분석)
 python src/main.py
 
-# 3. 웹 대시보드 서버 실행 (8081 포트)
+# 2. 웹 대시보드 서버 실행 (8081 포트)
 python run_server.py
 ```
-
-### 🔗 접속 링크 (Local Access)
-- **가상 ERP 포털**: [http://localhost:8081/src/mock_portal.html](http://localhost:8081/src/mock_portal.html)
-- **AI AX 대시보드**: [http://localhost:8081/smart_yard_dashboard.html](http://localhost:8081/smart_yard_dashboard.html)
-- **API 서버 (Swagger)**: [http://localhost:8082/docs](http://localhost:8082/docs)
 *Port 8000의 자산 모니터링 서버와 충돌 없이 병렬 실행 가능합니다.*
 *실력이 검증된 모듈형 코드로, 하드코딩 없이 유연하게 작동합니다.*
 
