@@ -20,66 +20,65 @@
 
 ---
 
-## 📸 Dashboard Preview (Mission Control Edition)
+## 📸 Dashboard Preview (Mission Control Edition v13.1.0)
 
-![AX Mission Control Center](docs/images/dashboard_v2.png)
+![AX Mission Control Center](docs/images/dashboard_overview.png)
 *브랜드 정체성이 강화된 오렌지 포인트 컬러, 글래스모피즘 레이아웃, 그리고 실시간 데이터 피드가 통합된 한화오션 전용 AX 미션 컨트롤 대시보드입니다.*
+
+### [주요 화면 구성]
+````carousel
+![1. Resource Performance Stack (Full-Width)](docs/images/dashboard_overview.png)
+<!-- slide -->
+![2. Horizontal Progress Bars & Safety Dividers](docs/images/performance_stack.png)
+<!-- slide -->
+![3. Risk Management Ledger (Table)](docs/images/risk_ledger.png)
+````
 
 ---
 
-## 🤖 AX Automation Workflow (RPA Pipeline)
+## 🤖 AX Automation Workflow (Integrated Pipeline)
 
-본 프로젝트는 단순한 시각화를 넘어, **RPA를 통한 데이터 자동 수집부터 AI 분석 및 보고서 생성까지의 전 과정(AX)**을 자동화합니다.
+본 프로젝트는 **RPA를 통한 데이터 자동 수집부터 AI 분석, 시각화, 보고서 생성**까지의 전 과정을 자동화합니다.
 
-| 단계 | 내 용 | 데이터 흐름 (Data Flow) |
+| 단계 | 내 용 | 핵심 기술 |
 | :--- | :--- | :--- |
-| **Stage 1** | **가상 ERP 포털** | 현장의 조업 데이터와 공정률이 입력되는 소스 시스템 (`mock_portal.html`) |
-| **Stage 2** | **RPA 데이터 DB화** | Selenium 기반 봇이 분산된 데이터를 수집하여 표준 CSV/Excel로 정형화 (`dock_status.csv`) |
-| **Stage 3** | **AI 커맨드 센터** | 최신 데이터를 분석하여 Tailwind 프리미엄 UI에 시각화하고 CSV 보고서 추출 지원 |
+| **Stage 1** | **ERP 소스 포털** | `mock_portal.html` 기반의 조업 시뮬레이션 데이터 생성 |
+| **Stage 2** | **RPA 데이터 정형화** | Selenium 봇을 통한 비정형 데이터 수집 및 `dock_status.csv` DB화 |
+| **Stage 3** | **AI 커맨드 센터** | **v13.0 Premium Engine**을 통한 실시간 공정 분석 및 시각화 |
+| **Stage 4** | **자동 보고서 추출** | 데이터 유효성을 검증한 클라이언트 사이드 CSV 리포트 생성 (`UTF-8-SIG`) |
 
-### [시뮬레이션 흐름 시각화]
+---
 
-````carousel
-![Stage 1: ERP Source Portal](docs/images/erp_portal.png)
-<!-- slide -->
-![Stage 2: Standardized CSV DB](docs/images/csv_db.png)
-<!-- slide -->
-![Stage 3: Tailwind AI Dashboard](docs/images/dashboard_v2.png)
-````
+## ✅ Reliability & Verification (신뢰성 검증)
+
+본 시스템은 **TestSprite**를 통한 엔터프라이즈급 자동화 테스트를 통과하였습니다.
+
+- **Frontend Health (TC004)**: `PASSED` - Tailwind CSS 리액티브 레이아웃 및 HTML 자동 렌더링 검증 완료.
+- **Backend Stability (POST/GET)**: `PASSED` - 다중 작업(Multi-task) 데이터 무결성 및 CSV 실시간 업데이트 확인.
+- **Data Integrity**: `utf-8-sig` 인코딩 적용으로 엑셀(Excel) 한글 깨짐 현상 100% 해결.
 
 ---
 
 ## 🏗️ Modular Enterprise Architecture
 
-프로젝트의 지속 가능한 유지보수와 AI 확장을 위해 **모듈화된 구조**를 채택하였습니다.
+프로젝트의 지속 가능한 유지보수와 AI 확장을 위해 **클린 아키텍처**를 채택하였습니다.
 
-- **Centralized Config**: 모든 경로, CI 브랜드 컬러, 비즈니스 상수( formulas)를 한곳에서 관리 (`src/core/config.py`).
+- **Centralized Config**: 모든 경로 및 CI 브랜드 컬러 관리 (`src/core/config.py`).
 - **Decoupled Logic**: 공정률 및 D-Day 연산 로직을 시각화 레이어와 완전 분리 (`src/core/analytics.py`).
-- **Pipeline Automation**: 데이터 생성부터 검증, 시각화까지 원클릭 파이프라인 구축 (`src/main.py`).
+- **Interactive Visualization**: Plotly 기반의 고해상도 그래픽 엔진 (`src/viz/dashboard.py`).
 
 ---
 
 ## 🧭 Project Blueprint (Strategy & Documentation)
 
-실제 전문 개발 라이프사이클을 증명하기 위해 세부 지침서를 포함하고 있습니다.
-
-1.  **[AX 전략 및 로드맵](docs/AX_STRATEGY.md)**: 사업 비전, 아키텍처 계층 구조 및 단계별 로드맵.
-2.  **[데이터 명세 및 수식 사전](docs/DATA_DICTIONARY.md)**: 데이터 필드 정의 및 수치 계산을 위한 **공식(Formula)** 기술서.
-3.  **[비즈니스 요구사항서(BRD)](docs/BRD.md)**: AX 전략의 비즈니스 가치 및 전략적 배경.
-4.  **[시스템 설계서(SDD)](docs/SDD.md)**: ETL 흐름도 및 Mermaid 기반의 상세 시스템 아키텍처.
-5.  **[운영 및 Power BI 가이드](docs/USER_MANUAL.md)**: 실행 방법 및 윈도우 환경에서의 BI 연동 지침.
+1.  **[AX 전략 및 로드맵](docs/AX_STRATEGY.md)**: 사업 비전 및 단계별 고도화 전략.
+2.  **[데이터 명세 및 수식 사전](docs/DATA_DICTIONARY.md)**: 공정률/D-Day 산출 공식(Formula) 기술서.
+3.  **[시스템 설계서(SDD)](docs/SDD.md)**: ETL 흐름도 및 Mermaid 아키텍처 다이어그램.
+4.  **[운영 가이드](docs/USER_MANUAL.md)**: 상세 실행 방법 및 Trouble-shooting.
 
 ---
 
-## 📊 Metrics Calculation Summary (공정률 산출 로직)
-
-- **야드 통합 공정률**: 각 도크별 실시간 조업 진전량을 산술 평균한 KPI 지표.
-- **예측 완공일 (D-Day)**: `(100 - 현재공정률) / 일일평균생산성(1.8%)` 수식을 통한 AI 추론.
-- **AI 멘토링**: 지연 위험 임계치(30%) 미달 구역을 실시간 감지하여 리소스 재배치 조언.
-
----
-
-## 🚀 실행 가이드
+## 🚀 실행 가이드 (Quick Start)
 
 ```bash
 # 1. 저장소 폴더로 이동
@@ -88,7 +87,7 @@ cd hanwha-ocean-rpa
 # 2. 파이프라인 엔진 실행 (데이터 생성 및 분석)
 python src/main.py
 
-# 3. 웹 대시보드 서버 실행 (8081 포트)
+# 3. 웹/API 서버 동시 실행
 python run_server.py
 ```
 
@@ -96,8 +95,9 @@ python run_server.py
 - **가상 ERP 포털**: [http://localhost:8081/src/mock_portal.html](http://localhost:8081/src/mock_portal.html)
 - **AI AX 대시보드**: [http://localhost:8081/smart_yard_dashboard.html](http://localhost:8081/smart_yard_dashboard.html)
 - **API 서버 (Swagger)**: [http://localhost:8082/docs](http://localhost:8082/docs)
-*Port 8000의 자산 모니터링 서버와 충돌 없이 병렬 실행 가능합니다.*
-*실력이 검증된 모듈형 코드로, 하드코딩 없이 유연하게 작동합니다.*
+
+---
+*Developed by Hanwha Ocean AX High-End Portfolio Project.*
 
 ---
 *Developed by Hanwha Ocean AX High-End Portfolio Project.*

@@ -1,41 +1,34 @@
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 BASE_URL = "http://localhost:8082"
+API_KEY = "sk-user-7NjWyvWwmm8tAk2EOdjilY9H30jLc64qrMxvkVREmN8p_FLprSCbzgvceeFYWu21Ja4jvOwI2PwOQrFH-ybWkMq4JqYnRO_Y-zfOb8UjDS3NWSm2R11ai859htR_iFkKuCc"
+HEADERS = {"Authorization": f"ApiKey {API_KEY}"}
+TIMEOUT = 30
 
-def test_get_api_v1_export_report_unsupported_format_and_no_content():
-    timeout = 30
 
-    # Test unsupported format (xml)
-    params_unsupported = {
-        "format": "xml"
-    }
+def test_get_api_v1_export_report_handles_unsupported_format_and_no_content():
+    # Test unsupported format 'xml'
     try:
-        response1 = requests.get(f"{BASE_URL}/api/v1/export-report", params=params_unsupported, timeout=timeout)
+        params_xml = {"format": "xml"}
+        response_xml = requests.get(f"{BASE_URL}/api/v1/export-report", headers=HEADERS, params=params_xml, timeout=TIMEOUT)
+        assert response_xml.status_code == 400, f"Expected status 400 for unsupported format, got {response_xml.status_code}"
+        json_resp = response_xml.json()
+        assert "error" in json_resp, "Response JSON must contain 'error' key for unsupported format"
+        assert "unsupported format" in json_resp["error"].lower(), f"Error message must mention unsupported format, got: {json_resp['error']}"
     except requests.RequestException as e:
-        assert False, f"Request failed: {e}"
+        assert False, f"Request failed for unsupported format test: {e}"
 
-    assert response1.status_code == 400, f"Expected 400 Bad Request for unsupported format but got {response1.status_code}"
+    # Test with format=csv and since date with no matching records
     try:
-        json_resp = response1.json()
-    except ValueError:
-        assert False, "Response is not valid JSON for unsupported format error"
-    assert "error" in json_resp, "Error message not found in response for unsupported format"
-    assert "unsupported format" in json_resp["error"].lower(), "Error message does not indicate unsupported format"
-
-    # Test format=csv with since date that matches no records
-    # Use a very recent future date to ensure no records match
-    future_date = (datetime.now().date().replace(year=datetime.now().year+10)).isoformat()
-    params_no_content = {
-        "format": "csv",
-        "since": future_date
-    }
-    try:
-        response2 = requests.get(f"{BASE_URL}/api/v1/export-report", params=params_no_content, timeout=timeout)
+        # Use a future date range assumed to have no records
+        future_date = (datetime.utcnow() + timedelta(days=365)).strftime("%Y-%m-%d")
+        params_csv = {"format": "csv", "since": future_date}
+        response_csv = requests.get(f"{BASE_URL}/api/v1/export-report", headers=HEADERS, params=params_csv, timeout=TIMEOUT)
+        assert response_csv.status_code == 204, f"Expected status 204 No Content for no matching records, got {response_csv.status_code}"
+        assert response_csv.text == "", "Expected empty body on 204 No Content response"
     except requests.RequestException as e:
-        assert False, f"Request failed: {e}"
-
-    assert response2.status_code == 204, f"Expected 204 No Content for no matching records but got {response2.status_code}"
+        assert False, f"Request failed for no content csv export test: {e}"
 
 
-test_get_api_v1_export_report_unsupported_format_and_no_content()
+test_get_api_v1_export_report_handles_unsupported_format_and_no_content()

@@ -1,8 +1,7 @@
-venv/
+testsprite_tests/tmp/
 __pycache__/
 *.pyc
-.DS_Store
-data/*.csv
-data/*.xlsx
-!data/dock_status.csv
-!data/safety_training_master.xlsx
+.env
+venv/
+node_modules/
+.pytest_cache/

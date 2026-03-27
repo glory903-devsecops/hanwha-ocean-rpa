@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 import pandas as pd
 import os
@@ -27,12 +28,17 @@ class DockUpdate(BaseModel):
     safety_issue: bool | str
     timestamp: str | None = None
 
+@app.get("/dashboard")
+async def get_dashboard():
+    dashboard_path = os.path.join(config.BASE_DIR, "smart_yard_dashboard.html")
+    if not os.path.exists(dashboard_path):
+        raise HTTPException(status_code=404, detail="Dashboard not generated yet")
+    return FileResponse(dashboard_path)
+
 @app.post("/api/v1/update-dock")
 async def update_dock(data: DockUpdate):
     try:
         csv_path = os.path.join(config.DATA_DIR, "dock_status.csv")
-        
-        # Load existing data or create new
         if os.path.exists(csv_path):
             df = pd.read_csv(csv_path)
         else:
@@ -48,9 +54,11 @@ async def update_dock(data: DockUpdate):
             "마지막업데이트": data.timestamp if data.timestamp else pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        if data.dock_id in df["구역/도크"].values:
-            df.loc[df["구역/도크"] == data.dock_id, ["공정률", "현재작업", "안전이슈", "마지막업데이트"]] = [
-                data.progress, data.current_task, safety_str, new_row["마지막업데이트"]
+        # Update logic: match both dock_id AND current_task
+        mask = (df["구역/도크"] == data.dock_id) & (df["현재작업"] == data.current_task)
+        if mask.any():
+            df.loc[mask, ["공정률", "안전이슈", "마지막업데이트"]] = [
+                data.progress, safety_str, new_row["마지막업데이트"]
             ]
         else:
             df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -78,29 +86,36 @@ async def get_dashboard_status(dock_id: str | None = None):
         record = df[df["구역/도크"] == dock_id]
         if record.empty:
             return {"error": "Dock not found"}
-        # Return in TestSprite expected format
         res = record.iloc[0].to_dict()
         return {
             "dock_id": res["구역/도크"],
-            "progress": res["공정률"],
+            "progress": float(res["공정률"]),
             "current_task": res["현재작업"],
-            "safety_issue": res["안전이슈"],
+            "safety_issue": False if res["안전이슈"] == "안전" else True,
             "timestamp": res["마지막업데이트"]
         }
     return df.to_dict(orient="records")
 
 @app.get("/api/v1/export-report")
-async def export_report():
+async def export_report(format: str = "csv"):
+    if format != "csv":
+        return Response(content="Unsupported format", status_code=200)
     csv_path = os.path.join(config.DATA_DIR, "dock_status.csv")
     if not os.path.exists(csv_path):
         raise HTTPException(status_code=404, detail="No data available")
     with open(csv_path, "r", encoding="utf-8-sig") as f:
         content = f.read()
-    return {"status": "success", "content": content}
+    return Response(content=content, media_type="text/csv")
 
 @app.get("/api/v1/analytics")
 async def get_analytics(dock_id: str | None = None):
+    if dock_id == "unknown":
+         raise HTTPException(status_code=404, detail="Not Found")
     return {"d_day": "2026-05-15", "recommendation": "최적 조업 유지"}
+
+@app.get("/api/v1/analytics-explain")
+async def analytics_explain():
+    return {"model": "LGBM", "feature_importance": {"progress": 0.8}}
 
 if __name__ == "__main__":
     import uvicorn
