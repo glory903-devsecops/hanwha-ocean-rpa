@@ -62,9 +62,9 @@ class DashboardEngine:
             # v16 Severity Mapping
             # Status: 0=위험, 1=주의, 2=정상
             palette = {
-                0: {"accent": "#EF4444", "bg": "bg-red-500/10", "border": "border-red-500/20", "label": "위험 (Critical)", "sev_key": "critical"},
-                1: {"accent": "#F59E0B", "bg": "bg-amber-500/10", "border": "border-amber-500/20", "label": "주의 (Caution)", "sev_key": "warning"},
-                2: {"accent": "#10B981", "bg": "bg-emerald-500/5", "border": "border-emerald-500/10", "label": "정상 (Optimal)", "sev_key": "optimal"}
+                0: {"accent": "#EF4444", "bg": "bg-red-500/10", "border": "border-red-500/20", "label": "위험", "sev_key": "critical"},
+                1: {"accent": "#F59E0B", "bg": "bg-amber-500/10", "border": "border-amber-500/20", "label": "주의", "sev_key": "warning"},
+                2: {"accent": "#10B981", "bg": "bg-emerald-500/5", "border": "border-emerald-500/10", "label": "정상", "sev_key": "optimal"}
             }
             p = palette.get(sev, palette[2])
             
@@ -76,7 +76,7 @@ class DashboardEngine:
                 <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
                     <div class="flex-1 space-y-6">
                         <div class="flex items-center gap-6">
-                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">{e_dock}</h4>
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">{e_dock}</h4>
                             <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 {p['bg']}" style="color: {p['accent']}">{p['label']}</span>
                         </div>
                         <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
