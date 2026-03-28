@@ -4,347 +4,754 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hanwha Ocean AX Mission Control</title>
+    <title>한화오션 AX - 미션 컨트롤 센터</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Pretendard', sans-serif; background-color: #080B0D; }
-        .glass-card { 
-            background: linear-gradient(145deg, rgba(20, 25, 30, 0.9), rgba(10, 15, 20, 0.95));
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        :root { 
+            --h-primary: #FF6B00;
+        --h-secondary: #00F2FF;
+        --h-bg: #020617;
+        --h-surface: rgba(30, 41, 59, 0.4);
+        --h-border: rgba(255, 255, 255, 0.08);
+        --h-font-main: 'Outfit', 'Inter', 'Noto Sans KR', sans-serif;
+        --h-glass-blur: blur(50px);
+        --h-radius: 40px;
+        --h-size-h3: 1.8rem;
+        --h-size-body: 1.1rem; 
+            --h-gap-main: 30px;
         }
-        .hero-gradient {
-            background: radial-gradient(circle at 50% -20%, rgba(249, 115, 22, 0.15), transparent 70%);
+        body { 
+            background-color: var(--h-bg); 
+            color: #fff; 
+            font-family: 'Noto Sans KR', var(--h-font-main);
+            background-image: radial-gradient(circle at 50% -20%, rgba(249, 115, 22, 0.15), transparent 85%);
+            background-attachment: fixed;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #080B0D; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #f97316; }
+        .glass { background: var(--h-surface); backdrop-filter: var(--h-glass-blur); border: 1px solid var(--h-border); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        /* Custom Filter Button Style */
+        .filter-btn {
+            @apply px-8 py-3 rounded-2xl font-black text-sm transition-all border border-white/5 uppercase tracking-widest;
+        }
+        .filter-btn.active {
+            @apply bg-orange-500 text-white shadow-[0_10px_30px_rgba(249,115,22,0.4)] border-transparent;
+        }
     </style>
 </head>
-<body class="text-white selection:bg-orange-500/30 hero-gradient">
-    <!-- Super Header -->
-    <header class="border-b border-white/5 backdrop-blur-xl sticky top-0 z-50 bg-[#080B0D]/80">
-        <div class="max-w-[1500px] mx-auto px-10 py-6 flex justify-between items-end">
-            <div class="flex items-center gap-6">
-                <div class="w-14 h-14 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-2xl flex items-center justify-center font-black text-3xl shadow-2xl shadow-orange-600/30">H</div>
+<body class="p-8 lg:p-20" x-data="{ filter: 'all', search: '' }">
+    
+    <!-- COMMAND HEADER (SCALED FOR V16) -->
+    <header class="max-w-[1600px] mx-auto flex flex-col lg:flex-row justify-between items-start lg:items-end gap-16 border-b border-white/10 pb-20 mb-16 animate-fade-in-up">
+        <div class="space-y-10">
+            <div class="flex items-center gap-10">
+                <div class="w-24 h-24 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-[2.5rem] flex items-center justify-center text-5xl font-black italic shadow-[0_0_50px_rgba(249,115,22,0.4)]">H</div>
                 <div>
-                    <h1 class="text-3xl font-black italic tracking-tighter uppercase whitespace-nowrap">
-                        AX <span class="text-orange-500">Mission Control</span>
+                    <h1 class="text-6xl font-black tracking-tighter uppercase italic leading-none">
+                        AX <span class="text-orange-500">커맨드 센터</span>
                     </h1>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                        <span class="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] leading-none">Live Intelligent Shipyard System</span>
-                    </div>
+                    <p class="text-xs text-gray-500 font-bold uppercase tracking-[0.5em] mt-5">v16.0.0 엔터프라이즈 운영 지능화 시스템</p>
                 </div>
             </div>
-            
-            <div class="flex items-center gap-12">
-                <div class="grid grid-cols-2 gap-10">
-                    <div>
-                        <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1.5 opacity-60">Fleet Efficiency</p>
-                        <p class="text-3xl font-black font-mono">52.7<span class="text-sm text-gray-500 ml-1">%</span></p>
-                    </div>
-                    <div>
-                        <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1.5 opacity-60">Optimized D-Day</p>
-                        <p class="text-3xl font-black text-orange-500 font-mono">2026-04-23 <span class="text-xs font-bold text-gray-400 ml-1">D-26</span></p>
-                    </div>
+            <div class="flex gap-16">
+                <div class="group">
+                    <p class="text-[11px] text-gray-600 font-black uppercase mb-2 tracking-[0.2em] group-hover:text-red-500 transition-colors">현재 위기 노드</p>
+                    <p class="text-4xl font-black text-red-500 leading-none">3 <span class="text-xs text-gray-700 font-bold ml-1 uppercase">Alerts</span></p>
                 </div>
-                <button onclick="downloadCSV()" class="h-14 px-8 bg-white/5 hover:bg-orange-600 hover:text-white border border-white/10 rounded-2xl font-black transition-all flex items-center gap-3 active:scale-95 group">
-                    <svg class="w-5 h-5 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    EXPORT REPORT
-                </button>
+                <div class="group">
+                    <p class="text-[11px] text-gray-600 font-black uppercase mb-2 tracking-[0.2em]">마지막 데이터 갱신</p>
+                    <p class="text-4xl font-black text-white font-mono leading-none">15:14:26</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex gap-20">
+            <div class="text-right">
+                <p class="text-2xl text-gray-400 font-bold uppercase mb-4 tracking-widest">전사 공정 도달율</p>
+                <div class="text-7xl font-black text-white font-mono leading-none tracking-tighter">47.1<span class="text-xl ml-2 text-gray-700">%</span></div>
+            </div>
+            <div class="text-right">
+                <p class="text-2xl text-orange-500 font-bold uppercase mb-4 tracking-widest">전략적 완공 예정일</p>
+                <div class="text-7xl font-black text-orange-500 font-mono leading-none tracking-tighter italic">2026-04-27</div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-[1500px] mx-auto p-12 space-y-16">
-        <!-- Visualization Area -->
-        <section class="space-y-10">
-            <div class="flex items-center justify-between px-2">
-                <div class="space-y-1">
-                    <h2 class="text-4xl font-black uppercase italic leading-none">Resource Performance</h2>
-                    <p class="text-xs text-gray-500 font-medium tracking-wide">Real-time task synchronization across all active docks</p>
-                </div>
-                <div class="flex gap-3">
-                    <div class="px-5 py-2 bg-red-500/5 border border-red-500/20 rounded-xl flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_red]"></span>
-                        <span class="text-[10px] font-black text-red-500 uppercase tracking-widest">Critical</span>
-                    </div>
-                    <div class="px-5 py-2 bg-amber-500/5 border border-amber-500/20 rounded-xl flex items-center gap-3">
-                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_amber]"></span>
-                        <span class="text-[10px] font-black text-amber-500 uppercase tracking-widest">Caution</span>
-                    </div>
-                </div>
+    <!-- STICKY FILTER BAR (NEW V16 UX) -->
+    <nav class="sticky top-10 z-50 max-w-[1600px] mx-auto mb-16 animate-fade-in-up" style="animation-delay: 0.2s">
+        <div class="glass rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between gap-6 px-12 border-white/10 shadow-2xl">
+            <div class="flex items-center gap-6 text-gray-400 font-bold text-sm">
+                <span class="mr-4 text-orange-500 uppercase tracking-widest text-sm">노드 필터링:</span>
+                <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-orange-600 text-white shadow-lg' : 'hover:bg-white/5'" class="px-8 py-3 rounded-2xl transition-all font-black text-base uppercase tracking-widest">전체</button>
+                <button @click="filter = 'critical'" :class="filter === 'critical' ? 'bg-red-600 text-white shadow-lg' : 'hover:bg-red-900/20'" class="px-8 py-3 rounded-2xl transition-all font-black text-base uppercase tracking-widest">위험</button>
+                <button @click="filter = 'warning'" :class="filter === 'warning' ? 'bg-amber-600 text-white shadow-lg' : 'hover:bg-amber-900/20'" class="px-8 py-3 rounded-2xl transition-all font-black text-base uppercase tracking-widest">주의</button>
+                <button @click="filter = 'optimal'" :class="filter === 'optimal' ? 'bg-emerald-600 text-white shadow-lg' : 'hover:bg-emerald-900/20'" class="px-8 py-3 rounded-2xl transition-all font-black text-base uppercase tracking-widest">정상</button>
             </div>
-
-            <!-- Plotly Container -->
-            <div class="glass-card rounded-[3rem] p-12 min-h-[600px] relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-[50%] h-full bg-orange-600/5 pointer-events-none skew-x-[-20deg] translate-x-32"></div>
-                <div>                            <div id="d6a45fd5-1fcd-4896-90c1-0a7731337230" class="plotly-graph-div" style="height:810px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("d6a45fd5-1fcd-4896-90c1-0a7731337230")) {                    Plotly.newPlot(                        "d6a45fd5-1fcd-4896-90c1-0a7731337230",                        [{"hovertemplate":"\ub3c4\ud06c: %{y}\u003cbr\u003e\uacf5\uc815\ub960: %{x}%\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":["#ef4444","#ef4444","#ef4444","#f59e0b","#f97316","#f97316","#f97316","#f97316","#f97316"],"line":{"color":"rgba(255,255,255,0.1)","width":1}},"orientation":"h","text":["\u003cb\u003e30.0%\u003c\u002fb\u003e","\u003cb\u003e60.0%\u003c\u002fb\u003e","\u003cb\u003e85.0%\u003c\u002fb\u003e","\u003cb\u003e12.0%\u003c\u002fb\u003e","\u003cb\u003e50.0%\u003c\u002fb\u003e","\u003cb\u003e50.0%\u003c\u002fb\u003e","\u003cb\u003e50.0%\u003c\u002fb\u003e","\u003cb\u003e92.0%\u003c\u002fb\u003e","\u003cb\u003e45.0%\u003c\u002fb\u003e"],"textfont":{"color":"white","size":14},"textposition":"inside","width":0.7,"x":{"dtype":"f8","bdata":"AAAAAAAAPkAAAAAAAABOQAAAAAAAQFVAAAAAAAAAKEAAAAAAAABJQAAAAAAAAElAAAAAAAAASUAAAAAAAABXQAAAAAAAgEZA"},"y":["\ub3c4\uc7a5\uacf5\uc7a5 \u003cbr\u003e\u003cspan style='font-size:10px; color:#9ca3af'\u003e\uc0cc\ub529 \uc791\uc5c5\u003c\u002fspan\u003e","\uc758\uc7a5\uc548\ubcbdA \u003cbr\u003e\u003cspan style='font-size:10px; color:#9ca3af'\u003e\ucf00\uc774\ube14 \ud3ec\uc124\u003c\u002fspan\u003e","\uc81c1\ub3c4\ud06c \u003cbr\u003e\u003cspan style='font-size:10px; color:#9ca3af'\u003e\uc5d4\uc9c4 \uc124\uce58\u003c\u002fspan\u003e","\uc81c3\ub3c4\ud06c \u003cbr\u003e\u003cspan style='font-size:10px; color:#9ca3af'\u003e\ube14\ub85d \ud0d1\uc7ac\u003c\u002fspan\u003e","27653995-0f36-41e7-8835-54c55750df09 \u003cbr\u003e\u003cspan style='font-size:10px; color:#9ca3af'\u003eLoading cargo\u003c\u002fspan\u003e","test-dock-001 \u003cbr\u003e\u003cspan style='font-size:10px; color:#9ca3af'\u003eloading\u003c\u002fspan\u003e","test-dock-907f9ece-39a0-49ad-9542-60352e3c23d8 \u003cbr\u003e\u003cspan style='font-size:10px; color:#9ca3af'\u003einstalling\u003c\u002fspan\u003e","\uc81c1\ub3c4\ud06c \u003cbr\u003e\u003cspan style='font-size:10px; color:#9ca3af'\u003e\ube44\ud30c\uad34 \uac80\uc0ac\u003c\u002fspan\u003e","\uc81c2\ub3c4\ud06c \u003cbr\u003e\u003cspan style='font-size:10px; color:#9ca3af'\u003e\uc120\uccb4 \uc6a9\uc811\u003c\u002fspan\u003e"],"type":"bar"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"font":{"color":"white","family":"Pretendard"},"margin":{"l":280,"r":50,"t":100,"b":50},"xaxis":{"tickfont":{"size":12,"color":"#9ca3af"},"range":[0,105],"showgrid":true,"gridcolor":"rgba(255,255,255,0.05)","side":"top","ticksuffix":"%"},"yaxis":{"tickfont":{"size":13,"color":"white"},"showgrid":false,"autorange":"reversed"},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(0,0,0,0)","height":810,"shapes":[{"line":{"color":"rgba(249,115,22,0.3)","dash":"dash","width":2},"type":"line","x0":0,"x1":100,"y0":2.5,"y1":2.5},{"line":{"color":"rgba(249,115,22,0.3)","dash":"dash","width":2},"type":"line","x0":0,"x1":100,"y0":3.5,"y1":3.5}],"showlegend":false,"autosize":true,"bargap":0.15},                        {"displayModeBar": false, "responsive": true}                    )                };            </script>        </div>
-            </div>
-        </section>
-
-        <!-- Monitoring Area -->
-        <section class="space-y-10">
-            <div class="flex items-center gap-4 px-2">
-                <div class="w-1.5 h-8 bg-orange-500 rounded-full"></div>
-                <h3 class="text-3xl font-black uppercase italic">Risk Management Ledger</h3>
-            </div>
-
-            <div class="glass-card rounded-[3rem] overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="bg-white/[0.02] text-[10px] text-gray-500 font-black uppercase tracking-[0.25em] border-b border-white/5">
-                                <th class="py-7 px-10">Asset / Node ID</th>
-                                <th class="py-7 px-10 min-w-[350px]">Efficiency Index</th>
-                                <th class="py-7 px-10">Current Operation</th>
-                                <th class="py-7 px-10 text-right">Sanctity Check</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/[0.03]">
-                            
-            <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                <td class="py-6 px-8">
-                    <div class="font-bold text-gray-100 group-hover:text-orange-400 transition-colors">도장공장</div>
-                    <div class="text-[10px] text-gray-500 font-mono mt-1">2026-03-27 11:20:00</div>
-                </td>
-                <td class="py-6 px-8">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1 bg-gray-800/50 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)]" style="width: 30.0%"></div>
-                        </div>
-                        <span class="text-sm font-black text-white min-w-[3rem] text-right">30.0%</span>
-                    </div>
-                </td>
-                <td class="py-6 px-8 text-gray-300 font-medium">샌딩 작업</td>
-                <td class="py-6 px-8">
-                    <span class="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-red-500/10 text-red-400 font-bold border border-current/20">
-                        분진위험
-                    </span>
-                </td>
-            </tr>
             
-            <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                <td class="py-6 px-8">
-                    <div class="font-bold text-gray-100 group-hover:text-orange-400 transition-colors">의장안벽A</div>
-                    <div class="text-[10px] text-gray-500 font-mono mt-1">2026-03-27 11:15:00</div>
-                </td>
-                <td class="py-6 px-8">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1 bg-gray-800/50 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)]" style="width: 60.0%"></div>
-                        </div>
-                        <span class="text-sm font-black text-white min-w-[3rem] text-right">60.0%</span>
-                    </div>
-                </td>
-                <td class="py-6 px-8 text-gray-300 font-medium">케이블 포설</td>
-                <td class="py-6 px-8">
-                    <span class="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-red-500/10 text-red-400 font-bold border border-current/20">
-                        주의
-                    </span>
-                </td>
-            </tr>
-            
-            <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                <td class="py-6 px-8">
-                    <div class="font-bold text-gray-100 group-hover:text-orange-400 transition-colors">제1도크</div>
-                    <div class="text-[10px] text-gray-500 font-mono mt-1">2026-03-27 10:00:00</div>
-                </td>
-                <td class="py-6 px-8">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1 bg-gray-800/50 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)]" style="width: 85.0%"></div>
-                        </div>
-                        <span class="text-sm font-black text-white min-w-[3rem] text-right">85.0%</span>
-                    </div>
-                </td>
-                <td class="py-6 px-8 text-gray-300 font-medium">엔진 설치</td>
-                <td class="py-6 px-8">
-                    <span class="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-red-500/10 text-red-400 font-bold border border-current/20">
-                        강풍주의
-                    </span>
-                </td>
-            </tr>
-            <tr class="bg-orange-500/5"><td colspan="4" class="py-1 px-8"><div class="h-px bg-orange-500/20 w-full"></div></td></tr>
-            <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                <td class="py-6 px-8">
-                    <div class="font-bold text-gray-100 group-hover:text-orange-400 transition-colors">제3도크</div>
-                    <div class="text-[10px] text-gray-500 font-mono mt-1">2026-03-27 08:45:00</div>
-                </td>
-                <td class="py-6 px-8">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1 bg-gray-800/50 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)]" style="width: 12.0%"></div>
-                        </div>
-                        <span class="text-sm font-black text-white min-w-[3rem] text-right">12.0%</span>
-                    </div>
-                </td>
-                <td class="py-6 px-8 text-gray-300 font-medium">블록 탑재</td>
-                <td class="py-6 px-8">
-                    <span class="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-current/20">
-                        크레인 점검
-                    </span>
-                </td>
-            </tr>
-            <tr class="bg-orange-500/5"><td colspan="4" class="py-1 px-8"><div class="h-px bg-orange-500/20 w-full"></div></td></tr>
-            <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                <td class="py-6 px-8">
-                    <div class="font-bold text-gray-100 group-hover:text-orange-400 transition-colors">27653995-0f36-41e7-8835-54c55750df09</div>
-                    <div class="text-[10px] text-gray-500 font-mono mt-1">2026-03-27T12:00:00Z</div>
-                </td>
-                <td class="py-6 px-8">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1 bg-gray-800/50 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)]" style="width: 50.0%"></div>
-                        </div>
-                        <span class="text-sm font-black text-white min-w-[3rem] text-right">50.0%</span>
-                    </div>
-                </td>
-                <td class="py-6 px-8 text-gray-300 font-medium">Loading cargo</td>
-                <td class="py-6 px-8">
-                    <span class="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-current/20">
-                        안전
-                    </span>
-                </td>
-            </tr>
-            
-            <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                <td class="py-6 px-8">
-                    <div class="font-bold text-gray-100 group-hover:text-orange-400 transition-colors">test-dock-001</div>
-                    <div class="text-[10px] text-gray-500 font-mono mt-1">2026-03-27T11:11:34.261516Z</div>
-                </td>
-                <td class="py-6 px-8">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1 bg-gray-800/50 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)]" style="width: 50.0%"></div>
-                        </div>
-                        <span class="text-sm font-black text-white min-w-[3rem] text-right">50.0%</span>
-                    </div>
-                </td>
-                <td class="py-6 px-8 text-gray-300 font-medium">loading</td>
-                <td class="py-6 px-8">
-                    <span class="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-current/20">
-                        안전
-                    </span>
-                </td>
-            </tr>
-            
-            <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                <td class="py-6 px-8">
-                    <div class="font-bold text-gray-100 group-hover:text-orange-400 transition-colors">test-dock-907f9ece-39a0-49ad-9542-60352e3c23d8</div>
-                    <div class="text-[10px] text-gray-500 font-mono mt-1">2026-03-27T11:11:16.324854</div>
-                </td>
-                <td class="py-6 px-8">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1 bg-gray-800/50 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)]" style="width: 50.0%"></div>
-                        </div>
-                        <span class="text-sm font-black text-white min-w-[3rem] text-right">50.0%</span>
-                    </div>
-                </td>
-                <td class="py-6 px-8 text-gray-300 font-medium">installing</td>
-                <td class="py-6 px-8">
-                    <span class="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-current/20">
-                        안전
-                    </span>
-                </td>
-            </tr>
-            
-            <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                <td class="py-6 px-8">
-                    <div class="font-bold text-gray-100 group-hover:text-orange-400 transition-colors">제1도크</div>
-                    <div class="text-[10px] text-gray-500 font-mono mt-1">2026-03-27 10:05:00</div>
-                </td>
-                <td class="py-6 px-8">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1 bg-gray-800/50 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)]" style="width: 92.0%"></div>
-                        </div>
-                        <span class="text-sm font-black text-white min-w-[3rem] text-right">92.0%</span>
-                    </div>
-                </td>
-                <td class="py-6 px-8 text-gray-300 font-medium">비파괴 검사</td>
-                <td class="py-6 px-8">
-                    <span class="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-current/20">
-                        안전
-                    </span>
-                </td>
-            </tr>
-            
-            <tr class="border-b border-white/5 hover:bg-white/5 transition-all group">
-                <td class="py-6 px-8">
-                    <div class="font-bold text-gray-100 group-hover:text-orange-400 transition-colors">제2도크</div>
-                    <div class="text-[10px] text-gray-500 font-mono mt-1">2026-03-27 09:30:00</div>
-                </td>
-                <td class="py-6 px-8">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1 bg-gray-800/50 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)]" style="width: 45.0%"></div>
-                        </div>
-                        <span class="text-sm font-black text-white min-w-[3rem] text-right">45.0%</span>
-                    </div>
-                </td>
-                <td class="py-6 px-8 text-gray-300 font-medium">선체 용접</td>
-                <td class="py-6 px-8">
-                    <span class="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-current/20">
-                        안전
-                    </span>
-                </td>
-            </tr>
-            
-                        </tbody>
-                    </table>
+            <div class="relative w-full md:w-[450px] group">
+                <input type="text" x-model="search" placeholder="작업 내용 또는 구역명 검색..." 
+                       class="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 text-lg font-bold focus:outline-none focus:border-orange-500 focus:bg-white/10 transition-all placeholder:text-gray-600">
+                <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
             </div>
-        </section>
+        </div>
+    </nav>
 
-        <!-- Global Footer -->
-        <footer class="pt-20 pb-10 flex justify-between items-center opacity-30">
+    <!-- OPERATIONAL NODES (20+ ASSETS) -->
+    <main class="max-w-[1600px] mx-auto space-y-12">
+        <div class="flex items-center justify-between px-6 pb-4">
             <div class="flex items-center gap-6">
-                <span class="text-[10px] font-black uppercase tracking-[0.4em]">Hanwha Ocean AX Core</span>
-                <span class="text-[10px] font-black uppercase tracking-[0.4em]">Node-82 Secure</span>
+                <div class="w-2 h-8 bg-orange-500 rounded-full"></div>
+                <h2 class="text-3xl font-black italic uppercase tracking-tight">전사 야드 자산 가동 현황</h2>
             </div>
-            <p class="text-[9px] font-bold uppercase tracking-widest">Proprietary Technology · Hanwha Ocean AX Command Center v13.0</p>
-        </footer>
+            <div class="text-sm font-black uppercase tracking-[0.3em] text-gray-500">
+                실시간 야드 자산 모니터링 모드 활성화됨
+            </div>
+        </div>
+
+        <div class="space-y-10">
+            <!-- CARDS CONTENT -->
+            <template x-for="card in Array.from(document.querySelectorAll('.card-node'))">
+                <div x-show="(filter === 'all' || card.dataset.severity === filter) && (search === '' || card.dataset.name.includes(search.toLowerCase()) || card.dataset.task.includes(search.toLowerCase()))"
+                     x-transition:enter="transition ease-out duration-300 transform"
+                     x-transition:enter-start="opacity-0 translate-y-4"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     class="contents">
+                    <div x-html="card.outerHTML"></div>
+                </div>
+            </template>
+            
+            <!-- RAW CARDS DATA (HIDDEN FOR ALPINE CONSUMPTION) -->
+            <div class="hidden">
+                
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-red-500/20 animate-fade-in-up card-node" 
+                 data-severity="critical" data-task="샌딩 작업" data-name="도장공장 1"
+                 style="border-left-color: #EF4444; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">도장공장 1</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-red-500/10" style="color: #EF4444">위험 (Critical)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            샌딩 작업 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 10:30:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 45.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">45.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #EF4444">분진위험</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="블록 탑재" data-name="제3도크"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">제3도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의 (Caution)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            블록 탑재 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 09:30:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 12.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">12.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #F59E0B">크레인 점검</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="엔진 구동 테스트" data-name="의장안벽 d"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">의장안벽 D</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의 (Caution)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            엔진 구동 테스트 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:11:34</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 15.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">15.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #F59E0B">장비 점검</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="블록 대조립" data-name="대조립공장"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">대조립공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의 (Caution)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            블록 대조립 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 09:55:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 35.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">35.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #F59E0B">중량물 주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="엔진 설치" data-name="제1도크"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">제1도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의 (Caution)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            엔진 설치 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 10:00:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 85.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">85.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #F59E0B">강풍주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="초도 안벽 접안" data-name="의장안벽 e"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">의장안벽 E</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            초도 안벽 접안 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 13:50:55</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 5.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">5.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="선박 계류" data-name="서안벽"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">서안벽</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            선박 계류 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 14:10:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 10.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">10.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="표면 세척" data-name="도장공장 2"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">도장공장 2</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            표면 세척 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 10:45:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 20.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">20.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="기술 검토" data-name="중앙공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">중앙공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            기술 검토 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 14:20:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 25.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">25.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="기초 도장" data-name="제5도크"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">제5도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            기초 도장 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:15:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 28.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">28.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="배관 포설" data-name="의장안벽 c"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">의장안벽 C</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            배관 포설 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:11:16</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 30.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">30.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="선체 용접" data-name="제2도크"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">제2도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            선체 용접 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 10:05:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 42.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">42.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="하역 작업" data-name="동안벽"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">동안벽</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            하역 작업 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 14:15:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 50.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">50.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="케이블 제작" data-name="전장공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">전장공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            케이블 제작 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 10:10:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 55.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">55.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="부재 용접" data-name="소조립공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">소조립공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            부재 용접 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 08:20:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 60.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">60.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="수밀 테스트" data-name="제4도크"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">제4도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            수밀 테스트 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 08:45:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 65.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">65.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="파이프 벤딩" data-name="배관공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">배관공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            파이프 벤딩 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:05:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 70.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">70.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="인테리어 마감" data-name="의장안벽 b"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">의장안벽 B</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            인테리어 마감 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 12:00:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 75.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">75.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">자재 대기</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="철장재 제작" data-name="사재공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">사재공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            철장재 제작 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:50:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 82.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">82.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="철판 절단" data-name="가공공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">가공공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            철판 절단 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 09:15:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 88.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">88.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="시운전 준비" data-name="의장안벽 a"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-6xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">의장안벽 A</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상 (Optimal)</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            시운전 준비 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:20:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 92.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">92.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right">
+                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            </div>
+        </div>
     </main>
 
+    <footer class="mt-60 mb-20 flex flex-col items-center gap-8 opacity-20">
+        <div class="w-60 h-px bg-gradient-to-r from-transparent via-white to-transparent"></div>
+        <p class="text-xs font-bold uppercase tracking-[1.5em] text-center">HANWHA OCEAN AX PROPRIETARY CONTROL MESH V16.0.0</p>
+    </footer>
+
     <script>
-        function downloadCSV() {
-            const rows = [
-                ["구역/도크", "공정률", "현재작업", "안전이슈", "마지막업데이트"],
-                ["도장공장", "30.0", "샌딩 작업", "분진위험", "2026-03-27 11:20:00"],
-["의장안벽A", "60.0", "케이블 포설", "주의", "2026-03-27 11:15:00"],
-["제1도크", "85.0", "엔진 설치", "강풍주의", "2026-03-27 10:00:00"],
-["제3도크", "12.0", "블록 탑재", "크레인 점검", "2026-03-27 08:45:00"],
-["27653995-0f36-41e7-8835-54c55750df09", "50.0", "Loading cargo", "안전", "2026-03-27T12:00:00Z"],
-["test-dock-001", "50.0", "loading", "안전", "2026-03-27T11:11:34.261516Z"],
-["test-dock-907f9ece-39a0-49ad-9542-60352e3c23d8", "50.0", "installing", "안전", "2026-03-27T11:11:16.324854"],
-["제1도크", "92.0", "비파괴 검사", "안전", "2026-03-27 10:05:00"],
-["제2도크", "45.0", "선체 용접", "안전", "2026-03-27 09:30:00"]
-            ];
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-            rows.forEach(function(rowArray) {
-                let row = rowArray.map(v => '"' + v + '"').join(",");
-                csvContent += row + "\r\n";
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `hanwha_ax_report_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-        window.addEventListener('resize', function() {
-            const plots = document.getElementsByClassName('plotly-graph-div');
-            for (let i = 0; i < plots.length; i++) {
-                Plotly.Plots.resize(plots[i]);
-            }
+        // Alpine data injection helper if needed
+        document.addEventListener('alpine:init', () => {
+            console.log('AX Logic Matrix Initialized');
         });
     </script>
 </body>
 </html>
+            

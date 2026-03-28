@@ -10,7 +10,7 @@
     "projectName": "hanwha-ocean-rpa",
     "projectPath": "g:\\내 드라이브\\99.Develop\\한화오션\\hanwha-ocean-rpa",
     "testIds": [],
-    "additionalInstruction": "Verify the latest /dashboard and /api/v1/update-dock endpoints in the hanwha-ocean-rpa project. Ensure multi-task support (dock_id + current_task) works as expected.",
+    "additionalInstruction": "Check for input validation, data integrity during CSV writes, and potential path traversal in static file serving. Verify the AI analytics output with varied data inputs.",
     "serverMode": "development",
     "envs": {
       "API_KEY": "sk-user-7NjWyvWwmm8tAk2EOdjilY9H30jLc64qrMxvkVREmN8p_FLprSCbzgvceeFYWu21Ja4jvOwI2PwOQrFH-ybWkMq4JqYnRO_Y-zfOb8UjDS3NWSm2R11ai859htR_iFkKuCc"

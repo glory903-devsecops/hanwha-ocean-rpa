@@ -1,19 +1,28 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, Response
-from pydantic import BaseModel
+from fastapi.responses import FileResponse, JSONResponse
+from pydantic import BaseModel, Field, field_validator
 import pandas as pd
 import os
 import sys
+import logging
+
+# [1] Structured Logging Configuration
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("AX_Server")
 
 # 프로젝트 루트를 path에 추가하여 src 모듈을 불러올 수 있게 함
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from src.core import config
+from src.core import config, analytics, repository
 from src.viz.dashboard import DashboardEngine
 
-app = FastAPI(title="Hanwha Ocean ERP Backend")
+# Components Initialization
+ax_analytics = analytics.AXAnalytics()
+yard_repo = repository.YardDataRepository()
 
-# CORS 설정 (포털에서 API 호출 가능하도록)
+app = FastAPI(title="Hanwha Ocean AX Enterprise Backend", version="13.3.0")
+
+# CORS 설정
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,12 +30,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# [2] Models with Strict Validation
 class DockUpdate(BaseModel):
-    dock_id: str
-    progress: float
-    current_task: str
+    dock_id: str = Field(..., min_length=2, max_length=50, description="Unique Dock ID")
+    progress: float = Field(..., ge=0, le=100, description="Real-time progress %")
+    current_task: str = Field(..., min_length=2, max_length=100)
     safety_issue: bool | str
     timestamp: str | None = None
+
+    @field_validator('dock_id', 'current_task')
+    def sanitize_strings(cls, v):
+        """Basic trimming and sanitization."""
+        return str(v).strip()
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Hide internal details from external clients."""
+    logger.error(f"Global Error: {str(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content={"error": "INTERNAL_SERVER_ERROR", "msg": "조업 연동 서버 내부에 작업이 지연되고 있습니다. 관리자에게 문의하세요."}
+    )
 
 @app.get("/dashboard")
 async def get_dashboard():
@@ -38,54 +62,38 @@ async def get_dashboard():
 @app.post("/api/v1/update-dock")
 async def update_dock(data: DockUpdate):
     try:
-        csv_path = os.path.join(config.DATA_DIR, "dock_status.csv")
-        if os.path.exists(csv_path):
-            df = pd.read_csv(csv_path)
-        else:
-            df = pd.DataFrame(columns=["구역/도크", "공정률", "현재작업", "안전이슈", "마지막업데이트"])
-
+        logger.info(f"Update Signal: {data.dock_id} at {data.progress}%")
+        
+        # Prepare safety string
         safety_str = "위험/주의" if isinstance(data.safety_issue, bool) and data.safety_issue else ("안전" if data.safety_issue == False else str(data.safety_issue))
 
-        new_row = {
-            "구역/도크": data.dock_id,
-            "공정률": data.progress,
-            "현재작업": data.current_task,
-            "안전이슈": safety_str,
-            "마지막업데이트": data.timestamp if data.timestamp else pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
+        # Use Repository for Thread-safe Write
+        total_count = yard_repo.update_record(
+            dock_id=data.dock_id,
+            progress=data.progress,
+            task=data.current_task,
+            safety=safety_str,
+            timestamp=data.timestamp if data.timestamp else pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
+        )
 
-        # Update logic: match both dock_id AND current_task
-        mask = (df["구역/도크"] == data.dock_id) & (df["현재작업"] == data.current_task)
-        if mask.any():
-            df.loc[mask, ["공정률", "안전이슈", "마지막업데이트"]] = [
-                data.progress, safety_str, new_row["마지막업데이트"]
-            ]
-        else:
-            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-
-        df.to_csv(csv_path, index=False, encoding="utf-8-sig")
         DashboardEngine().render()
         
         return {
-            "status": "saved", 
-            "message": f"Updated {data.dock_id} successfully.",
-            "file": csv_path,
-            "updated_record_count": 1
+            "status": "synchronized", 
+            "sync_count": total_count,
+            "ref": data.dock_id
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Sync Failure: {str(e)}")
+        raise HTTPException(status_code=500, detail="Data Synchronization Failed")
 
 @app.get("/api/v1/dashboard-status")
 async def get_dashboard_status(dock_id: str | None = None):
-    csv_path = os.path.join(config.DATA_DIR, "dock_status.csv")
-    if not os.path.exists(csv_path):
-        raise HTTPException(status_code=404, detail="No data available")
-    
-    df = pd.read_csv(csv_path)
+    df = yard_repo.load_all()
     if dock_id:
         record = df[df["구역/도크"] == dock_id]
         if record.empty:
-            return {"error": "Dock not found"}
+            return JSONResponse(status_code=404, content={"error": "Not Found"})
         res = record.iloc[0].to_dict()
         return {
             "dock_id": res["구역/도크"],
@@ -97,25 +105,28 @@ async def get_dashboard_status(dock_id: str | None = None):
     return df.to_dict(orient="records")
 
 @app.get("/api/v1/export-report")
-async def export_report(format: str = "csv"):
-    if format != "csv":
-        return Response(content="Unsupported format", status_code=200)
-    csv_path = os.path.join(config.DATA_DIR, "dock_status.csv")
-    if not os.path.exists(csv_path):
-        raise HTTPException(status_code=404, detail="No data available")
-    with open(csv_path, "r", encoding="utf-8-sig") as f:
-        content = f.read()
-    return Response(content=content, media_type="text/csv")
+async def export_report():
+    df = yard_repo.load_all()
+    content = df.to_csv(index=False, encoding="utf-8-sig")
+    return JSONResponse(content={"csv": content, "filename": "yard_report.csv"})
 
 @app.get("/api/v1/analytics")
-async def get_analytics(dock_id: str | None = None):
-    if dock_id == "unknown":
-         raise HTTPException(status_code=404, detail="Not Found")
-    return {"d_day": "2026-05-15", "recommendation": "최적 조업 유지"}
+async def get_analytics():
+    df = yard_repo.load_all()
+    avg_proc = ax_analytics.calculate_average_progress(df)
+    days_to_go, predicted_date = ax_analytics.predict_dday(avg_proc)
+    insights = ax_analytics.generate_ai_insights(df)
+    
+    return {
+        "status": "success",
+        "d_day": predicted_date,
+        "days_remaining": round(days_to_go, 1),
+        "insights": insights
+    }
 
-@app.get("/api/v1/analytics-explain")
-async def analytics_explain():
-    return {"model": "LGBM", "feature_importance": {"progress": 0.8}}
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8082)
 
 if __name__ == "__main__":
     import uvicorn
