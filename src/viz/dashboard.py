@@ -80,8 +80,8 @@ class DashboardEngine:
         fig_bar.update_layout(
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             font=dict(color='white', family='Pretendard'),
-            height=max(600, len(df_sorted) * 80),
-            margin=dict(l=250, r=50, t=100, b=50),
+            height=max(600, len(df_sorted) * 90),
+            margin=dict(l=280, r=50, t=100, b=50),
             xaxis=dict(
                 range=[0, 105], showgrid=True, gridcolor='rgba(255,255,255,0.05)', 
                 side='top', ticksuffix="%", tickfont=dict(size=12, color="#9ca3af")
@@ -90,7 +90,7 @@ class DashboardEngine:
             shapes=shapes,
             showlegend=False,
             autosize=True,
-            bargap=0.4
+            bargap=0.15
         )
         bar_html = fig_bar.to_html(include_plotlyjs=False, full_html=False, config={'displayModeBar': False, 'responsive': True})
 

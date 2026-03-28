@@ -22,16 +22,16 @@
 
 ## 📸 Dashboard Preview (Mission Control Edition v13.1.0)
 
-![AX Mission Control Center](docs/images/dashboard_overview.png)
-*브랜드 정체성이 강화된 오렌지 포인트 컬러, 글래스모피즘 레이아웃, 그리고 실시간 데이터 피드가 통합된 한화오션 전용 AX 미션 컨트롤 대시보드입니다.*
+![AX Mission Control Center](docs/images/dashboard_v13.png)
+*브랜드 정체성이 강화된 오렌지 포인트 컬러와 'Vertical Stack' 레이아웃이 적용된 한화오션 전용 AX 미션 컨트롤 대시보드입니다.*
 
-### [주요 화면 구성]
+### [3-Stage Automation Journey]
 ````carousel
-![1. Resource Performance Stack (Full-Width)](docs/images/dashboard_overview.png)
+![Stage 1: ERP Source Portal (Data Input)](docs/images/erp_input.png)
 <!-- slide -->
-![2. Horizontal Progress Bars & Safety Dividers](docs/images/performance_stack.png)
+![Stage 2: Standardized CSV DB (Data Ledger)](docs/images/csv_report.png)
 <!-- slide -->
-![3. Risk Management Ledger (Table)](docs/images/risk_ledger.png)
+![Stage 3: Tailwind AI Dashboard (Mission Control)](docs/images/dashboard_v13.png)
 ````
 
 ---
