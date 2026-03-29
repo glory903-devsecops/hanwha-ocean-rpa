@@ -1,9 +1,9 @@
 import os
 
-# System & Branding Configuration (v4.5.0)
-PROJECT_NAME = "Hanwha Ocean Smart Yard AX"
-VERSION = "4.5.0"
-AUTHOR = "Hanwha Ocean AX Team"
+# System & Branding Configuration (v25.0.0 - Enterprise Elite)
+PROJECT_NAME = "Hanwha Ocean Smart Yard AX: Ultimate Mission Control"
+VERSION = "25.0.0"
+AUTHOR = "Hanwha Ocean AX Advanced Development Team"
 
 # [Branding: Hanwha Ocean Premium]
 BRAND_ORANGE = "#FF6A00"

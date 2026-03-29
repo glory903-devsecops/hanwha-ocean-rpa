@@ -1,0 +1,8 @@
+pandas
+fastapi
+uvicorn
+filelock
+plotly
+pytest
+flake8
+bandit

@@ -1,52 +1,47 @@
 [
   {
     "id": "TC001",
-    "title": "post api v1 update dock with valid payload",
-    "description": "Test the POST /api/v1/update-dock endpoint with a valid JSON payload containing dock_id, progress, safety_issue, current_task, and timestamp. Verify that the response status is 200 OK, the response body confirms the CSV file update, and the updated_record_count is correct."
+    "title": "post api v1 update dock with valid data",
+    "description": "Test the POST /api/v1/update-dock endpoint with valid JSON payload containing dock_id, progress, safety_issue, and current_task. Verify that the response status is 200 OK, confirmation is received, and the data is correctly saved to dock_status.csv."
   },
   {
     "id": "TC002",
-    "title": "post api v1 update dock with missing required fields",
-    "description": "Test the POST /api/v1/update-dock endpoint with a JSON payload missing required fields such as progress. Verify that the response status is 400 Bad Request and the response body contains validation error details. Confirm that the dock record remains unchanged by fetching it via GET /api/v1/dashboard-status."
+    "title": "post api v1 update dock with malformed json",
+    "description": "Test the POST /api/v1/update-dock endpoint with malformed JSON payload missing required fields such as dock_id. Verify that the response status is 400 Bad Request with appropriate validation error message and that dock_status.csv remains unchanged."
   },
   {
     "id": "TC003",
-    "title": "get api v1 dashboard status after dock update",
-    "description": "After a successful dock update via POST /api/v1/update-dock, test the GET /api/v1/dashboard-status endpoint with the dock_id parameter. Verify that the response status is 200 OK and the JSON response contains the newly updated dock record."
+    "title": "get smart yard dashboard html after data update",
+    "description": "After a successful POST to /api/v1/update-dock, test GET /smart_yard_dashboard.html to verify that the dashboard HTML is regenerated and reflects the latest dock and safety data with a 200 OK response."
   },
   {
     "id": "TC004",
-    "title": "get dashboard html reflects updated dock data",
-    "description": "After updating dock data via POST /api/v1/update-dock, test the GET /dashboard endpoint. Verify that the response status is 200 OK and the HTML body contains updated metrics and a recent generation timestamp reflecting the latest dock data."
+    "title": "get smart yard dashboard html during regeneration",
+    "description": "Test GET /smart_yard_dashboard.html during the dashboard regeneration process triggered by a data update. Verify that the response status is 503 Service Unavailable with a 'regenerating' message, and that subsequent requests after regeneration return 200 OK with updated HTML."
   },
   {
     "id": "TC005",
-    "title": "get dashboard generation failure and error logs",
-    "description": "Simulate a dashboard generation failure after POST /api/v1/update-dock. Test GET /dashboard to receive a 500 Internal Server Error with a generation failure page. Then test GET /api/v1/logs?source=dashboard-generate to verify that JSON log entries describe the generation error."
+    "title": "get api v1 analytics dday with valid dock id",
+    "description": "Test GET /api/v1/analytics/dday with a valid dock_id parameter. Verify that the response status is 200 OK and the JSON payload contains dock_id, current_progress, daily_productivity_rate, days_remaining, and projected_completion_date."
   },
   {
     "id": "TC006",
-    "title": "get api v1 analytics with valid dock id",
-    "description": "Test the GET /api/v1/analytics endpoint with a valid dock_id parameter. Verify that the response status is 200 OK and the JSON response contains dock_id, d_day prediction, daily_rate, risk_level, and recommendations."
+    "title": "get api v1 analytics insights with valid dock id",
+    "description": "Test GET /api/v1/analytics/insights with a valid dock_id parameter. Verify that the response status is 200 OK and the JSON payload contains dock_id, risk_level, and recommended_actions such as 'reallocate_resources' or 'safety_inspection'."
   },
   {
     "id": "TC007",
-    "title": "get api v1 analytics explain with valid dock id",
-    "description": "Test the GET /api/v1/analytics/explain endpoint with a valid dock_id parameter. Verify that the response status is 200 OK and the JSON response provides an explanation of model factors and rule-based decisions."
+    "title": "get api v1 analytics with unknown dock id",
+    "description": "Test GET /api/v1/analytics/dday and /api/v1/analytics/insights with an unknown dock_id parameter. Verify that the response status is 404 Not Found with an error message 'dock not found'."
   },
   {
     "id": "TC008",
-    "title": "get api v1 analytics with unknown dock id",
-    "description": "Test the GET /api/v1/analytics endpoint with an unknown dock_id parameter. Verify that the response status is 404 Not Found and the JSON response contains an error message indicating the dock was not found."
+    "title": "get api v1 export dock csv with data available",
+    "description": "Test GET /api/v1/export-dock-csv when dock data is available. Verify that the response status is 200 OK with Content-Disposition header for attachment and the CSV payload contains the dock data."
   },
   {
     "id": "TC009",
-    "title": "get api v1 export report with valid csv format and date",
-    "description": "Test the GET /api/v1/export-report endpoint with format=csv and a valid since date parameter. Verify that the response status is 200 OK, the Content-Type is text/csv, and the CSV payload contains processed dock records. Confirm the client can save the file with the correct naming convention."
-  },
-  {
-    "id": "TC010",
-    "title": "get api v1 export report with unsupported format",
-    "description": "Test the GET /api/v1/export-report endpoint with an unsupported format parameter such as xml. Verify that the response status is 400 Bad Request and the JSON response contains an error message indicating unsupported format."
+    "title": "get api v1 export dock csv with no data",
+    "description": "Test GET /api/v1/export-dock-csv when no dock data rows are available. Verify that the response status is 204 No Content or 200 OK with an explanatory header, and the client prompts the user that no data is available for export."
   }
 ]

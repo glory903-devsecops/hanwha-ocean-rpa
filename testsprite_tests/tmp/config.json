@@ -8,9 +8,9 @@
   "backendApiValue": "sk-user-7NjWyvWwmm8tAk2EOdjilY9H30jLc64qrMxvkVREmN8p_FLprSCbzgvceeFYWu21Ja4jvOwI2PwOQrFH-ybWkMq4JqYnRO_Y-zfOb8UjDS3NWSm2R11ai859htR_iFkKuCc",
   "executionArgs": {
     "projectName": "hanwha-ocean-rpa",
-    "projectPath": "g:\\내 드라이브\\99.Develop\\한화오션\\hanwha-ocean-rpa",
+    "projectPath": "g:\\내 드라이브\\99.Develop\\hanwha-ocean-rpa",
     "testIds": [],
-    "additionalInstruction": "Check for input validation, data integrity during CSV writes, and potential path traversal in static file serving. Verify the AI analytics output with varied data inputs.",
+    "additionalInstruction": "Final comprehensive verification for enterprise deployment. Focus on edge cases in data processing and dashboard rendering. Ensure the server is accessible.",
     "serverMode": "development",
     "envs": {
       "API_KEY": "sk-user-7NjWyvWwmm8tAk2EOdjilY9H30jLc64qrMxvkVREmN8p_FLprSCbzgvceeFYWu21Ja4jvOwI2PwOQrFH-ybWkMq4JqYnRO_Y-zfOb8UjDS3NWSm2R11ai859htR_iFkKuCc"

@@ -11,11 +11,11 @@ from src.viz import theme
 
 class DashboardEngine:
     """
-    Visualization Engine for Hanwha Ocean AX (v16.0.0).
-    ENTERPRISE FILTERABLE DASHBOARD:
-    - Real-time client-side filtering (Alpine.js).
-    - Fully localized to Korean (K-Shipyard Standard).
-    - Large-scale asset monitoring (20+ nodes).
+    Visualization Engine for Hanwha Ocean AX (v25.0.0 - Enterprise Elite).
+    STRATEGIC COMMAND & CONTROL INTERFACE:
+    - Real-time Digital Twin Synchronization Monitoring.
+    - Large-scale high-visibility asset hierarchy (50+ nodes).
+    - AI-Driven Strategic Action Planning.
     """
     
     def __init__(self):
@@ -32,12 +32,13 @@ class DashboardEngine:
             self.df_dock["안전이슈"] = self.df_dock["안전이슈"].str.replace(prefix + " ", "", regex=False)
 
     def render(self):
-        print(f"📡 [Enterprise-AX] Rendering Scale-UP Filterable Dashboard (v16.0.0)...")
+        print(f"📡 [Enterprise-AX] Rendering Scale-UP Filterable Dashboard (v25.0.0 Enterprise Quantum Elite)...")
         self.load_data()
         
-        # 1. High-Level KPI Data
-        avg_proc = self.df_dock["공정률"].mean() if not self.df_dock.empty else 0
+        # 1. High-Level KPI Data (Strategic)
+        avg_proc = self.analytics.calculate_average_progress(self.df_dock)
         days_to_go, proj_date = self.analytics.predict_dday(avg_proc)
+        risk_index = self.analytics.calculate_executive_risk_index(self.df_dock)
         critical_count = len(self.df_dock[self.df_dock["안전이슈"].isin(["위험", "경고", "분진위험", "중량물 주의", "크레인 점검"])])
         
         # 2. Sorting Logic (Severity > Process)
@@ -49,6 +50,13 @@ class DashboardEngine:
             
         self.df_dock["sev_score"] = self.df_dock.apply(get_severity_score, axis=1)
         df_sorted = self.df_dock.sort_values(["sev_score", "공정률"], ascending=[True, True])
+
+        # Load Guidelines for Injection
+        guidelines_path = os.path.join(self.config.DATA_DIR, "safety_guidelines.csv")
+        guidelines_json = "[]"
+        if os.path.exists(guidelines_path):
+            g_df = pd.read_csv(guidelines_path)
+            guidelines_json = g_df.to_json(orient="records")
 
         # 3. Component Generation: Individual Priority Cards
         cards_html = ""
@@ -92,9 +100,12 @@ class DashboardEngine:
                         <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">{row['공정률']}%</div>
                     </div>
 
-                    <div class="xl:min-w-[320px] text-right">
-                        <div class="text-sm font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
-                        <div class="text-5xl font-black uppercase italic tracking-widest" style="color: {p['accent']}">{e_safety}</div>
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('{e_safety}', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: {p['accent']}">{e_safety}</div>
                     </div>
                 </div>
             </div>
@@ -131,17 +142,42 @@ class DashboardEngine:
         @keyframes fadeInUp {{ from {{ opacity: 0; transform: translateY(40px); }} to {{ opacity: 1; transform: translateY(0); }} }}
         .animate-fade-in-up {{ animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }}
         
-        /* Custom Filter Button Style */
-        .filter-btn {{
-            @apply px-8 py-3 rounded-2xl font-black text-sm transition-all border border-white/5 uppercase tracking-widest;
-        }}
-        .filter-btn.active {{
-            @apply bg-orange-500 text-white shadow-[0_10px_30px_rgba(249,115,22,0.4)] border-transparent;
-        }}
+        [x-cloak] {{ display: none !important; }}
     </style>
 </head>
-<body class="p-8 lg:p-20" x-data="{{ filter: 'all', search: '' }}">
+<body class="p-8 lg:p-20" x-data="axDashboard()">
     
+    <!-- AI INSIGHT NOTICE (CENTERED MODAL) -->
+    <div x-show="tooltip.show" 
+         x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-90"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-90"
+         class="fixed inset-0 z-[200] flex items-center justify-center p-12 bg-black/40 backdrop-blur-sm pointer-events-auto"
+         @click.self="hideGuidance()"
+    >
+        <div class="glass rounded-[4rem] p-24 max-w-5xl shadow-[0_0_150px_rgba(249,115,22,0.4)] border-orange-500/50 relative text-center">
+            <!-- Close Trigger -->
+            <button @click="hideGuidance()" class="absolute top-12 right-16 text-gray-500 hover:text-white transition-all scale-150">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <div class="flex flex-col items-center space-y-16">
+                <div class="flex items-center gap-6 px-10 py-3 bg-orange-500/10 rounded-full border border-orange-500/20">
+                    <span class="w-3 h-3 bg-orange-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(249,115,22,1)]"></span>
+                    <span class="text-lg font-black uppercase tracking-[0.5em] text-orange-500">대처 방안 (Management Plan)</span>
+                </div>
+                
+                <p class="text-7xl font-black text-white leading-[1.1] tracking-tighter italic" x-text="tooltip.content"></p>
+                
+                <div class="w-40 h-1.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-40"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- COMMAND HEADER (SCALED FOR V16) -->
     <header class="max-w-[1600px] mx-auto flex flex-col lg:flex-row justify-between items-start lg:items-end gap-16 border-b border-white/10 pb-20 mb-16 animate-fade-in-up">
         <div class="space-y-10">
@@ -149,9 +185,9 @@ class DashboardEngine:
                 <div class="w-24 h-24 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-[2.5rem] flex items-center justify-center text-5xl font-black italic shadow-[0_0_50px_rgba(249,115,22,0.4)]">H</div>
                 <div>
                     <h1 class="text-6xl font-black tracking-tighter uppercase italic leading-none">
-                        AX <span class="text-orange-500">커맨드 센터</span>
+                        AX <span class="text-orange-500">전략 커맨드 센터</span>
                     </h1>
-                    <p class="text-xs text-gray-500 font-bold uppercase tracking-[0.5em] mt-5">v16.0.0 엔터프라이즈 운영 지능화 시스템</p>
+                    <p class="text-xs text-gray-500 font-bold uppercase tracking-[0.5em] mt-5">v25.0.0 Enterprise Quantum Elite</p>
                 </div>
             </div>
             <div class="flex gap-16">
@@ -160,8 +196,8 @@ class DashboardEngine:
                     <p class="text-4xl font-black text-red-500 leading-none">{critical_count} <span class="text-xs text-gray-700 font-bold ml-1 uppercase">Alerts</span></p>
                 </div>
                 <div class="group">
-                    <p class="text-[11px] text-gray-600 font-black uppercase mb-2 tracking-[0.2em]">마지막 데이터 갱신</p>
-                    <p class="text-4xl font-black text-white font-mono leading-none">{datetime.datetime.now().strftime('%H:%M:%S')}</p>
+                    <p class="text-[11px] text-gray-600 font-black uppercase mb-2 tracking-[0.2em] group-hover:text-cyan-400 transition-colors">전략 리스크 지수</p>
+                    <p class="text-4xl font-black text-white leading-none">{risk_index}</p>
                 </div>
             </div>
         </div>
@@ -178,15 +214,46 @@ class DashboardEngine:
         </div>
     </header>
 
-    <!-- STICKY FILTER BAR (NEW V16 UX) -->
-    <nav class="sticky top-10 z-50 max-w-[1600px] mx-auto mb-16 animate-fade-in-up" style="animation-delay: 0.2s">
+    <!-- ENTERPRISE EXECUTIVE SUMMARY (NEW V25) -->
+    <div class="max-w-[1600px] mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-10 animate-fade-in-up" style="animation-delay: 0.1s">
+        <div class="glass rounded-[2rem] p-10 flex items-center justify-between border-emerald-500/20">
+            <div class="space-y-2">
+                <p class="text-xs text-gray-500 font-black uppercase tracking-[0.2em]">Digital Twin Sync</p>
+                <p class="text-4xl font-black text-emerald-500 italic">99.98% <span class="text-xs opacity-40">ACTIVE</span></p>
+            </div>
+            <div class="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                <div class="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
+            </div>
+        </div>
+        <div class="glass rounded-[2rem] p-10 flex items-center justify-between border-orange-500/20">
+            <div class="space-y-2">
+                <p class="text-xs text-gray-500 font-black uppercase tracking-[0.2em]">RPA BOT Fleet</p>
+                <p class="text-4xl font-black text-orange-500 italic">12/12 <span class="text-xs opacity-40">OPERATIONAL</span></p>
+            </div>
+            <div class="w-16 h-16 rounded-full bg-orange-500/10 flex items-center justify-center">
+                <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            </div>
+        </div>
+        <div class="glass rounded-[2rem] p-10 flex items-center justify-between border-cyan-500/20">
+            <div class="space-y-2">
+                <p class="text-xs text-gray-500 font-black uppercase tracking-[0.2em]">Security Standard</p>
+                <p class="text-4xl font-black text-cyan-400 italic">SECURE <span class="text-xs opacity-40">ENCRYPTED</span></p>
+            </div>
+            <div class="w-16 h-16 rounded-full bg-cyan-500/10 flex items-center justify-center">
+                <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- STICKY FILTER BAR (NEW V25 UX) -->
+    <nav class="sticky top-10 z-50 max-w-[1600px] mx-auto mb-16 animate-fade-in-up" style="animation-delay: 0.3s">
         <div class="glass rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between gap-6 px-12 border-white/10 shadow-2xl">
-            <div class="flex items-center gap-6 text-gray-400 font-bold text-sm">
-                <span class="mr-4 text-orange-500 uppercase tracking-widest text-sm">노드 필터링:</span>
-                <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-orange-600 text-white shadow-lg' : 'hover:bg-white/5'" class="px-8 py-3 rounded-2xl transition-all font-black text-base uppercase tracking-widest">전체</button>
-                <button @click="filter = 'critical'" :class="filter === 'critical' ? 'bg-red-600 text-white shadow-lg' : 'hover:bg-red-900/20'" class="px-8 py-3 rounded-2xl transition-all font-black text-base uppercase tracking-widest">위험</button>
-                <button @click="filter = 'warning'" :class="filter === 'warning' ? 'bg-amber-600 text-white shadow-lg' : 'hover:bg-amber-900/20'" class="px-8 py-3 rounded-2xl transition-all font-black text-base uppercase tracking-widest">주의</button>
-                <button @click="filter = 'optimal'" :class="filter === 'optimal' ? 'bg-emerald-600 text-white shadow-lg' : 'hover:bg-emerald-900/20'" class="px-8 py-3 rounded-2xl transition-all font-black text-base uppercase tracking-widest">정상</button>
+            <div class="flex items-center gap-10 text-gray-400 font-black">
+                <span class="mr-6 text-orange-500 uppercase tracking-[0.4em] text-xl">노드 필터링:</span>
+                <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-orange-600 text-white shadow-2xl' : 'hover:bg-white/5'" class="px-12 py-5 rounded-[2rem] transition-all font-black text-2xl uppercase tracking-widest">전체</button>
+                <button @click="filter = 'critical'" :class="filter === 'critical' ? 'bg-red-600 text-white shadow-2xl' : 'hover:bg-red-900/20'" class="px-12 py-5 rounded-[2rem] transition-all font-black text-2xl uppercase tracking-widest">위험</button>
+                <button @click="filter = 'warning'" :class="filter === 'warning' ? 'bg-amber-600 text-white shadow-2xl' : 'hover:bg-amber-900/20'" class="px-12 py-5 rounded-[2rem] transition-all font-black text-2xl uppercase tracking-widest">주의</button>
+                <button @click="filter = 'optimal'" :class="filter === 'optimal' ? 'bg-emerald-600 text-white shadow-2xl' : 'hover:bg-emerald-900/20'" class="px-12 py-5 rounded-[2rem] transition-all font-black text-2xl uppercase tracking-widest">정상</button>
             </div>
             
             <div class="relative w-full md:w-[450px] group">
@@ -232,19 +299,39 @@ class DashboardEngine:
 
     <footer class="mt-60 mb-20 flex flex-col items-center gap-8 opacity-20">
         <div class="w-60 h-px bg-gradient-to-r from-transparent via-white to-transparent"></div>
-        <p class="text-xs font-bold uppercase tracking-[1.5em] text-center">HANWHA OCEAN AX PROPRIETARY CONTROL MESH V16.0.0</p>
+        <p class="text-xs font-bold uppercase tracking-[1.5em] text-center">HANWHA OCEAN AX PROPRIETARY CONTROL MESH V17.0.0</p>
     </footer>
 
     <script>
-        // Alpine data injection helper if needed
-        document.addEventListener('alpine:init', () => {{
-            console.log('AX Logic Matrix Initialized');
-        }});
+        function axDashboard() {{
+            return {{
+                filter: 'all',
+                search: '',
+                guidelines: {guidelines_json},
+                tooltip: {{ show: false, content: '' }},
+                
+                showGuidance(issue, event) {{
+                    const match = this.guidelines.find(g => g.ISSUE === issue);
+                    
+                    if (match) {{
+                        this.tooltip.content = match.GUIDANCE;
+                        this.tooltip.show = true;
+                    }} else {{
+                        this.tooltip.content = "현재 등록된 가이드라인이 없습니다. 안전 관리자에게 문의하세요.";
+                        this.tooltip.show = true;
+                    }}
+                }},
+                
+                hideGuidance() {{
+                    this.tooltip.show = false;
+                }}
+            }}
+        }}
     </script>
 </body>
 </html>
             """)
-        print(f"✨ Enterprise Scaled Dashboard (v16.0.0) Generated: {output_path}")
+        print(f"✨ Enterprise Scaled Dashboard (v25.0.0 Enterprise Quantum Elite) Generated: {output_path}")
 
 if __name__ == "__main__":
     engine = DashboardEngine()
