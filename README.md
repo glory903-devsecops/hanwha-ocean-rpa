@@ -5,45 +5,63 @@
 [![Status](https://img.shields.io/badge/Status-Enterprise_Elite-emerald)](https://github.com/glory903-devsecops/hanwha-ocean-rpa)
 
 ## 🏢 Executive Overview
-본 프로젝트는 **한화오션(Hanwha Ocean)**의 'Smart Yard' 비전 실현을 위한 **디지털 트윈 기반 전략 커맨드 센터**입니다. 인공지능(AI)과 디지털 전환(DX)을 결합한 **AX(AI Transformation)** 플랫폼으로, 야드 내 50개 이상의 핵심 노드를 실시간 동기화하고 전략적 리스크 인덱스(QRI)를 통한 전사 거버넌스를 지원합니다.
+본 프로젝트는 **한화오션(Hanwha Ocean)**의 'Smart Yard' 비전 실현을 위한 **디지털 트윈 기반 전략 커맨드 센터**입니다. 인공지능(AI)과 디지털 전환(DX)을 결합한 **AX(AI Transformation)** 플랫폼으로, 50개 이상의 핵심 노드 동기화와 전략 리스크 지표(QRI) 관리를 지원합니다.
 
 ---
 
-## 🌐 Strategic Access Points (4 Core Channels)
-실제 운영 환경과 포트폴리오 검토를 위해 4가지 핵심 접속 경로를 제공합니다.
+## 🚀 Strategic Dashboard Showcase (v25.0.0)
 
-| Channel | Description | Access URL |
+### [Full Asset Grid: High-Density Node Monitoring]
+![Main Dashboard Grid](docs/images/full_asset_grid_v25.png)
+*거제 옥포 야드 내 50개 이상의 작업 노드를 실시간 디지털 공간에 동기화합니다.*
+
+### [Intelligence: AI-Driven Risk Filtering]
+![Risk Filter in Action](docs/images/risk_filter_applied_v25.png)
+*Quantum Risk Index(QRI) 기반 지능형 필터링을 통해 위험 구역을 즉시 식별합니다.*
+
+### [Insight: Strategic Search & SISE Synthesis]
+![Search Interface](docs/images/dock_search_v25.png)
+*특정 호선 및 도크를 즉각 검색하고, 최적의 공정 리밸런싱 방안을 도출합니다.*
+
+---
+
+## 🌐 Enterprise Access Points (4 CORE CHANNELS)
+
+| Channel | Description | Live/Local Access |
 | :--- | :--- | :--- |
-| **🚀 [1] HQ Dashboard** | 전체 야드 현황 및 이슈 필터링 (메인 관제) | [Live Dashboard](https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html) |
-| **💻 [2] ERP Data Center** | 야드 자산 공정률 및 안전 데이터 시뮬레이션 | [Local Only (ERP Input)](http://localhost:8081/src/viz/erp_input.html) |
-| **🛡️ [3] Gov Portal** | 대처 방안 및 RPA 가이드라인 거버넌스 관리 | [Local Only (Governance)](http://localhost:8081/src/viz/admin_guidance.html) |
-| **🎮 [4] AX Launchpad** | 전사 시스템 구성 요소별 통합 진입 게이트웨이 | [Live Launchpad](https://glory903-devsecops.github.io/hanwha-ocean-rpa/launchpad.html) |
-
-> [!IMPORTANT]
-> **실시간 상호작용**: GitHub Pages(Static)는 시각적 결과물을 보여주며, 실제 데이터 저장 및 RPA 연동은 **로컬 서버(run_server.py)** 가동 시에만 가능합니다.
+| **🚀 HQ Dashboard** | 전체 야드 전략 커맨드 센터 (메인) | [Live Link](https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html) / [Local (8081)](http://localhost:8081/index.html) |
+| **🎮 AX Launchpad** | 구성 요소별 통합 진입 게이트웨이 | [Live Link](https://glory903-devsecops.github.io/hanwha-ocean-rpa/launchpad.html) / [Local (8081)](http://localhost:8081/launchpad.html) |
+| **💻 ERP Simulator** | 야드 데이터 실시간 연동/등록 보드 | [Local (8081)](http://localhost:8081/src/viz/erp_input.html) |
+| **🛡️ Gov Portal** | 거버넌스 가이드라인 관리 포털 | [Local (8081)](http://localhost:8081/src/viz/admin_guidance.html) |
 
 ---
 
-## 📺 Operational Demo (v25.0.0 Enterprise)
+## 🏗 Enterprise Quick Start (CEO Guide)
 
-### [Main Command: 고해상도 다국어 지원 UI]
-![Full Asset Grid (50+ Nodes)](docs/images/full_asset_grid_v25.png)
+본 시스템은 정밀한 데이터 연동을 위해 **정적 자산 서버(8081)**와 **데이터 인텔리전스 API(8082)**의 병행 가동이 필요합니다.
 
-### [Intelligence: 실시간 지능형 필터링]
-![Filtering in Action](docs/images/risk_filter_applied_v25.png)
-*상태별 필터(위험/주의/정상) 및 실시간 검색 기능을 통해 필요한 정보만 즉시 노출합니다.*
+### 1단계: 환경 구축 (Windows/macOS)
+```powershell
+python -m venv venv_windows
+.\venv_windows\Scripts\activate
+python -m pip install -r requirements.txt
+```
 
-### [Strategy: 전략적 검색 & SISE Insight]
-![Search in Action](docs/images/dock_search_v25.png)
+### 2단계: 통합 전략 엔진 기동
+```powershell
+# 모든 서버(Dashboard + API)를 원클릭으로 기동합니다.
+python enterprise_ax_start.py
+```
 
-### [Walkthrough: Enterprise Video Demo]
-![Video Walkthrough](docs/images/official_demo_v25.webp)
-*(Note: v25.0.0 Enterprise Quantum Elite 실시간 가동 화면 / 30fps Digital Twin Sync)*
+### 3단계: 시스템 접속
+*   **전략 대시보드**: [http://localhost:8081/index.html](http://localhost:8081/index.html)
+*   **거버넌스 포털**: [http://localhost:8081/src/viz/admin_guidance.html](http://localhost:8081/src/viz/admin_guidance.html)
+*   **인텔리전스 API**: [http://localhost:8082/docs](http://localhost:8082/docs)
 
 ---
 
 ## 🛠 Strategic Architecture
-![Strategic Architecture](docs/images/architecture_v25.png)
+![System Architecture](docs/images/architecture_v25.png)
 
 ```mermaid
 graph TD
@@ -56,29 +74,10 @@ graph TD
 
 ---
 
-## 🏗 Setup & Deployment (CEO Guide)
-
-본 시스템은 엔터프라이즈 환경에서의 빠른 배포와 안정적인 운영을 보장합니다.
-
-```powershell
-# 1. 전략 환경 구축 (Windows 기반)
-python -m venv venv_windows
-.\venv_windows\Scripts\activate
-
-# 2. 인텔리전스 엔진 의존성 설치
-python -m pip install -r requirements.txt
-
-# 3. 전략 커맨드 센터 가동
-python run_server.py
-# 브라우저 전용 URL: http://localhost:8081/index.html (메인 대시보드)
-```
-
----
-
 ## 🔒 Security & Governance
-*   **Data Integrity**: AES-256 기반 데이터 암호화 및 하드웨어 가속 검증.
+*   **Data Integrity**: AES-256 기반 암호화 및 하드웨어 가속 검증.
 *   **Access Control**: 전용 보안 토큰을 통한 관리자 권한 제어.
-*   **Code Quality**: `flake8`, `bandit` 및 `TestSprite`를 통한 상시 품질 보증.
+*   **Code Quality**: `TestSprite`를 통한 상시 QA 보장.
 
 ---
 
