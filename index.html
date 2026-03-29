@@ -1,89 +1,1792 @@
+
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="dark">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한화오션 Smart Yard AX | Launchpad</title>
+    <title>한화오션 AX - 미션 컨트롤 센터</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #FF6A00;
-            --bg: #020617;
+        :root { 
+            --h-primary: #FF6B00;
+        --h-secondary: #00F2FF;
+        --h-bg: #020617;
+        --h-surface: rgba(30, 41, 59, 0.4);
+        --h-border: rgba(255, 255, 255, 0.08);
+        --h-font-main: 'Outfit', 'Inter', 'Noto Sans KR', sans-serif;
+        --h-glass-blur: blur(50px);
+        --h-radius: 40px;
+        --h-size-h3: 1.8rem;
+        --h-size-body: 1.1rem; 
+            --h-gap-main: 30px;
         }
-        body {
-            background-color: var(--bg);
-            color: #fff;
-            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(255, 106, 0, 0.05), transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(0, 242, 255, 0.05), transparent 40%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        body { 
+            background-color: var(--h-bg); 
+            color: #fff; 
+            font-family: 'Noto Sans KR', var(--h-font-main);
+            background-image: radial-gradient(circle at 50% -20%, rgba(249, 115, 22, 0.15), transparent 85%);
+            background-attachment: fixed;
         }
-        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
-        .btn-glow { box-shadow: 0 0 20px rgba(255, 106, 0, 0.4); transition: 0.3s; }
-        .btn-glow:hover { box-shadow: 0 0 40px rgba(255, 106, 0, 0.6); transform: translateY(-2px); }
+        .glass { background: var(--h-surface); backdrop-filter: var(--h-glass-blur); border: 1px solid var(--h-border); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="p-6">
-    <div class="max-w-6xl w-full space-y-20 text-center">
-        <!-- Brand Header -->
-        <div class="flex flex-col items-center space-y-6">
-            <div class="px-6 py-2 rounded-full border border-orange-500/30 bg-orange-500/5 text-orange-500 text-sm font-black tracking-[0.4em] uppercase">
-                AX Enterprise Elite v25.0.0
-            </div>
-            <h1 class="text-7xl md:text-9xl font-black italic tracking-tighter uppercase leading-none">
-                HANWHA <span class="text-orange-500">OCEAN</span>
-            </h1>
-            <p class="text-2xl md:text-3xl font-light text-gray-400 tracking-widest uppercase">
-                Smart Yard Strategic Command Center
-            </p>
-        </div>
+<body class="p-8 lg:p-20" x-data="axDashboard()">
+    
+    <!-- AI INSIGHT NOTICE (CENTERED MODAL) -->
+    <div x-show="tooltip.show" 
+         x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-90"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-90"
+         class="fixed inset-0 z-[200] flex items-center justify-center p-12 bg-black/40 backdrop-blur-sm pointer-events-auto"
+         @click.self="hideGuidance()"
+    >
+        <div class="glass rounded-[4rem] p-24 max-w-5xl shadow-[0_0_150px_rgba(249,115,22,0.4)] border-orange-500/50 relative text-center">
+            <!-- Close Trigger -->
+            <button @click="hideGuidance()" class="absolute top-12 right-16 text-gray-500 hover:text-white transition-all scale-150">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
 
-        <!-- Pillar Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <a href="smart_yard_dashboard.html" class="glass rounded-[3rem] p-12 space-y-8 group hover:border-orange-500/50 transition-all text-left">
-                <div class="w-20 h-20 bg-orange-500/10 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition-transform">📊</div>
-                <div class="space-y-4">
-                    <h3 class="text-3xl font-black italic uppercase tracking-tight">Mission Control</h3>
-                    <p class="text-gray-500 leading-relaxed font-bold">50개 이상의 노드를 실시간 매핑하는 전략적 대시보드에 접속합니다.</p>
+            <div class="flex flex-col items-center space-y-16">
+                <div class="flex items-center gap-6 px-10 py-3 bg-orange-500/10 rounded-full border border-orange-500/20">
+                    <span class="w-3 h-3 bg-orange-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(249,115,22,1)]"></span>
+                    <span class="text-lg font-black uppercase tracking-[0.5em] text-orange-500">대처 방안 (Management Plan)</span>
                 </div>
-            </a>
-
-            <div class="glass rounded-[3rem] p-12 space-y-8 group cursor-not-allowed opacity-50 text-left">
-                <div class="w-20 h-20 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-4xl">🤖</div>
-                <div class="space-y-4">
-                    <h3 class="text-3xl font-black italic uppercase tracking-tight">RPA Fleet</h3>
-                    <p class="text-gray-500 leading-relaxed font-bold">12기의 자율 가동 로봇 상태 및 로그를 중앙에서 관리합니다. (준비 중)</p>
-                </div>
-            </div>
-
-            <div class="glass rounded-[3rem] p-12 space-y-8 group cursor-not-allowed opacity-50 text-left">
-                <div class="w-20 h-20 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-4xl">🛡️</div>
-                <div class="space-y-4">
-                    <h3 class="text-3xl font-black italic uppercase tracking-tight">Gov Center</h3>
-                    <p class="text-gray-500 leading-relaxed font-bold">분석된 리스크 인덱스를 바탕으로 전사 거버넌스를 확립합니다. (준비 중)</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Call to Action -->
-        <div class="flex flex-col items-center space-y-12 pt-10">
-            <a href="smart_yard_dashboard.html" class="bg-orange-500 text-white px-20 py-8 rounded-[3rem] text-3xl font-black italic tracking-tighter uppercase btn-glow">
-                Enter Command Center
-            </a>
-            <div class="flex items-center gap-6 text-xs text-gray-700 font-bold uppercase tracking-[1em]">
-                Secure Connection Verified <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                
+                <p class="text-7xl font-black text-white leading-[1.1] tracking-tighter italic" x-text="tooltip.content"></p>
+                
+                <div class="w-40 h-1.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-40"></div>
             </div>
         </div>
     </div>
 
-    <footer class="mt-40 opacity-20 text-[10px] font-black tracking-[1.5em] uppercase">
-        Proprietary AX Engine | Hanwha Ocean AX Team
+    <!-- COMMAND HEADER (SCALED FOR V16) -->
+    <header class="max-w-[1600px] mx-auto flex flex-col lg:flex-row justify-between items-start lg:items-end gap-16 border-b border-white/10 pb-20 mb-16 animate-fade-in-up">
+        <div class="space-y-10">
+            <div class="flex items-center gap-10">
+                <div class="w-24 h-24 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-[2.5rem] flex items-center justify-center text-5xl font-black italic shadow-[0_0_50px_rgba(249,115,22,0.4)]">H</div>
+                <div>
+                    <h1 class="text-6xl font-black tracking-tighter uppercase italic leading-none">
+                        AX <span class="text-orange-500">전략 커맨드 센터</span>
+                    </h1>
+                    <p class="text-xs text-gray-500 font-bold uppercase tracking-[0.5em] mt-5">v25.0.0 Enterprise Quantum Elite</p>
+                </div>
+            </div>
+            <div class="flex gap-16">
+                <div class="group">
+                    <p class="text-[11px] text-gray-600 font-black uppercase mb-2 tracking-[0.2em] group-hover:text-red-500 transition-colors">현재 위기 노드</p>
+                    <p class="text-4xl font-black text-red-500 leading-none">7 <span class="text-xs text-gray-700 font-bold ml-1 uppercase">Alerts</span></p>
+                </div>
+                <div class="group">
+                    <p class="text-[11px] text-gray-600 font-black uppercase mb-2 tracking-[0.2em] group-hover:text-cyan-400 transition-colors">전략 리스크 지수</p>
+                    <p class="text-4xl font-black text-white leading-none">47.07</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex gap-20">
+            <div class="text-right">
+                <p class="text-2xl text-gray-400 font-bold uppercase mb-4 tracking-widest">전사 공정 도달율</p>
+                <div class="text-7xl font-black text-white font-mono leading-none tracking-tighter">47.6<span class="text-xl ml-2 text-gray-700">%</span></div>
+            </div>
+            <div class="text-right">
+                <p class="text-2xl text-orange-500 font-bold uppercase mb-4 tracking-widest">전략적 완공 예정일</p>
+                <div class="text-7xl font-black text-orange-500 font-mono leading-none tracking-tighter italic">2026-04-27</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ENTERPRISE EXECUTIVE SUMMARY (NEW V25) -->
+    <div class="max-w-[1600px] mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-10 animate-fade-in-up" style="animation-delay: 0.1s">
+        <div class="glass rounded-[2rem] p-10 flex items-center justify-between border-emerald-500/20">
+            <div class="space-y-2">
+                <p class="text-xs text-gray-500 font-black uppercase tracking-[0.2em]">Digital Twin Sync</p>
+                <p class="text-4xl font-black text-emerald-500 italic">99.98% <span class="text-xs opacity-40">ACTIVE</span></p>
+            </div>
+            <div class="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                <div class="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
+            </div>
+        </div>
+        <div class="glass rounded-[2rem] p-10 flex items-center justify-between border-orange-500/20">
+            <div class="space-y-2">
+                <p class="text-xs text-gray-500 font-black uppercase tracking-[0.2em]">RPA BOT Fleet</p>
+                <p class="text-4xl font-black text-orange-500 italic">12/12 <span class="text-xs opacity-40">OPERATIONAL</span></p>
+            </div>
+            <div class="w-16 h-16 rounded-full bg-orange-500/10 flex items-center justify-center">
+                <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            </div>
+        </div>
+        <div class="glass rounded-[2rem] p-10 flex items-center justify-between border-cyan-500/20">
+            <div class="space-y-2">
+                <p class="text-xs text-gray-500 font-black uppercase tracking-[0.2em]">Security Standard</p>
+                <p class="text-4xl font-black text-cyan-400 italic">SECURE <span class="text-xs opacity-40">ENCRYPTED</span></p>
+            </div>
+            <div class="w-16 h-16 rounded-full bg-cyan-500/10 flex items-center justify-center">
+                <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- STICKY FILTER BAR (NEW V25 UX) -->
+    <nav class="sticky top-10 z-50 max-w-[1600px] mx-auto mb-16 animate-fade-in-up" style="animation-delay: 0.3s">
+        <div class="glass rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between gap-6 px-12 border-white/10 shadow-2xl">
+            <div class="flex items-center gap-10 text-gray-400 font-black">
+                <span class="mr-6 text-orange-500 uppercase tracking-[0.4em] text-xl">노드 필터링:</span>
+                <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-orange-600 text-white shadow-2xl' : 'hover:bg-white/5'" class="px-12 py-5 rounded-[2rem] transition-all font-black text-2xl uppercase tracking-widest">전체</button>
+                <button @click="filter = 'critical'" :class="filter === 'critical' ? 'bg-red-600 text-white shadow-2xl' : 'hover:bg-red-900/20'" class="px-12 py-5 rounded-[2rem] transition-all font-black text-2xl uppercase tracking-widest">위험</button>
+                <button @click="filter = 'warning'" :class="filter === 'warning' ? 'bg-amber-600 text-white shadow-2xl' : 'hover:bg-amber-900/20'" class="px-12 py-5 rounded-[2rem] transition-all font-black text-2xl uppercase tracking-widest">주의</button>
+                <button @click="filter = 'optimal'" :class="filter === 'optimal' ? 'bg-emerald-600 text-white shadow-2xl' : 'hover:bg-emerald-900/20'" class="px-12 py-5 rounded-[2rem] transition-all font-black text-2xl uppercase tracking-widest">정상</button>
+            </div>
+            
+            <div class="relative w-full md:w-[450px] group">
+                <input type="text" x-model="search" placeholder="작업 내용 또는 구역명 검색..." 
+                       class="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 text-lg font-bold focus:outline-none focus:border-orange-500 focus:bg-white/10 transition-all placeholder:text-gray-600">
+                <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- OPERATIONAL NODES (20+ ASSETS) -->
+    <main class="max-w-[1600px] mx-auto space-y-12">
+        <div class="flex items-center justify-between px-6 pb-4">
+            <div class="flex items-center gap-6">
+                <div class="w-2 h-8 bg-orange-500 rounded-full"></div>
+                <h2 class="text-3xl font-black italic uppercase tracking-tight">전사 야드 자산 가동 현황</h2>
+            </div>
+            <div class="text-sm font-black uppercase tracking-[0.3em] text-gray-500">
+                실시간 야드 자산 모니터링 모드 활성화됨
+            </div>
+        </div>
+
+        <div class="space-y-10">
+            <!-- CARDS CONTENT -->
+            <template x-for="card in Array.from(document.querySelectorAll('.card-node'))">
+                <div x-show="(filter === 'all' || card.dataset.severity === filter) && (search === '' || card.dataset.name.includes(search.toLowerCase()) || card.dataset.task.includes(search.toLowerCase()))"
+                     x-transition:enter="transition ease-out duration-300 transform"
+                     x-transition:enter-start="opacity-0 translate-y-4"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     class="contents">
+                    <div x-html="card.outerHTML"></div>
+                </div>
+            </template>
+            
+            <!-- RAW CARDS DATA (HIDDEN FOR ALPINE CONSUMPTION) -->
+            <div class="hidden">
+                
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-red-500/20 animate-fade-in-up card-node" 
+                 data-severity="critical" data-task="함정 외판 조립" data-name="특수선 도크 1"
+                 style="border-left-color: #EF4444; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">특수선 도크 1</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-red-500/10" style="color: #EF4444">위험</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            함정 외판 조립 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 14:30:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 33.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">33.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('위험 항목 확인 필요', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #EF4444">위험 항목 확인 필요</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-red-500/20 animate-fade-in-up card-node" 
+                 data-severity="critical" data-task="그릿 샌딩" data-name="선행 도장장"
+                 style="border-left-color: #EF4444; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">선행 도장장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-red-500/10" style="color: #EF4444">위험</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            그릿 샌딩 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:25:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 40.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">40.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('분진위험', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #EF4444">분진위험</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-red-500/20 animate-fade-in-up card-node" 
+                 data-severity="critical" data-task="샌딩 작업" data-name="도장공장 1"
+                 style="border-left-color: #EF4444; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">도장공장 1</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-red-500/10" style="color: #EF4444">위험</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            샌딩 작업 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 10:30:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 45.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">45.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('분진위험', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #EF4444">분진위험</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-red-500/20 animate-fade-in-up card-node" 
+                 data-severity="critical" data-task="단열재 설치" data-name="lng 화물창 공장"
+                 style="border-left-color: #EF4444; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">LNG 화물창 공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-red-500/10" style="color: #EF4444">위험</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            단열재 설치 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:00:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 78.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">78.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('질식위험', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #EF4444">질식위험</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-red-500/20 animate-fade-in-up card-node" 
+                 data-severity="critical" data-task="내압 테스트" data-name="연료 탱크 공장"
+                 style="border-left-color: #EF4444; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">연료 탱크 공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-red-500/10" style="color: #EF4444">위험</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            내압 테스트 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:00:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 82.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">82.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('폭발위험 주의', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #EF4444">폭발위험 주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="블록 탑재" data-name="제3도크"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">제3도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            블록 탑재 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 09:30:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 12.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">12.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('크레인 점검', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">크레인 점검</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="방오 도료 코팅" data-name="특수 도장 공장"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">특수 도장 공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            방오 도료 코팅 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:45:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 12.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">12.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('화학 연기 주의', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">화학 연기 주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="엔진 구동 테스트" data-name="의장안벽 d"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">의장안벽 D</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            엔진 구동 테스트 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:11:34</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 15.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">15.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('장비 점검', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">장비 점검</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="블록 분할 배치" data-name="야드 남단 자재장"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">야드 남단 자재장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            블록 분할 배치 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:20:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 15.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">15.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('중량물 주의', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">중량물 주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="선체 인양 테스트" data-name="부유식 도크"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">부유식 도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            선체 인양 테스트 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:45:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 22.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">22.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('균형 주의', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">균형 주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="크레인 와이어 교체" data-name="정비 공장 2호"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">정비 공장 2호</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            크레인 와이어 교체 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:55:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 22.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">22.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('크레인 점검', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">크레인 점검</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="피스톤 조립" data-name="엔진 공장 2호기"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">엔진 공장 2호기</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            피스톤 조립 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:50:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 30.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">30.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('고소 작업 주의', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">고소 작업 주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="블록 대조립" data-name="대조립공장"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">대조립공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            블록 대조립 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 09:55:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 35.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">35.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('중량물 주의', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">중량물 주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="초저온 테스트" data-name="고압 탱크 시험실"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">고압 탱크 시험실</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            초저온 테스트 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:40:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 35.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">35.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('냉각 사고 주의', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">냉각 사고 주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="블레이드 검수" data-name="해상풍력 구역 b"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">해상풍력 구역 B</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            블레이드 검수 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 14:45:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 45.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">45.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('강풍주의', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">강풍주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="모듈 연동 용접" data-name="플랜트 조립장"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">플랜트 조립장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            모듈 연동 용접 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:15:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 45.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">45.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('스패터 주의', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">스패터 주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="다관절 로봇 세팅" data-name="로봇 용접 센터"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">로봇 용접 센터</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            다관절 로봇 세팅 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:15:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 50.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">50.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('자체 점검', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">자체 점검</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="지게차 엔진 수리" data-name="정비 공장 1호"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">정비 공장 1호</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            지게차 엔진 수리 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:50:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 55.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">55.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('장비 점검', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">장비 점검</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="상부 구조물 탑재" data-name="g안벽"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">G안벽</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            상부 구조물 탑재 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:35:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 65.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">65.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('크레인 점검', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">크레인 점검</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-amber-500/20 animate-fade-in-up card-node" 
+                 data-severity="warning" data-task="엔진 설치" data-name="제1도크"
+                 style="border-left-color: #F59E0B; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">제1도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-amber-500/10" style="color: #F59E0B">주의</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            엔진 설치 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 10:00:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 85.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">85.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('강풍주의', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #F59E0B">강풍주의</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="초도 안벽 접안" data-name="의장안벽 e"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">의장안벽 E</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            초도 안벽 접안 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 13:50:55</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 5.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">5.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="원자재 입고" data-name="야드 북단 하역장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">야드 북단 하역장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            원자재 입고 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:55:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 5.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">5.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="선박 계류" data-name="서안벽"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">서안벽</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            선박 계류 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 14:10:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 10.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">10.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="배관 선행 탑재" data-name="암모니아 운반선 도크"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">암모니아 운반선 도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            배관 선행 탑재 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:05:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 10.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">10.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="안전 등기구 교체" data-name="헬기장 구역"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">헬기장 구역</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            안전 등기구 교체 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:30:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 10.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">10.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="시운전 원격 모니터링" data-name="h안벽"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">H안벽</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            시운전 원격 모니터링 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:40:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 12.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">12.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="레이더 장착" data-name="특수선 도크 2"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">특수선 도크 2</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            레이더 장착 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 14:35:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 15.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">15.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="표면 세척" data-name="도장공장 2"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">도장공장 2</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            표면 세척 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 10:45:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 20.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">20.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="녹 방지 작업" data-name="블록 보관소 7구역"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">블록 보관소 7구역</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            녹 방지 작업 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:10:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 20.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">20.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="기술 검토" data-name="중앙공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">중앙공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            기술 검토 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 14:20:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 25.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">25.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="기초 도장" data-name="제5도크"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">제5도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            기초 도장 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:15:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 28.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">28.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="배관 포설" data-name="의장안벽 c"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">의장안벽 C</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            배관 포설 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:11:16</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 30.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">30.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="선체 용접" data-name="제2도크"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">제2도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            선체 용접 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 10:05:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 42.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">42.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="하역 작업" data-name="동안벽"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">동안벽</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            하역 작업 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 14:15:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 50.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">50.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="케이블 제작" data-name="전장공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">전장공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            케이블 제작 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 10:10:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 55.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">55.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="부재 용접" data-name="소조립공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">소조립공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            부재 용접 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 08:20:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 60.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">60.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="하부구조물 조립" data-name="해상풍력 구역 a"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">해상풍력 구역 A</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            하부구조물 조립 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 14:40:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 60.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">60.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="수밀 테스트" data-name="제4도크"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">제4도크</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            수밀 테스트 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 08:45:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 65.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">65.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="파이프 벤딩" data-name="배관공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">배관공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            파이프 벤딩 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:05:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 70.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">70.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="인테리어 마감" data-name="의장안벽 b"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">의장안벽 B</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            인테리어 마감 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 12:00:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 75.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">75.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('자재 대기', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">자재 대기</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="철장재 제작" data-name="사재공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">사재공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            철장재 제작 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:50:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 82.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">82.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="철판 절단" data-name="가공공장"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">가공공장</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            철판 절단 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 09:15:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 88.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">88.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="네트워크 인프라 구축" data-name="시스템 통합 센터"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">시스템 통합 센터</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            네트워크 인프라 구축 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:05:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 90.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">90.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="시운전 준비" data-name="의장안벽 a"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">의장안벽 A</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            시운전 준비 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 11:20:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 92.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">92.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="자동화 셔틀 테스트" data-name="스마트 물류 센터"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">스마트 물류 센터</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            자동화 셔틀 테스트 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:10:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 95.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">95.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="운영 매뉴얼 배포" data-name="종합 지원 센터"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">종합 지원 센터</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            운영 매뉴얼 배포 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:25:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 99.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">99.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('안전', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">안전</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="디지털 트윈 매핑" data-name="기술 연구소 테스트룸"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">기술 연구소 테스트룸</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            디지털 트윈 매핑 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 15:30:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 100.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">100.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('최적 상태', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">최적 상태</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="폐수 정화 가동" data-name="환경 처리 시설"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">환경 처리 시설</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            폐수 정화 가동 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:20:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 100.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">100.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('정상 가동 중', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">정상 가동 중</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] p-12 border-l-[18px] group transition-all hover:translate-x-3 border-emerald-500/10 animate-fade-in-up card-node" 
+                 data-severity="optimal" data-task="보안 검색 강화" data-name="야드 주출입구"
+                 style="border-left-color: #10B981; margin-bottom: var(--h-gap-main);">
+                <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <div class="flex items-center gap-6">
+                            <h4 class="text-5xl font-black uppercase italic tracking-tighter text-white group-hover:text-orange-500 transition-colors leading-tight">야드 주출입구</h4>
+                            <span class="px-6 py-2 rounded-full text-xl font-black border border-current/20 bg-emerald-500/5" style="color: #10B981">정상</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-400 uppercase tracking-widest leading-none">
+                            보안 검색 강화 <span class="mx-4 opacity-20">|</span> <span class="font-mono text-xl opacity-60">업데이트: 2026-03-28 16:35:00</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-[1.5] flex items-center gap-12">
+                        <div class="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(249,115,22,0.6)]" 
+                                 style="width: 100.0%"></div>
+                        </div>
+                        <div class="text-7xl font-black font-mono text-white min-w-[8rem] text-right">100.0%</div>
+                    </div>
+
+                    <div class="xl:min-w-[320px] text-right relative">
+                        <div class="text-base font-black text-gray-600 uppercase mb-4 tracking-[0.3em]">실시간 보안/안전 상태</div>
+                        <div class="text-5xl font-black uppercase italic tracking-widest cursor-help hover:text-white transition-colors" 
+                             @mouseenter="showGuidance('정상', $event)" 
+                             @mouseleave="hideGuidance()"
+                             style="color: #10B981">정상</div>
+                    </div>
+                </div>
+            </div>
+            
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-60 mb-20 flex flex-col items-center gap-8 opacity-20">
+        <div class="w-60 h-px bg-gradient-to-r from-transparent via-white to-transparent"></div>
+        <p class="text-xs font-bold uppercase tracking-[1.5em] text-center">HANWHA OCEAN AX PROPRIETARY CONTROL MESH V17.0.0</p>
     </footer>
+
+    <script>
+        function axDashboard() {
+            return {
+                filter: 'all',
+                search: '',
+                guidelines: [{"ISSUE":"\ubd84\uc9c4\uc704\ud5d8","GUIDANCE":"\uc791\uc5c5\uc790 \ubc29\uc9c4 \ub9c8\uc2a4\ud06c \ucc29\uc6a9 \ud544\uc218 \ubc0f \uc9d1\uc9c4\uae30 \uac00\ub3d9\ub960 100% \uc0c1\ud5a5 \uac80\ud1a0 \ud544\uc694","SEVERITY":"CRITICAL","RPA_TRIGGER":"DUST_LEVEL > 50","BOT_ID":"BOT_VENT_01"},{"ISSUE":"\uac15\ud48d\uc8fc\uc758","GUIDANCE":"\ud06c\ub808\uc778 \uc791\uc5c5 \uc989\uc2dc \uc911\ub2e8 \ubc0f \uace0\uc18c \uc791\uc5c5\uc790 \ud558\ud5a5 \uc870\uce58 \uad8c\uace0 (\ud48d\uc18d 15m\/s \ucd08\uacfc \uc2dc)","SEVERITY":"CRITICAL","RPA_TRIGGER":"WIND_SPEED > 15","BOT_ID":"BOT_CRANE_MGMT"},{"ISSUE":"\ud06c\ub808\uc778 \uc810\uac80","GUIDANCE":"\uc778\uadfc \uc791\uc5c5\uc790 \ub300\ud53c \ubc0f \uc810\uac80 \uc644\ub8cc \uc2dc\uae4c\uc9c0 \ubc18\uacbd 20m \uc811\uadfc \ucc28\ub2e8 \ud544\uc694","SEVERITY":"WARNING","RPA_TRIGGER":"MAINT_SIGNAL == 1","BOT_ID":"BOT_SAFETY_PATH"},{"ISSUE":"\uc911\ub7c9\ubb3c \uc8fc\uc758","GUIDANCE":"\uc9c0\uac8c\ucc28 \ubc0f \ud06c\ub808\uc778 \uc2e0\ud638\uc218 \ubc30\uce58 \ud655\uc778 \ud6c4 \ud6c4\uc18d \uacf5\uc815 \uc7ac\uac1c \uad8c\uace0","SEVERITY":"WARNING","RPA_TRIGGER":"WEIGHT > 10T","BOT_ID":"BOT_LOGIC_09"},{"ISSUE":"\uc790\uc7ac \ub300\uae30","GUIDANCE":"\ud6c4\uc18d \uc120\ub2e8 \uacf5\uc815 \uc778\ub825 \uc784\uc2dc \uc7ac\ubc30\uce58 \ubc0f \ubb3c\ub958 \uc13c\ud130 \uc785\uace0 \ud604\ud669 \uc7ac\ud655\uc778 \ud544\uc694","SEVERITY":"CAUTION","RPA_TRIGGER":"SUPPLY_DELAY > 4H","BOT_ID":"BOT_ERP_SYNC"},{"ISSUE":"\uc7a5\ube44 \uc810\uac80","GUIDANCE":"\ud574\ub2f9 \uc139\uc158 \uc804\uc6d0 \ucc28\ub2e8 \ud6c4 LOTO(Lock-Out Tag-Out) \uc808\ucc28 \uc774\ud589 \uc5ec\ubd80 \ud655\uc778","SEVERITY":"WARNING","RPA_TRIGGER":"POWER_ANOMALY","BOT_ID":"BOT_POWER_CTRL"},{"ISSUE":"\uc218\ubc00 \ud14c\uc2a4\ud2b8","GUIDANCE":"\ud0f1\ud06c \ub0b4\ubd80 \ubc00\ud3d0 \uacf5\uac04 \uc791\uc5c5 \ud5c8\uac00\uc11c \uc7ac\ud655\uc778 \ubc0f \uc0b0\uc18c \ub18d\ub3c4 \uce21\uc815\uae30 \uc0c1\uc2dc \uac00\ub3d9","SEVERITY":"WARNING","RPA_TRIGGER":"TEST_START","BOT_ID":"BOT_O2_MONITOR"},{"ISSUE":"\uc548\uc804","GUIDANCE":"\ud604\uc7ac \uc774\uc0c1 \uc9d5\ud6c4 \uc5c6\uc74c. \uac1c\uc778 \ubcf4\ud638\uad6c \ucc29\uc6a9 \ubc0f \uae30\ubcf8 \uc548\uc804 \uc218\uce59 \uc900\uc218 \uc720\uc9c0","SEVERITY":"OPTIMAL","RPA_TRIGGER":"NONE","BOT_ID":"DISPATCH_ALL"},{"ISSUE":"\uae30\ucd08 \ub3c4\uc7a5","GUIDANCE":"\ud654\uae30 \uc791\uc5c5 \uc5c4\uaca9 \uae08\uc9c0 \ubc0f \ud718\ubc1c\uc131 \uc720\uae30\ud654\ud569\ubb3c \uce21\uc815 \uc8fc\uae30 \ub2e8\ucd95 \uad8c\uace0","SEVERITY":"WARNING","RPA_TRIGGER":"PAINT_START","BOT_ID":"BOT_VOC_SENSE"},{"ISSUE":"\uc785\uace0 \uc9c0\uc5f0","GUIDANCE":"\uc120\ub2e8 \uc870\ub9bd \uacf5\uc815 \uc2a4\ucf00\uc904 12\uc2dc\uac04 \uc870\uc815 \ubc0f \ub300\uccb4 \uc790\uc7ac \uc218\uae09 \uacbd\ub85c \ud0d0\uc0c9(A\uc548\/B\uc548)","SEVERITY":"CAUTION","RPA_TRIGGER":"LOGISTICS_HALT","BOT_ID":"BOT_SUPPLY_CHAIN"},{"ISSUE":"\uc704\ud5d8","GUIDANCE":"\uc791\uc5c5 \uc911\ub2e8 \ubc0f \ub300\ud53c \ud6c4 \uc548\uc804 \uad00\ub9ac\uc790 \uc2b9\uc778 \ud558\uc5d0 \uc7ac\uac1c","SEVERITY":"CRITICAL","RPA_TRIGGER":"EMERGENCY_ESTOP","BOT_ID":"BOT_SHIELD_01"},{"ISSUE":"\uc8fc\uc758","GUIDANCE":"\uc791\uc5c5 \uc18d\ub3c4 \uc870\uc808 \ubc0f \uc2e0\ud638\uc218 \ucd94\uac00 \ubc30\uce58","SEVERITY":"WARNING","RPA_TRIGGER":"CAUTION_SIGNAL","BOT_ID":"BOT_ADVISOR"},{"ISSUE":"Dust_Danger_Test","GUIDANCE":"Use Mask v18.0.0","SEVERITY":"WARNING","RPA_TRIGGER":"NONELEVEL > 100","BOT_ID":"DISPATCHROBOT_X_01_ALL"},{"ISSUE":"\ud654\uc7ac\uc704\ud5d8","GUIDANCE":"\uc989\uc2dc \uc18c\ud654\uc804 \uac00\ub3d9 \ubc0f \uc778\uadfc \uc778\uc6d0 \ube44\uc0c1 \ub300\ud53c\uc18c \uc774\ub3d9 \ud544\uc694","SEVERITY":"CRITICAL","RPA_TRIGGER":"TEMP > 100","BOT_ID":"BOT_FIRE_EXT"}],
+                tooltip: { show: false, content: '' },
+                
+                showGuidance(issue, event) {
+                    const match = this.guidelines.find(g => g.ISSUE === issue);
+                    
+                    if (match) {
+                        this.tooltip.content = match.GUIDANCE;
+                        this.tooltip.show = true;
+                    } else {
+                        this.tooltip.content = "현재 등록된 가이드라인이 없습니다. 안전 관리자에게 문의하세요.";
+                        this.tooltip.show = true;
+                    }
+                },
+                
+                hideGuidance() {
+                    this.tooltip.show = false;
+                }
+            }
+        }
+    </script>
 </body>
 </html>
+            
