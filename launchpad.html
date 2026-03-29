@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한화오션 Smart Yard AX | Launchpad</title>
+    <title>한화오션 Smart Yard AX | Launchpad (v25.0.0)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -30,7 +30,7 @@
     </style>
 </head>
 <body class="p-6">
-    <div class="max-w-6xl w-full space-y-20 text-center">
+    <div class="max-w-7xl w-full space-y-20 text-center">
         <!-- Brand Header -->
         <div class="flex flex-col items-center space-y-6">
             <div class="px-6 py-2 rounded-full border border-orange-500/30 bg-orange-500/5 text-orange-500 text-sm font-black tracking-[0.4em] uppercase">
@@ -44,46 +44,49 @@
             </p>
         </div>
 
-        <!-- Pillar Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <a href="smart_yard_dashboard.html" class="glass rounded-[3rem] p-12 space-y-8 group hover:border-orange-500/50 transition-all text-left">
-                <div class="w-20 h-20 bg-orange-500/10 rounded-2xl flex items-center justify-center text-4xl group-hover:scale-110 transition-transform">📊</div>
-                <div class="space-y-4">
-                    <h3 class="text-3xl font-black italic uppercase tracking-tight">Mission Control</h3>
-                    <p class="text-gray-500 leading-relaxed font-bold">50개 이상의 노드를 실시간 매핑하는 전략적 대시보드에 접속합니다.</p>
+        <!-- Pillar Cards (4 Strategic Channels) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 px-4">
+            <!-- 1. Mission Control (Main Dashboard) -->
+            <a href="index.html" class="glass rounded-[3rem] p-10 space-y-6 group hover:border-orange-500/50 transition-all text-left">
+                <div class="w-16 h-16 bg-orange-500/10 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">📊</div>
+                <div class="space-y-3">
+                    <h3 class="text-2xl font-black italic uppercase tracking-tight">Mission Control</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-bold">실시간 야드 현황 및 지능형 리스크 지표를 모니터링합니다.</p>
                 </div>
             </a>
 
-            <div class="glass rounded-[3rem] p-12 space-y-8 group cursor-not-allowed opacity-50 text-left">
-                <div class="w-20 h-20 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-4xl">🤖</div>
-                <div class="space-y-4">
-                    <h3 class="text-3xl font-black italic uppercase tracking-tight">RPA Fleet</h3>
-                    <p class="text-gray-500 leading-relaxed font-bold">12기의 자율 가동 로봇 상태 및 로그를 중앙에서 관리합니다. (준비 중)</p>
+            <!-- 2. ERP Data Center (Input Simulation) -->
+            <a href="src/viz/erp_input.html" class="glass rounded-[3rem] p-10 space-y-6 group hover:border-emerald-500/50 transition-all text-left">
+                <div class="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">💻</div>
+                <div class="space-y-3">
+                    <h3 class="text-2xl font-black italic uppercase tracking-tight text-emerald-500">ERP Data Center</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-bold">야드 자산의 공정률 및 안전 데이터를 실시간으로 시물레이션 업데이트합니다.</p>
                 </div>
-            </div>
+            </a>
 
-            <div class="glass rounded-[3rem] p-12 space-y-8 group cursor-not-allowed opacity-50 text-left">
-                <div class="w-20 h-20 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-4xl">🛡️</div>
-                <div class="space-y-4">
-                    <h3 class="text-3xl font-black italic uppercase tracking-tight">Gov Center</h3>
-                    <p class="text-gray-500 leading-relaxed font-bold">분석된 리스크 인덱스를 바탕으로 전사 거버넌스를 확립합니다. (준비 중)</p>
+            <!-- 3. Governance Portal (Guideline Management) -->
+            <a href="src/viz/admin_guidance.html" class="glass rounded-[3rem] p-10 space-y-6 group hover:border-cyan-500/50 transition-all text-left">
+                <div class="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🛡️</div>
+                <div class="space-y-3">
+                    <h3 class="text-2xl font-black italic uppercase tracking-tight text-cyan-500">Gov Portal</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-bold">RPA 봇이 참조할 지능형 대응 가이드라인 및 거버넌스를 관리합니다.</p>
                 </div>
-            </div>
+            </a>
+
+            <!-- 4. Strategic API Docs (FastAPI) -->
+            <a href="http://localhost:8082/docs" target="_blank" class="glass rounded-[3rem] p-10 space-y-6 group hover:border-blue-500/50 transition-all text-left">
+                <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">⚙️</div>
+                <div class="space-y-3">
+                    <h3 class="text-2xl font-black italic uppercase tracking-tight text-blue-500">Technical API</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-bold">AX 시스템의 핵심 연동 API 및 기술 스펙 문서를 확인합니다. (로컬 서버 가동 필요)</p>
+                </div>
+            </a>
         </div>
 
-        <!-- Call to Action -->
-        <div class="flex flex-col items-center space-y-12 pt-10">
-            <a href="smart_yard_dashboard.html" class="bg-orange-500 text-white px-20 py-8 rounded-[3rem] text-3xl font-black italic tracking-tighter uppercase btn-glow">
-                Enter Command Center
-            </a>
-            <div class="flex items-center gap-6 text-xs text-gray-700 font-bold uppercase tracking-[1em]">
-                Secure Connection Verified <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-            </div>
+        <!-- Footer Logo -->
+        <div class="pt-20 opacity-20 text-[10px] font-black tracking-[1.5em] uppercase">
+            Proprietary AX Engine | Hanwha Ocean AX Team
         </div>
     </div>
-
-    <footer class="mt-40 opacity-20 text-[10px] font-black tracking-[1.5em] uppercase">
-        Proprietary AX Engine | Hanwha Ocean AX Team
-    </footer>
 </body>
 </html>
