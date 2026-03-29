@@ -1,13 +1,25 @@
 # ⚓ Hanwha Ocean Smart Yard AX: Digital Strategy & Strategic Command Center (v25.0.0)
 
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-FF6A00?logo=python&logoColor=white)](https://www.python.org/)
+[![Live Dashboard](https://img.shields.io/badge/Live-Strategic_Command-00F2FF?logo=target&logoColor=white)](https://glory903-devsecops.github.io/hanwha-ocean-rpa/)
 [![Status](https://img.shields.io/badge/Status-Enterprise_Elite-emerald)](https://github.com/glory903-devsecops/hanwha-ocean-rpa)
-[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 
 ## 🏢 Executive Overview
-본 프로젝트는 **한화오션(Hanwha Ocean)**의 'Smart Yard' 비전을 실현하기 위한 **디지털 트윈 기반 전략 커맨드 센터**입니다. 단순한 데이터 시각화를 넘어, 인공지능(AI)과 디지털 전환(DX)을 결합한 **AX(AI Transformation)** 기술을 통해 야드 내 50개 이상의 핵심 노드를 실시간으로 관리하고 전략적 의사결정을 지원합니다.
+본 프로젝트는 **한화오션(Hanwha Ocean)**의 'Smart Yard' 비전 실현을 위한 **디지털 트윈 기반 전략 커맨드 센터**입니다. 인공지능(AI)과 디지털 전환(DX)을 결합한 **AX(AI Transformation)** 플랫폼으로, 50개 이상의 핵심 노드 동기화와 전략 리스크 지표 관리를 지원합니다.
 
-> "디지털 기술을 넘어, 한화오션의 초격차 기술력을 완성하는 미래 야드 거버넌스의 핵심입니다."
+---
+
+## 🌐 Strategic Access Points (3 Core Channels)
+실제 운영 환경과 포트폴리오 검토를 위해 3가지 핵심 접속 경로를 제공합니다.
+
+| Channel | Description | Live/Local URL |
+| :--- | :--- | :--- |
+| **🚀 HQ Dashboard** | 전체 야드 현황 및 이슈 필터링 (메인) | [Live Dashboard 바로가기](https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html) |
+| **🎮 AX Launchpad** | 시스템 구성 요소별 진입 관문 (게이트웨이) | [Live Launchpad 바로가기](https://glory903-devsecops.github.io/hanwha-ocean-rpa/launchpad.html) |
+| **🛡️ Gov Portal** | 대처 방안 및 RPA 가이드라인 관리 (어드민) | [Admin Portal (Local Server Only)](http://localhost:8081/src/viz/admin_guidance.html) |
+
+> [!NOTE]
+> **GitHub Pages(Static)** 환경에서도 대시보드의 필터링 및 시각화 기능은 완벽히 작동합니다. 단, 실시간 데이터 동기화 및 어드민 포털의 데이터 저장은 **로컬 서버(run_server.py)** 가동 환경에서만 활성화됩니다.
 
 ---
 
@@ -18,12 +30,8 @@
 *   **Quantum Risk Index (QRI)**: 공정 지연과 안전 이슈를 복합적으로 연산하여 야드의 위기 수준을 계량화합니다.
 
 ### 2. **Digital Twin Synchronization**
-*   **Real-time Node Monitoring**: 50개 이상의 도크 및 안벽 자산을 디지털 공간에 실시간 동기화(99.98% 연동률)하여 현장 가시성을 극대화합니다.
+*   **Real-time Node Monitoring**: 50개 이상의 도크 및 안벽 자산을 디지털 공간에 실시간 동기화하여 현장 가시성을 극대화합니다.
 *   **High-Visibility UX**: 조선소 현장의 높은 조도와 복잡한 환경에서도 최상의 가독성을 보장하는 **Quantum Dark Mode**와 **Glassmorphism UI**를 적용하였습니다.
-
-### 3. **AI-Driven Strategic Levers**
-*   **SISE (Strategic Insight Synthesis Engine)**: 병목 현상이 발생하는 노드를 즉각 식별하고, 자원 재배치를 통한 공기 단축 방안을 능동적으로 제시합니다.
-*   **Dynamic Response Protocol**: 안전 이슈 발생 시 AI가 즉각적으로 대처 방안(Management Plan)을 도출하여 현장 대응력을 강화합니다.
 
 ---
 
@@ -34,10 +42,7 @@
 
 ### [실시간 지능형 필터링]
 ![Filtering in Action](docs/images/risk_filter_applied_v25.png)
-*상태별 필터(ALL/위험/주의/정상) 및 실시간 검색을 통해 수십 개의 작업 노드 중 필요한 정보만 즉시 노출합니다.*
-
-### [전략적 검색 & SISE Insight]
-![Search in Action](docs/images/dock_search_v25.png)
+*상태별 필터(ALL/위험/주의/정상) 및 실시간 검색 기능을 통해 필요한 정보만 즉시 노출합니다.*
 
 ### [Enterprise Video Walkthrough]
 ![Video Walkthrough](docs/images/official_demo_v25.webp)
@@ -57,13 +62,6 @@ graph TD
     D --> F[Real-time Alerting]
 ```
 
-### Tech Stack (Enterprise Standard)
-*   **Core Logic**: Python 3.14 (Secure Coding Standards)
-*   **Analytics**: Strategic Insight Synthesis Engine (SISE)
-*   **Frontend**: Alpine.js, TailwindCSS (Quantum Layout Engine)
-*   **Automation**: RPA Bot Fleet (12 Active Bots)
-*   **QA/CI**: TestSprite Automated Testing, PEP8 Compliance
-
 ---
 
 ## 🏗 Setup & Deployment (CEO Guide)
@@ -80,7 +78,7 @@ python -m pip install -r requirements.txt
 
 # 3. 전략 커맨드 센터 가동
 python run_server.py
-# 브라우저에서 http://localhost:8081/smart_yard_dashboard.html 접속
+# 전용 URL: http://localhost:8081/index.html (메인 대시보드)
 ```
 
 ---
