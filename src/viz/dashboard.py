@@ -3,8 +3,6 @@ import os
 import sys
 import html
 import datetime
-import plotly.graph_objects as go
-import plotly.io as pio
 
 # 프로젝트 루트를 path에 추가하여 src 모듈을 불러올 수 있게 함
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -18,7 +16,7 @@ class DashboardEngine:
     - Real-time Digital Twin Synchronization Monitoring.
     - Large-scale high-visibility asset hierarchy (60+ nodes).
     - AI-Driven Strategic Action Planning.
-    - High-Visibility Plotly Executive Charts.
+    - [REMOVED PLOTLY] As per user request for a cleaner strategic grid.
     """
     
     def __init__(self):
@@ -34,47 +32,8 @@ class DashboardEngine:
         for prefix in ["[주의]", "[기상]", "[위험]", "[경고]", "[장비]"]:
             self.df_dock["안전이슈"] = self.df_dock["안전이슈"].str.replace(prefix + " ", "", regex=False)
 
-    def generate_plotly_chart(self, df):
-        """Generates a high-visibility horizontal progress chart for the executive view."""
-        # Sorting for chart: Severity first, then Progress ascending (to show low progress at top)
-        df_chart = df.copy()
-        def get_color(row):
-            val = str(row["안전이슈"])
-            if "위험" in val or "경고" in val: return "#EF4444"
-            if "주의" in val or "점검" in val: return "#F59E0B"
-            return "#10B981"
-            
-        df_chart["color"] = df_chart.apply(get_color, axis=1)
-        df_chart = df_chart.sort_values(["sev_score", "공정률"], ascending=[True, True]).tail(25) # Top 25 priority
-        
-        fig = go.Figure()
-        fig.add_trace(go.Bar(
-            y=df_chart["구역/도크"],
-            x=df_chart["공정률"],
-            orientation='h',
-            marker=dict(color=df_chart["color"], line=dict(width=0)),
-            text=df_chart["공정률"].apply(lambda x: f" {x}%"),
-            textposition='outside',
-            textfont=dict(size=14, color='white', family='Outfit'),
-            hovertemplate="<b>%{y}</b><br>공정률: %{x}%<br>상태: %{customdata}<extra></extra>",
-            customdata=df_chart["안전이슈"]
-        ))
-        
-        fig.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            margin=dict(l=20, r=20, t=20, b=20),
-            height=800,
-            xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.05)', range=[0, 110], tickfont=dict(color='#64748b')),
-            yaxis=dict(showgrid=False, tickfont=dict(color='white', size=14, family='Outfit')),
-            showlegend=False,
-            font=dict(family="Outfit, sans-serif")
-        )
-        
-        return pio.to_html(fig, full_html=False, include_plotlyjs='cdn', config={'displayModeBar': False})
-
     def render(self):
-        print(f"📡 [Enterprise-AX] Rendering Scale-UP Flagship Dashboard (v25.0.0 Global Edition)...")
+        print(f"📡 [Enterprise-AX] Rendering Strategic Power Grid (v25.0.0 Enterprise Quantum Elite)...")
         self.load_data()
         
         # 1. High-Level KPI Data
@@ -93,10 +52,7 @@ class DashboardEngine:
         self.df_dock["sev_score"] = self.df_dock.apply(get_severity_score, axis=1)
         df_sorted = self.df_dock.sort_values(["sev_score", "공정률"], ascending=[True, True])
 
-        # 3. Generate Plotly Strategic Chart
-        plotly_html = self.generate_plotly_chart(self.df_dock)
-
-        # 4. Generate Cards HTML
+        # 3. Component Generation: Individual Priority Cards
         guidelines_path = os.path.join(self.config.DATA_DIR, "safety_guidelines.csv")
         guidelines_json = "[]"
         if os.path.exists(guidelines_path):
@@ -152,7 +108,7 @@ class DashboardEngine:
             </div>
             """
 
-        # 5. Final Assembly
+        # 4. Final HTML Assembly
         output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
         css_vars = theme.get_css_vars()
         
@@ -186,7 +142,10 @@ class DashboardEngine:
         .glass {{ background: var(--h-surface); backdrop-filter: var(--h-glass-blur); border: 1px solid var(--h-border); }}
         @keyframes fadeInUp {{ from {{ opacity: 0; transform: translateY(40px); }} to {{ opacity: 1; transform: translateY(0); }} }}
         .animate-fade-in-up {{ animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }}
+        
         [x-cloak] {{ display: none !important; }}
+
+        /* Scrollbar Styling */
         ::-webkit-scrollbar {{ width: 10px; }}
         ::-webkit-scrollbar-track {{ background: transparent; }}
         ::-webkit-scrollbar-thumb {{ background: rgba(255,107,0,0.2); border-radius: 10px; border: 3px solid var(--h-bg); }}
@@ -229,24 +188,33 @@ class DashboardEngine:
         </div>
     </div>
 
-    <!-- STRATEGIC SUMMARY CARDS -->
+    <!-- STRATEGIC EXECUTIVE SUMMARY ROW -->
     <div class="max-w-[1700px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-20 animate-fade-in-up">
         <div class="glass rounded-[3.5rem] p-12 border-t-8 border-cyan-500/30 flex justify-between items-center group overflow-hidden relative">
             <div class="w-40 h-40 bg-cyan-500/10 rounded-full absolute -right-10 -bottom-10 blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
             <div class="z-10 text-left">
                 <p class="text-xs font-black text-gray-600 uppercase tracking-widest mb-4 font-bold">Digital Twin Sync</p>
                 <p class="text-6xl font-black text-white italic tracking-tighter">99.98<span class="text-xl text-cyan-500 ml-1 font-black">%</span></p>
+                <div class="flex items-center gap-3 mt-6">
+                    <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span class="text-xs font-bold text-emerald-500 uppercase tracking-widest font-black">Active Real-time</span>
+                </div>
             </div>
             <div class="text-7xl opacity-10 group-hover:opacity-30 transition-opacity">📡</div>
         </div>
+
         <div class="glass rounded-[3.5rem] p-12 border-t-8 border-orange-500/30 flex justify-between items-center group overflow-hidden relative">
              <div class="w-40 h-40 bg-orange-500/10 rounded-full absolute -right-10 -top-10 blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
             <div class="z-10 text-left">
                 <p class="text-xs font-black text-gray-600 uppercase tracking-widest mb-4 font-bold">RPA BOT Fleet</p>
                 <p class="text-6xl font-black text-white italic tracking-tighter">12<span class="text-2xl text-orange-500 ml-1">/</span>12</p>
+                <div class="flex items-center gap-3 mt-6">
+                    <span class="px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-500 text-[10px] font-black uppercase tracking-widest border border-orange-500/20">All Healthy</span>
+                </div>
             </div>
             <div class="text-7xl opacity-10 group-hover:opacity-30 transition-opacity">🤖</div>
         </div>
+
         <div class="glass rounded-[3.5rem] p-12 border-t-8 border-emerald-500/30 flex justify-between items-center group overflow-hidden relative">
             <div class="w-40 h-40 bg-emerald-500/10 rounded-full absolute -right-10 -bottom-10 blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
             <div class="z-10 text-left">
@@ -258,19 +226,8 @@ class DashboardEngine:
         </div>
     </div>
 
-    <!-- STRATEGIC FOCUS CHART (PLOTLY) -->
-    <div class="max-w-[1700px] mx-auto mb-24 animate-fade-in-up" style="animation-delay: 0.1s;">
-        <div class="glass rounded-[4rem] p-16 relative overflow-hidden">
-            <div class="flex justify-between items-center mb-10">
-                <h3 class="text-4xl font-black italic tracking-tighter uppercase text-left">Strategic Priority Overview</h3>
-                <span class="text-xs font-black text-gray-600 uppercase tracking-widest border border-white/10 px-6 py-2 rounded-full">Top 25 Critical Nodes</span>
-            </div>
-            {plotly_html}
-        </div>
-    </div>
-
     <!-- TACTICAL FILTER BAR -->
-    <div class="max-w-[1700px] mx-auto mb-20 flex flex-col md:flex-row gap-8 items-center justify-between animate-fade-in-up" style="animation-delay: 0.2s;">
+    <div class="max-w-[1700px] mx-auto mb-20 flex flex-col md:flex-row gap-8 items-center justify-between animate-fade-in-up" style="animation-delay: 0.1s;">
         <div class="flex bg-white/5 p-3 rounded-[2.5rem] border border-white/10">
             <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-white text-black shadow-2xl' : 'text-gray-500 hover:text-white'" class="px-12 py-5 rounded-[2rem] text-xl font-black italic tracking-tighter uppercase transition-all duration-300">ALL</button>
             <button @click="filter = 'critical'" :class="filter === 'critical' ? 'bg-red-500 text-white shadow-2xl scale-105' : 'text-gray-500 hover:text-red-500'" class="px-12 py-5 rounded-[2rem] text-xl font-black italic tracking-tighter uppercase transition-all duration-300">위험</button>
@@ -281,7 +238,7 @@ class DashboardEngine:
             <div class="absolute inset-y-0 left-8 flex items-center text-gray-600 pointer-events-none group-focus-within:text-orange-500 transition-colors">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
-            <input type="text" x-model="search" placeholder="구역 또는 도크 검색..." class="w-full bg-white/5 border border-white/10 rounded-[2.5rem] py-6 pl-20 pr-10 text-2xl font-black italic tracking-tight focus:outline-none focus:border-orange-500 transition-all focus:bg-white/10 group-hover:border-white/20">
+            <input type="text" x-model="search" placeholder="구역 또는 도크 검색 (e.g. 제1도크)" class="w-full bg-white/5 border border-white/10 rounded-[2.5rem] py-6 pl-20 pr-10 text-2xl font-black italic tracking-tight focus:outline-none focus:border-orange-500 transition-all focus:bg-white/10 group-hover:border-white/20">
         </div>
     </div>
 
@@ -292,13 +249,13 @@ class DashboardEngine:
 
     <!-- FOOTER -->
     <footer class="max-w-[1700px] mx-auto py-20 border-t border-white/5 opacity-20 text-center">
-        <p class="text-[10px] font-black tracking-[1.5em] uppercase">Proprietary AX Engine | Hanwha Ocean AX Team V25.0.0 Global</p>
+        <p class="text-[10px] font-black tracking-[1.5em] uppercase">Proprietary AX Engine | Hanwha Ocean AX Team V25.0.0</p>
     </footer>
 
     <!-- SISE GUIDANCE OVERLAY -->
     <div x-show="guidance.show" 
          x-cloak 
-         class="fixed pointer-events-none z-[3000] glass rounded-[2.5rem] p-10 max-w-sm shadow-[0_0_80px_rgba(0,0,0,0.8)] border-orange-500/40"
+         class="fixed pointer-events-none z-[2000] glass rounded-[2.5rem] p-10 max-w-sm shadow-[0_0_80px_rgba(0,0,0,0.8)] border-orange-500/40"
          :style="`left: ${{guidance.x}}px; top: ${{guidance.y}}px;`"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-90"
@@ -330,28 +287,36 @@ class DashboardEngine:
                         const sev = card.dataset.severity;
                         const name = card.dataset.name;
                         const task = card.dataset.task;
+                        
                         const matchesFilter = this.filter === 'all' || sev === this.filter;
                         const matchesSearch = name.includes(this.search.toLowerCase()) || task.includes(this.search.toLowerCase());
-                        if (matchesFilter && matchesSearch) {{ card.classList.remove('hidden'); }} else {{ card.classList.add('hidden'); }}
+                        
+                        if (matchesFilter && matchesSearch) {{
+                            card.classList.remove('hidden');
+                        }} else {{
+                            card.classList.add('hidden');
+                        }}
                     }});
                 }},
 
                 showGuidance(issue, event) {{
                     const match = this.guidelines.find(g => issue.includes(g.ISSUE));
-                    this.guidance.text = match ? match.GUIDANCE : '본 항목에 대한 자동화 프로토콜이 정의되지 않았습니다.';
+                    this.guidance.text = match ? match.GUIDANCE : '본 항목에 대한 자동화 프로토콜이 정의되지 않았습니다. 관리 센터에 문의하십시오.';
                     this.guidance.x = event.clientX + 20;
                     this.guidance.y = event.clientY + 20;
                     this.guidance.show = true;
                 }},
 
-                hideGuidance() {{ this.guidance.show = false; }}
+                hideGuidance() {{
+                    this.guidance.show = false;
+                }}
             }}
         }}
     </script>
 </body>
 </html>
             """)
-        print(f"✨ Strategic Enterprise Dashboard (v25.0.0 Global Edition) Generated: {{output_path}}")
+        print(f"✨ Strategic Enterprise Dashboard (v25.0.0) Generated: {{output_path}}")
 
 if __name__ == "__main__":
     engine = DashboardEngine()
