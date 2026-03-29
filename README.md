@@ -27,7 +27,14 @@
 
 ---
 
+## 📺 Operational Demo
+![Strategic Command Center](docs/images/demo_v25.webp)
+*(Note: v25.0.0 Enterprise Quantum Elite 실시간 가동 화면 / 30fps Digital Twin Sync)*
+
+---
+
 ## 🛠 Strategic Architecture
+![Strategic Architecture](docs/images/architecture_v25.png)
 
 ```mermaid
 graph TD
@@ -40,17 +47,10 @@ graph TD
 
 ### Tech Stack (Enterprise Standard)
 *   **Core Logic**: Python 3.14 (Secure Coding Standards)
-*   **Analytics**: Pandemic-Robust Data Pipeline (Pandas, Custom AX Math)
+*   **Analytics**: Strategic Insight Synthesis Engine (SISE)
 *   **Frontend**: Alpine.js, TailwindCSS (Quantum Layout Engine)
 *   **Automation**: RPA Bot Fleet (12 Active Bots)
 *   **QA/CI**: TestSprite Automated Testing, PEP8 Compliance
-
----
-
-## 📺 Operational Demo
-
-![Main Dashboard](docs/dashboard_v45.png)
-*(Note: 실제 운영 화면은 고해상도 대형 멀티 디스플레이 환경에 최적화되어 있습니다.)*
 
 ---
 

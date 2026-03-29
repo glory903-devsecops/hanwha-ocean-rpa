@@ -1,4 +1,4 @@
-# Hanwha Ocean AX Unified Design System (v16.0.0)
+# Hanwha Ocean AX Unified Design System (v25.0.0)
 
 THEME = {
     # 1. Color Palette (Enterprise Navy & Hanwha Orange)
