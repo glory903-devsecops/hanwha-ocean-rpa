@@ -1,4 +1,4 @@
-# ⚓ Hanwha Ocean Smart Yard AX: Digital Strategy & Strategic Command Center (v25.0.0)
+# ⚓ 한화오션 스마트 야드 AX: 디지털 전략 & 전략 커맨드 센터 (v25.0.0)
 
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-FF6A00?logo=python&logoColor=white)](https://www.python.org/)
 [![Live Dashboard](https://img.shields.io/badge/Live-Strategic_Command-00F2FF?logo=target&logoColor=white)](https://glory903-devsecops.github.io/hanwha-ocean-rpa/)

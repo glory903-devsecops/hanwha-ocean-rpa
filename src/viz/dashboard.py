@@ -160,11 +160,11 @@ class DashboardEngine:
             <div class="w-32 h-32 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-[3rem] flex items-center justify-center text-6xl font-black italic shadow-[0_0_80px_rgba(249,115,22,0.5)] border-4 border-white/20 select-none">H</div>
             <div class="text-left">
                 <h1 class="text-7xl lg:text-9xl font-black tracking-tighter uppercase italic leading-none whitespace-nowrap">
-                    AX <span class="text-orange-500">CONTROL</span>
+                    AX <span class="text-orange-500">전략 커맨드 센터</span>
                 </h1>
-                <p class="text-sm lg:text-base text-gray-500 font-bold uppercase tracking-[0.8em] mt-8 flex items-center gap-4">
+                <p class="text-sm lg:text-base text-gray-400 font-bold uppercase tracking-[0.8em] mt-8 flex items-center gap-4">
                     <span class="w-12 h-[2px] bg-orange-500"></span> 
-                    v25.0.0 Strategic Quantum Elite
+                    v25.0.0 미션 컨트롤 (Strategic Quantum Elite)
                 </p>
             </div>
         </div>
