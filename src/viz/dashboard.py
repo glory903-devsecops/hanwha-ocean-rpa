@@ -73,9 +73,9 @@ class DashboardEngine:
             
             # Dynamic Button Label
             if label != "정상":
-                btn_label = f"⚠️ [{e_safety_display}] 지시 확인"
+                btn_label = e_safety_display
             else:
-                btn_label = "✅ 특이사항 없음"
+                btn_label = "특이사항 없음"
 
             # Circular Progress
             circ_offset = 301.6 * (1 - progress/100)
