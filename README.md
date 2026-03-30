@@ -1,4 +1,8 @@
-# ⚓ Hanwha Ocean AX: Strategic Command Center (v26.0.0)
+# ⚓ 한화오션 AX: 최첨단 전략 관제 및 RPA 통합 관리 시스템 (v26.3.2)
+
+## 🌐 바로가기 (Live Quick Links)
+- **📊 [라이브 대시보드 데모]**: [https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html](https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html)
+- **📁 [포트폴리오 저장소]**: [https://github.com/glory903-devsecops/hanwha-ocean-rpa](https://github.com/glory903-devsecops/hanwha-ocean-rpa)
 
 [![Demo Dashboard](https://img.shields.io/badge/Live-Demo%20Dashboard-orange?style=for-the-badge&logo=github)](https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html)
 [![Portfolio Edition](https://img.shields.io/badge/Portfolio-Global%20Enterprise-blue?style=for-the-badge)](https://github.com/glory903-devsecops/hanwha-ocean-rpa)
