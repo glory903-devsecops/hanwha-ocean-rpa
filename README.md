@@ -52,6 +52,35 @@ python tests/test_integration.py
 
 ---
 
+## 📸 플랫폼 통합 검증 및 시연 (Live Verification v26.3.2)
+
+본 시스템은 단순 UI 구성을 넘어, **데이터 입력 -> 어드민 지휘 -> 대시보드 실시간 반영**의 전 과정을 자동화된 통합 테스트와 실전 시연을 통해 검증하였습니다.
+
+### 1. 통합 검증 테스트 결과 (Combined Tech Stack Test)
+FastAPI 서버 환경에서 데이터 무결성과 동적 렌더링 엔진의 정합성을 100% 검증 완료하였습니다.
+
+```powershell
+# API 통합 및 대시보드 동기화 테스트 실행
+python tests/test_api_integration.py
+```
+**[PASS]** ✅ Dock API Update | ✅ Guideline API Sync | ✅ CSV Integrity | ✅ Dashboard Hot-Reload
+
+### 2. 라이브 시스템 시연 (Live Activity Workflow)
+아래 시연 과정은 실제 로컬 서버 상에서 **'신규 도크 추가 -> 긴급 대응 지침 등록 -> 대시보드 실시간 필터링 및 팝업 확인'**의 전 과정을 기록한 것입니다.
+
+![플랫폼 통합 검증 시연](docs/videos/verification_v26_3.webp)
+*시연 파일: `docs/videos/verification_v26_3.webp` (Enterprise-AX-Cycle)*
+
+#### [핵심 검증 포인트]
+- **실시간 데이터 동기화**: `erp_input.html`에서 입력한 🧪 제99 테스트 도크가 즉시 리스트에 반영됨.
+- **지능형 지휘 체계**: `admin_portal.html`에서 등록한 신규 지시사항이 대시보드 팝업에 정확히 매칭되어 출력됨.
+- **고도화된 시인성**: 폰트 확대 및 상태별 색상 코딩(위험/주의/정상)이 실제 운영 환경에서 직관적으로 작동함.
+
+![최종 대시보드 검증 캡처](docs/screenshots/verification_v26_3.png)
+*최종 팝업 화면: [긴급] 전원 대용량 차단 및 대피로 확보 프로토콜 작동 중*
+
+---
+
 ## 🎯 포트폴리오 가치 (Strategic Value)
 
 -   **데이터 기반 의사결정**: 단순 모니터링을 넘어 리스크를 수치화하고 대응 지침을 즉각 배포하는 거버넌스 체계 구축.
@@ -59,4 +88,5 @@ python tests/test_integration.py
 -   **확장성**: 경량화된 아키텍처로 실제 현장 IoT 센서 데이터와의 즉각적인 결합 가능.
 
 ---
+
 © 2026 Hanwha Ocean AX Team. Enterprise Portfolio Edition.
