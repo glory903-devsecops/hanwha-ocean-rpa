@@ -14,15 +14,13 @@
         .form-card { background: #1e293b; border: 1px solid #334155; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-10">
-    
-    <div class="max-w-xl w-full">
+<body class="flex flex-col items-center justify-center min-h-s    <div class="max-w-xl w-full">
         <header class="text-center mb-12">
-            <h1 class="text-5xl font-black text-orange-500 italic mb-4">RPA DOCK ENTRY</h1>
-            <p class="text-gray-400 font-bold tracking-widest uppercase">실시간 도크 공정률 입력 시스템</p>
+            <h1 class="text-5xl font-black text-orange-500 italic mb-4">RPA 도크 현황 입력</h1>
+            <p class="text-gray-400 font-bold tracking-widest uppercase">실시간 공정 데이터 동기화 시스템</p>
         </header>
 
-        <div class="form-card p-12 rounded-[3rem] shadow-2xl space-y-10">
+        <div class="form-card p-12 rounded-[3.5rem] shadow-2xl space-y-10">
             <div>
                 <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-4">도크 선택</label>
                 <select id="dock-name" class="w-full bg-slate-900 border border-slate-700 rounded-2xl py-5 px-8 text-xl font-black text-white focus:outline-none focus:border-orange-500">
@@ -63,16 +61,21 @@
                 </select>
             </div>
 
-            <button onclick="submitData()" class="w-full py-8 bg-orange-500 text-white text-2xl font-black italic rounded-3xl hover:scale-[1.02] shadow-xl transition-all">실시간 데이터 전송 (UPDATE)</button>
+            <button onclick="submitData()" class="w-full py-8 bg-orange-500 text-white text-2xl font-black italic rounded-3xl hover:scale-[1.02] shadow-xl transition-all">실시간 데이터 갱신 (UPDATE)</button>
         </div>
 
         <nav class="mt-12 flex justify-between px-10">
-            <a href="index.html" target="_blank" class="text-xs font-black text-gray-500 hover:text-orange-500 transition-colors uppercase tracking-widest">← HUB Home</a>
-            <a href="smart_yard_dashboard.html" target="_blank" class="text-xs font-black text-gray-500 hover:text-orange-500 transition-colors uppercase tracking-widest">Dashboard →</a>
+            <a href="index.html" target="_blank" class="text-xs font-black text-gray-500 hover:text-orange-500 transition-colors uppercase tracking-widest">← 홈으로 이동</a>
+            <a href="smart_yard_dashboard.html" target="_blank" class="text-xs font-black text-gray-500 hover:text-orange-500 transition-colors uppercase tracking-widest">대보시드 보기 →</a>
         </nav>
 
         <footer class="mt-20 text-center opacity-40">
-            <p class="text-[10px] font-black uppercase tracking-[1.5em] mb-8 text-gray-800">Hanwha Ocean AX Data Terminal</p>
+            <p class="text-[10px] font-black uppercase tracking-[1.5em] mb-8 text-gray-800">한화오션 AX 데이터 터미널</p>
+            <a href="https://github.com/glory903-devsecops/hanwha-ocean-rpa" target="_blank" class="inline-flex items-center gap-2 text-xs font-black text-white hover:underline">
+                깃허브 저장소
+            </a>
+        </footer>
+          <p class="text-[10px] font-black uppercase tracking-[1.5em] mb-8 text-gray-800">Hanwha Ocean AX Data Terminal</p>
             <a href="https://github.com/glory903-devsecops/hanwha-ocean-rpa" target="_blank" class="inline-flex items-center gap-2 text-xs font-black text-white hover:underline">
                 GITHUB REPOSITORY
             </a>

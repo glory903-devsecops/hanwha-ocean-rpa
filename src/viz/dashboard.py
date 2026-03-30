@@ -11,12 +11,12 @@ from src.viz import theme
 
 class DashboardEngine:
     """
-    Visualization Engine for Hanwha Ocean AX (v26.1.0 - Refined List Edition).
+    Visualization Engine for Hanwha Ocean AX (v26.2.0 - Final Korean Edition).
     STRATEGIC COMMAND & CONTROL INTERFACE:
     - [DASHBOARD UI]: Clean List format (Removing horizontal bar charts as requested).
     - [PROGRESS VIZ]: Each list item has a Circular Progress Chart (Primary indicator).
-    - [INTERACTION]: Center Popup for detailed instructions.
-    - [LOCALIZATION]: Full Korean Support.
+    - [LOCALIZATION]: Full Korean Support (No more English strings).
+    - [GUIDANCE SYSTEM]: Enhanced instruction matching logic.
     """
     
     def __init__(self):
@@ -28,11 +28,13 @@ class DashboardEngine:
     def load_data(self):
         csv_path = os.path.join(self.config.DATA_DIR, "dock_status.csv")
         self.df_dock = pd.read_csv(csv_path)
+        # Keep original issue for better matching if needed, but for display we clean prefixes
+        self.df_dock["표기_안전이슈"] = self.df_dock["안전이슈"].copy()
         for prefix in ["[주의]", "[기상]", "[위험]", "[경고]", "[장비]"]:
-            self.df_dock["안전이슈"] = self.df_dock["안전이슈"].str.replace(prefix + " ", "", regex=False)
+             self.df_dock["표기_안전이슈"] = self.df_dock["표기_안전이슈"].str.replace(prefix + " ", "", regex=False)
 
     def render(self):
-        print(f"📡 [Enterprise-AX] Rendering Refined List Dashboard (v26.1.0)...")
+        print(f"📡 [Enterprise-AX] 전략 관제 대시보드 렌더링 중 (v26.2.0 최종 한국어판)...")
         self.load_data()
         
         avg_proc = self.analytics.calculate_average_progress(self.df_dock)
@@ -61,24 +63,25 @@ class DashboardEngine:
         for _, row in df_sorted.iterrows():
             e_dock = html.escape(str(row['구역/도크']))
             e_task = html.escape(str(row['현재작업']))
-            e_safety = html.escape(str(row['안전이슈']))
+            e_safety_display = html.escape(str(row['표기_안전이슈']))
+            e_safety_raw = html.escape(str(row['안전이슈']))
             progress = float(row['공정률'])
             
             sev = row['sev_score']
             color = {0: "#EF4444", 1: "#F59E0B", 2: "#10B981"}.get(sev)
             label = {0: "위험", 1: "주의", 2: "정상"}.get(sev)
             
-            # Circular Progress with Progress % 
-            circ_offset = 251.2 * (1 - progress/100)
+            # Circular Progress
+            circ_offset = 301.6 * (1 - progress/100)
             
             list_html += f"""
             <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: {color}">
-                <!-- CIRCULAR PROGRESS (PRIMARY INDICATOR) -->
+                <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
                         <circle cx="56" cy="56" r="48" stroke="rgba(255,255,255,0.05)" stroke-width="10" fill="transparent" />
                         <circle cx="56" cy="56" r="48" stroke="{color}" stroke-width="10" fill="transparent" 
-                                stroke-dasharray="301.6" stroke-dashoffset="{301.6 * (1 - progress/100)}" 
+                                stroke-dasharray="301.6" stroke-dashoffset="{circ_offset}" 
                                 class="transition-all duration-1000" />
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
@@ -87,21 +90,21 @@ class DashboardEngine:
                     </div>
                 </div>
 
-                <!-- MAIN INFO -->
+                <!-- 주요 정보 영역 -->
                 <div class="flex-1">
                     <div class="flex flex-col gap-2">
                         <h4 class="text-4xl font-black italic tracking-tighter uppercase whitespace-nowrap text-white group-hover:text-orange-500 transition-colors">{e_dock}</h4>
                         <div class="flex items-center gap-4">
-                            <span class="px-4 py-1 rounded bg-white/5 text-xs font-bold text-gray-500 uppercase tracking-widest">TASK: {e_task}</span>
+                            <span class="px-4 py-1 rounded bg-white/5 text-xs font-bold text-gray-500 uppercase tracking-widest">현재작업: {e_task}</span>
                             <span class="w-2 h-2 rounded-full bg-white/10"></span>
-                            <span class="text-xs font-black italic text-gray-600">STABILITY: {e_safety}</span>
+                            <span class="text-xs font-black italic text-gray-600">안전상태: {e_safety_display}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- ACTION SIDE -->
+                <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
-                    <button @click="openPopup('{e_safety}', '{e_dock}')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
+                    <button @click="openPopup('{e_safety_raw}', '{e_dock}')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
                         ⚠️ 상세 지시사항 확인
                     </button>
                 </div>
@@ -118,7 +121,7 @@ class DashboardEngine:
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한화오션 AX: 전략 관제 시스템 (v26.1.0)</title>
+    <title>한화오션 AX: 전략 관제 시스템 (v26.2.0)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -140,75 +143,75 @@ class DashboardEngine:
 </head>
 <body x-data="dashboard()" class="p-8 lg:p-20">
     <div class="max-w-[1400px] mx-auto">
-        <!-- HEADER -->
+        <!-- 헤더 영역 -->
         <header class="flex justify-between items-end mb-20">
             <div>
                 <div class="flex items-center gap-8 mb-6">
                     <div class="w-16 h-16 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-2xl flex items-center justify-center text-4xl font-black italic shadow-2xl">H</div>
-                    <h1 class="text-6xl font-black italic tracking-tighter uppercase leading-none">STRATEGIC <span class="text-orange-500">AX DASHBOARD</span></h1>
+                    <h1 class="text-6xl font-black italic tracking-tighter uppercase leading-none">전략 관제 <span class="text-orange-500">데이터 센터</span></h1>
                 </div>
                 <div class="flex items-center gap-4">
                     <span class="w-12 h-1 bg-orange-500 rounded-full"></span>
-                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-[1em]">전사 통합 데이터 관제 프로토콜 v26.1.0</p>
+                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-[1em]">전사 통합 실시간 모니터링 시스템 v26.2.0</p>
                 </div>
             </div>
             <div class="flex gap-12">
                 <div class="text-right">
-                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2">RISK INDEX (QRI)</p>
+                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2">리스크 인덱스 (QRI)</p>
                     <p class="text-6xl font-black italic tabular-nums">{risk_index}</p>
                 </div>
                 <div class="text-right border-l border-white/10 pl-12">
-                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2">YARD PROGRESS</p>
+                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2">전체 평균 공정률</p>
                     <p class="text-6xl font-black italic text-orange-500 tabular-nums">{avg_proc:.1f}%</p>
                 </div>
             </div>
         </header>
 
-        <!-- MAIN LIST AREA -->
+        <!-- 메인 도크 리스트 -->
         <main class="space-y-6 pb-40">
             <div class="flex justify-between items-center px-10 mb-12">
-                <h2 class="text-2xl font-black italic uppercase tracking-[0.3em] text-white/40">Yard Asset Operations Hub</h2>
+                <h2 class="text-2xl font-black italic uppercase tracking-[0.3em] text-white/40">야드 자산 운영 현황</h2>
                 <div class="flex items-center gap-4 text-xs font-black text-orange-500 bg-orange-500/10 px-8 py-4 rounded-full border border-orange-500/20 shadow-2xl">
                     <span class="w-2.5 h-2.5 bg-orange-500 rounded-full animate-ping"></span>
-                    D-{days_to_go:.0f} (예상 인도: {proj_date})
+                    D-{days_to_go:.0f} (최종 예상 인도일: {proj_date})
                 </div>
             </div>
             {list_html}
         </main>
 
-        <!-- FOOTER WITH GITHUB LINK -->
+        <!-- 푸터 영역 -->
         <footer class="flex flex-col items-center py-20 border-t border-white/10 opacity-30 mt-20">
-             <p class="text-[10px] font-black uppercase tracking-[1.5em] mb-12">Proprietary AX Engine | Hanwha Ocean AX Team</p>
+             <p class="text-[10px] font-black uppercase tracking-[1.5em] mb-12">한화오션 AX 고도화 팀 | 독점 기술 라이브러리</p>
              <a href="https://github.com/glory903-devsecops/hanwha-ocean-rpa" target="_blank" 
                 class="inline-flex items-center gap-6 px-12 py-6 bg-white text-black rounded-full font-black italic tracking-tighter hover:scale-110 active:scale-95 transition-all shadow-2xl">
                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                 GITHUB REPOSITORY
+                 깃허브 저장소 방문하기
              </a>
         </footer>
 
-        <!-- CENTER POPUP OVERLAY -->
+        <!-- 중앙 지시사항 팝업 오버레이 -->
         <div x-show="popup.open" x-cloak class="fixed inset-0 z-[1000] flex items-center justify-center p-10 bg-black/80 backdrop-blur-md" x-transition>
             <div class="glass max-w-2xl w-full p-16 rounded-[4rem] border-orange-500/30 relative" @click.away="popup.open = false">
                 <button @click="popup.open = false" class="absolute top-10 right-10 text-4xl text-white/50 hover:text-white">&times;</button>
                 <div class="flex items-center gap-6 mb-10">
                     <div class="w-20 h-20 bg-orange-500/20 rounded-3xl flex items-center justify-center text-5xl">🤖</div>
                     <div>
-                        <h3 class="text-4xl font-black italic tracking-tighter uppercase mb-2">AX <span class="text-orange-500">Operation Protocol</span></h3>
-                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest" x-text="`Target Dock: ${{popup.dock}}`"></p>
+                        <h3 class="text-4xl font-black italic tracking-tighter uppercase mb-2">AX <span class="text-orange-500">운영 지시사항</span></h3>
+                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest" x-text="`관제 대상 도크: ${{popup.dock}}`"></p>
                     </div>
                 </div>
                 <div class="space-y-10">
                     <div>
-                        <p class="text-[10px] font-black text-orange-500 uppercase tracking-[0.5em] mb-4">Detection Insight</p>
-                        <p class="text-3xl font-black text-white" x-text="popup.issue"></p>
+                        <p class="text-[10px] font-black text-orange-500 uppercase tracking-[0.5em] mb-4">탐지된 안전 이슈</p>
+                        <p class="text-3xl font-black text-white" x-text="popup.issueDisplay"></p>
                     </div>
                     <div class="h-px bg-white/10"></div>
                     <div>
-                        <p class="text-[10px] font-black text-orange-500 uppercase tracking-[0.5em] mb-4">Command Guidance</p>
+                        <p class="text-[10px] font-black text-orange-500 uppercase tracking-[0.5em] mb-4">대응 지침 (프로토콜)</p>
                         <p class="text-2xl font-bold text-gray-300 leading-relaxed italic" x-text="popup.guidance"></p>
                     </div>
                 </div>
-                <button @click="popup.open = false" class="mt-16 w-full py-8 rounded-3xl bg-orange-500 text-white text-2xl font-black italic transition-all hover:scale-[1.02] shadow-2xl">ACKNOWLEDGEMENT: EXECUTE</button>
+                <button @click="popup.open = false" class="mt-16 w-full py-8 rounded-3xl bg-orange-500 text-white text-2xl font-black italic transition-all hover:scale-[1.02] shadow-2xl">지시 확인: 즉시 집행</button>
             </div>
         </div>
     </div>
@@ -216,13 +219,20 @@ class DashboardEngine:
     <script>
         function dashboard() {{
             return {{
-                popup: {{ open: false, issue: '', guidance: '', dock: '' }},
+                popup: {{ open: false, issueDisplay: '', guidance: '', dock: '' }},
                 guidelines: {guidelines_json},
-                openPopup(issue, dock) {{
-                    const match = this.guidelines.find(g => issue.includes(g.ISSUE)) || {{ GUIDANCE: 'Protocol Pending. Manual intervention required.' }};
-                    this.popup.issue = issue;
+                openPopup(rawIssue, dock) {{
+                    // 접두사 제거를 통한 매칭 향상
+                    const prefixes = ["[주의]", "[기상]", "[위험]", "[경고]", "[장비]"];
+                    let cleanIssue = rawIssue;
+                    prefixes.forEach(p => {{ cleanIssue = cleanIssue.replace(p + " ", ""); }});
+                    
+                    // 유연한 매칭 로직: 이슈 문자열이 포함되어 있는지 확인
+                    const match = this.guidelines.find(g => cleanIssue.includes(g.ISSUE) || rawIssue.includes(g.ISSUE));
+                    
+                    this.popup.issueDisplay = cleanIssue;
                     this.popup.dock = dock;
-                    this.popup.guidance = match.GUIDANCE;
+                    this.popup.guidance = match ? match.GUIDANCE : '대응 프로토콜 분석 중입니다. 현장 즉시 보고를 권장합니다.';
                     this.popup.open = true;
                 }}
             }}
@@ -231,7 +241,7 @@ class DashboardEngine:
 </body>
 </html>
             """)
-        print(f"✨ Refined List Dashboard (v26.1.0) Generated: {{output_path}}")
+        print(f"✨ 전략 관제 대시보드 (v26.2.0 최종 한국어판) 생성 완료: {{output_path}}")
 
 if __name__ == "__main__":
     engine = DashboardEngine()
