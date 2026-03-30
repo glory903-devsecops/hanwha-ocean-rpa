@@ -11,12 +11,12 @@ from src.viz import theme
 
 class DashboardEngine:
     """
-    Visualization Engine for Hanwha Ocean AX (v26.2.0 - Final Korean Edition).
+    Visualization Engine for Hanwha Ocean AX (v26.3.0 - Strategic Command Edition).
     STRATEGIC COMMAND & CONTROL INTERFACE:
-    - [DASHBOARD UI]: Clean List format (Removing horizontal bar charts as requested).
+    - [DASHBOARD UI]: Clean List format with Horizontal Search & Filter Bar.
     - [PROGRESS VIZ]: Each list item has a Circular Progress Chart (Primary indicator).
-    - [LOCALIZATION]: Full Korean Support (No more English strings).
-    - [GUIDANCE SYSTEM]: Enhanced instruction matching logic.
+    - [INTERACTION]: Dynamic Action Buttons (e.g., ⚠️ [위험] 크레인 오작동 지시 확인).
+    - [ALPHINE.JS]: Client-side filtering and real-time search.
     """
     
     def __init__(self):
@@ -34,7 +34,7 @@ class DashboardEngine:
              self.df_dock["표기_안전이슈"] = self.df_dock["표기_안전이슈"].str.replace(prefix + " ", "", regex=False)
 
     def render(self):
-        print(f"📡 [Enterprise-AX] 전략 관제 대시보드 렌더링 중 (v26.2.0 최종 한국어판)...")
+        print(f"📡 [Enterprise-AX] 전략 관제 대시보드 렌더링 중 (v26.3.0 검색/필터 강화 버전)...")
         self.load_data()
         
         avg_proc = self.analytics.calculate_average_progress(self.df_dock)
@@ -71,11 +71,22 @@ class DashboardEngine:
             color = {0: "#EF4444", 1: "#F59E0B", 2: "#10B981"}.get(sev)
             label = {0: "위험", 1: "주의", 2: "정상"}.get(sev)
             
+            # Dynamic Button Label
+            if label != "정상":
+                btn_label = f"⚠️ [{e_safety_display}] 지시 확인"
+            else:
+                btn_label = "⚠️ 상세 지시사항 확인"
+
             # Circular Progress
             circ_offset = 301.6 * (1 - progress/100)
             
             list_html += f"""
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: {color}">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: {color}"
+                 x-show="(filterStatus === '전체' || filterStatus === '{label}') && (searchQuery === '' || '{e_dock}'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -105,7 +116,7 @@ class DashboardEngine:
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('{e_safety_raw}', '{e_dock}')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        {btn_label}
                     </button>
                 </div>
             </div>
@@ -121,7 +132,7 @@ class DashboardEngine:
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한화오션 AX: 전략 관제 시스템 (v26.2.0)</title>
+    <title>한화오션 AX: 전략 관제 시스템 (v26.3.0)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -136,6 +147,12 @@ class DashboardEngine:
             min-height: 100vh;
         }}
         .glass {{ background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.05); }}
+        .filter-btn {{
+            @apply px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all;
+        }}
+        .filter-btn.active {{
+            @apply bg-orange-500 text-white shadow-[0_0_20px_rgba(249,115,22,0.4)];
+        }}
         [x-cloak] {{ display: none !important; }}
         ::-webkit-scrollbar {{ width: 8px; }}
         ::-webkit-scrollbar-thumb {{ background: rgba(249,115,22,0.2); border-radius: 10px; }}
@@ -152,7 +169,7 @@ class DashboardEngine:
                 </div>
                 <div class="flex items-center gap-4">
                     <span class="w-12 h-1 bg-orange-500 rounded-full"></span>
-                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-[1em]">전사 통합 실시간 모니터링 시스템 v26.2.0</p>
+                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-[1em]">전사 통합 실시간 모니터링 시스템 v26.3.0</p>
                 </div>
             </div>
             <div class="flex gap-12">
@@ -167,6 +184,24 @@ class DashboardEngine:
             </div>
         </header>
 
+        <!-- 검색 및 필터 가로형 바 -->
+        <div class="glass flex flex-wrap items-center justify-between gap-10 p-8 rounded-[3rem] mb-16 border-orange-500/10 shadow-2xl">
+            <div class="flex-1 min-w-[300px] relative group">
+                <div class="absolute left-8 top-1/2 -translate-y-1/2 text-orange-500/50 group-focus-within:text-orange-500 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input x-model="searchQuery" type="text" placeholder="도크 이름 또는 구역 검색..." 
+                       class="w-full bg-black/20 border border-white/5 rounded-2xl py-6 pl-20 pr-10 text-xl font-bold text-white focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-gray-700">
+            </div>
+            
+            <div class="flex items-center gap-4 bg-black/20 p-2 rounded-full border border-white/5">
+                <button @click="filterStatus = '전체'" :class="filterStatus === '전체' ? 'bg-orange-500 text-white' : 'text-gray-500 hover:text-white'" class="px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all">전체</button>
+                <button @click="filterStatus = '위험'" :class="filterStatus === '위험' ? 'bg-red-600 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]' : 'text-gray-500 hover:text-red-400'" class="px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all">심각/위험</button>
+                <button @click="filterStatus = '주의'" :class="filterStatus === '주의' ? 'bg-amber-500 text-white shadow-[0_0_20px_rgba(245,158,11,0.4)]' : 'text-gray-500 hover:text-amber-400'" class="px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all">주의</button>
+                <button @click="filterStatus = '정상'" :class="filterStatus === '정상' ? 'bg-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'text-gray-500 hover:text-emerald-400'" class="px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all">정상/안전</button>
+            </div>
+        </div>
+
         <!-- 메인 도크 리스트 -->
         <main class="space-y-6 pb-40">
             <div class="flex justify-between items-center px-10 mb-12">
@@ -177,6 +212,11 @@ class DashboardEngine:
                 </div>
             </div>
             {list_html}
+            
+            <!-- 데이터 없음 메시지 -->
+            <div x-show="Object.keys($el.parentElement.children).filter(i => $el.parentElement.children[i].style.display !== 'none').length <= 2" x-cloak class="py-40 text-center">
+                <p class="text-4xl font-black text-white/10 uppercase italic tracking-widest">검색 결과가 없습니다</p>
+            </div>
         </main>
 
         <!-- 푸터 영역 -->
@@ -221,13 +261,13 @@ class DashboardEngine:
             return {{
                 popup: {{ open: false, issueDisplay: '', guidance: '', dock: '' }},
                 guidelines: {guidelines_json},
+                searchQuery: '',
+                filterStatus: '전체',
                 openPopup(rawIssue, dock) {{
-                    // 접두사 제거를 통한 매칭 향상
                     const prefixes = ["[주의]", "[기상]", "[위험]", "[경고]", "[장비]"];
                     let cleanIssue = rawIssue;
                     prefixes.forEach(p => {{ cleanIssue = cleanIssue.replace(p + " ", ""); }});
                     
-                    // 유연한 매칭 로직: 이슈 문자열이 포함되어 있는지 확인
                     const match = this.guidelines.find(g => cleanIssue.includes(g.ISSUE) || rawIssue.includes(g.ISSUE));
                     
                     this.popup.issueDisplay = cleanIssue;
@@ -241,7 +281,7 @@ class DashboardEngine:
 </body>
 </html>
             """)
-        print(f"✨ 전략 관제 대시보드 (v26.2.0 최종 한국어판) 생성 완료: {{output_path}}")
+        print(f"✨ 전략 관제 대시보드 (v26.3.0 검색/필터 강화 완료) 생성 완료: {{output_path}}")
 
 if __name__ == "__main__":
     engine = DashboardEngine()

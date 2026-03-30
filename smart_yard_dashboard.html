@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한화오션 AX: 전략 관제 시스템 (v26.2.0)</title>
+    <title>한화오션 AX: 전략 관제 시스템 (v26.3.0)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -28,6 +28,12 @@
             min-height: 100vh;
         }
         .glass { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.05); }
+        .filter-btn {
+            @apply px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all;
+        }
+        .filter-btn.active {
+            @apply bg-orange-500 text-white shadow-[0_0_20px_rgba(249,115,22,0.4)];
+        }
         [x-cloak] { display: none !important; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: rgba(249,115,22,0.2); border-radius: 10px; }
@@ -44,7 +50,7 @@
                 </div>
                 <div class="flex items-center gap-4">
                     <span class="w-12 h-1 bg-orange-500 rounded-full"></span>
-                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-[1em]">전사 통합 실시간 모니터링 시스템 v26.2.0</p>
+                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-[1em]">전사 통합 실시간 모니터링 시스템 v26.3.0</p>
                 </div>
             </div>
             <div class="flex gap-12">
@@ -59,6 +65,24 @@
             </div>
         </header>
 
+        <!-- 검색 및 필터 가로형 바 -->
+        <div class="glass flex flex-wrap items-center justify-between gap-10 p-8 rounded-[3rem] mb-16 border-orange-500/10 shadow-2xl">
+            <div class="flex-1 min-w-[300px] relative group">
+                <div class="absolute left-8 top-1/2 -translate-y-1/2 text-orange-500/50 group-focus-within:text-orange-500 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input x-model="searchQuery" type="text" placeholder="도크 이름 또는 구역 검색..." 
+                       class="w-full bg-black/20 border border-white/5 rounded-2xl py-6 pl-20 pr-10 text-xl font-bold text-white focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-gray-700">
+            </div>
+            
+            <div class="flex items-center gap-4 bg-black/20 p-2 rounded-full border border-white/5">
+                <button @click="filterStatus = '전체'" :class="filterStatus === '전체' ? 'bg-orange-500 text-white' : 'text-gray-500 hover:text-white'" class="px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all">전체</button>
+                <button @click="filterStatus = '위험'" :class="filterStatus === '위험' ? 'bg-red-600 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]' : 'text-gray-500 hover:text-red-400'" class="px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all">심각/위험</button>
+                <button @click="filterStatus = '주의'" :class="filterStatus === '주의' ? 'bg-amber-500 text-white shadow-[0_0_20px_rgba(245,158,11,0.4)]' : 'text-gray-500 hover:text-amber-400'" class="px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all">주의</button>
+                <button @click="filterStatus = '정상'" :class="filterStatus === '정상' ? 'bg-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'text-gray-500 hover:text-emerald-400'" class="px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all">정상/안전</button>
+            </div>
+        </div>
+
         <!-- 메인 도크 리스트 -->
         <main class="space-y-6 pb-40">
             <div class="flex justify-between items-center px-10 mb-12">
@@ -69,7 +93,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '배관 블록 공장'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -99,12 +128,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[경고] 유해가스 감지', '배관 블록 공장')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [유해가스 감지] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || 'RPA 로봇 충전 스테이션'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -134,12 +168,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[위험] 크레인 오작동', 'RPA 로봇 충전 스테이션')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [크레인 오작동] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '크레인 트랙 B'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -169,12 +208,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[위험] 크레인 오작동', '크레인 트랙 B')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [크레인 오작동] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '옥포 특수선 구역 A'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -204,12 +248,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[경고] 유해가스 감지', '옥포 특수선 구역 A')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [유해가스 감지] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '해상풍력 구역 B'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -239,12 +288,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[위험] 크레인 오작동', '해상풍력 구역 B')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [크레인 오작동] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '조립 구역 베타'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -274,12 +328,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[위험] 낙하물 발생', '조립 구역 베타')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [낙하물 발생] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '옥포 특수선 구역 C'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -309,12 +368,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[경고] 유해가스 감지', '옥포 특수선 구역 C')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [유해가스 감지] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || 'AI 서버 클러스터 알파'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -344,12 +408,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[위험] 크레인 오작동', 'AI 서버 클러스터 알파')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [크레인 오작동] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '거제 제2도크'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -379,12 +448,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[위험] 크레인 오작동', '거제 제2도크')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [크레인 오작동] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '거제 제4도크'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -414,12 +488,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[위험] 낙하물 발생', '거제 제4도크')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [낙하물 발생] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '도장 2방'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -449,12 +528,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[위험] 낙하물 발생', '도장 2방')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [낙하물 발생] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '대형 가공 2공장'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -484,12 +568,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[위험] 크레인 오작동', '대형 가공 2공장')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [크레인 오작동] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #EF4444">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #EF4444"
+                 x-show="(filterStatus === '전체' || filterStatus === '위험') && (searchQuery === '' || '거제 제3도크'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -519,12 +608,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[위험] 크레인 오작동', '거제 제3도크')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [크레인 오작동] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '워크샵 17구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -554,12 +648,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 장비 점검', '워크샵 17구역')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [장비 점검] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '전략 보급 구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -589,12 +688,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 강풍주의', '전략 보급 구역')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [강풍주의] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '배관 공장 1단지'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -624,12 +728,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 장비 점검', '배관 공장 1단지')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [장비 점검] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || 'X-도크 서비스 구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -659,12 +768,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 장비 점검', 'X-도크 서비스 구역')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [장비 점검] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '배관 공장 2단지'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -694,12 +808,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 분진 발생', '배관 공장 2단지')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [분진 발생] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '강재 저장소 A'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -729,12 +848,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 화기 작업 주의', '강재 저장소 A')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [화기 작업 주의] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '워크샵 18구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -764,12 +888,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 장비 점검', '워크샵 18구역')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [장비 점검] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '워크샵 9구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -799,12 +928,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 강풍주의', '워크샵 9구역')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [강풍주의] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '옥포 특수선 구역 B'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -834,12 +968,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 분진 발생', '옥포 특수선 구역 B')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [분진 발생] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '의장 부두 A'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -869,12 +1008,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 분진 발생', '의장 부두 A')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [분진 발생] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '북부 야드 1도크'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -904,12 +1048,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 화기 작업 주의', '북부 야드 1도크')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [화기 작업 주의] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '워크샵 11구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -939,12 +1088,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 장비 점검', '워크샵 11구역')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [장비 점검] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #F59E0B">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #F59E0B"
+                 x-show="(filterStatus === '전체' || filterStatus === '주의') && (searchQuery === '' || '제1 진수대'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -974,12 +1128,17 @@
                 <!-- 액션 버튼 -->
                 <div class="text-right space-y-4">
                     <button @click="openPopup('[주의] 분진 발생', '제1 진수대')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                        ⚠️ 상세 지시사항 확인
+                        ⚠️ [분진 발생] 지시 확인
                     </button>
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '워크샵 13구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1014,7 +1173,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '특수선 시운전 구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1049,7 +1213,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '조립 구역 감마'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1084,7 +1253,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '강재 저장소 B'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1119,7 +1293,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '정문 물류 센터'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1154,7 +1333,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '디지털 트윈 동기화 허브'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1189,7 +1373,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '워크샵 16구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1224,7 +1413,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '북부 야드 2도크'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1259,7 +1453,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '제3 도장 공장'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1294,7 +1493,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '크레인 트랙 C'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1329,7 +1533,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '의장 부두 B'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1364,7 +1573,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '해상풍력 구역 A'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1399,7 +1613,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || 'E-도크 서비스 구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1434,7 +1653,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '남부 야드 A부두'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1469,7 +1693,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '도장 1방'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1504,7 +1733,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '워크샵 14구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1539,7 +1773,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '크레인 트랙 A'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1574,7 +1813,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '해상 가공 플랫폼'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1609,7 +1853,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '워크샵 15구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1644,7 +1893,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '워크샵 10구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1679,7 +1933,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '워크샵 19구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1714,7 +1973,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '대형 가공 1공장'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1749,7 +2013,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '제5도크 (통영분관)'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1784,7 +2053,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '보안 블록 1'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1819,7 +2093,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '조립 구역 알파'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1854,7 +2133,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '제2 진수대'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1889,7 +2173,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '거제 제1도크'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1924,7 +2213,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '선박 블록 저장소 2'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1959,7 +2253,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '남부 야드 B부두'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -1994,7 +2293,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '보안 블록 2'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -2029,7 +2333,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '수출 부두 델타'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -2064,7 +2373,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '중량물 하역장'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -2099,7 +2413,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '워크샵 12구역'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -2134,7 +2453,12 @@
                 </div>
             </div>
             
-            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: #10B981">
+            <div class="glass flex items-center gap-12 p-8 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" 
+                 style="border-left-color: #10B981"
+                 x-show="(filterStatus === '전체' || filterStatus === '정상') && (searchQuery === '' || '선박 블록 저장소 1'.includes(searchQuery))"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
                 <!-- 원형 진행률 그래프 -->
                 <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg class="w-full h-full transform -rotate-90">
@@ -2169,6 +2493,11 @@
                 </div>
             </div>
             
+            
+            <!-- 데이터 없음 메시지 -->
+            <div x-show="Object.keys($el.parentElement.children).filter(i => $el.parentElement.children[i].style.display !== 'none').length <= 2" x-cloak class="py-40 text-center">
+                <p class="text-4xl font-black text-white/10 uppercase italic tracking-widest">검색 결과가 없습니다</p>
+            </div>
         </main>
 
         <!-- 푸터 영역 -->
@@ -2213,13 +2542,13 @@
             return {
                 popup: { open: false, issueDisplay: '', guidance: '', dock: '' },
                 guidelines: [{"ISSUE":"\ud06c\ub808\uc778 \uc624\uc791\ub3d9","GUIDANCE":"\uc989\uc2dc \ubaa8\ub4e0 \ud06c\ub808\uc778 \uc804\uc6d0 \ucc28\ub2e8 \ubc0f \uc8fc\ubcc0 \ub300\ud53c \uba85\ub839 \ubc1c\ub839. \uc804\ubb38 \uc5d4\uc9c0\ub2c8\uc5b4\uac00 \ud604\uc7a5\uc5d0 \ud22c\uc785\ub420 \ub54c\uae4c\uc9c0 \uc811\uadfc \uae08\uc9c0."},{"ISSUE":"\ub099\ud558\ubb3c \ubc1c\uc0dd","GUIDANCE":"\ud604\uc7a5 \uc791\uc5c5\uc790 \uc989\uc2dc \ub300\ud53c \uc720\ub3c4. \uc794\ud574\ubb3c\uc774 \uacf5\uc815 \uc790\uc7ac\uc5d0 \ubbf8\uce58\ub294 \uc601\ud5a5\uc744 \ud3c9\uac00\ud558\uace0 \uc804\uba74 \uc548\uc804 \uc9c4\ub2e8 \uc644\ub8cc \ud6c4 \uc791\uc5c5 \uc7ac\uac1c\ud560 \uac83."},{"ISSUE":"\uc720\ud574\uac00\uc2a4 \uac10\uc9c0","GUIDANCE":"\ud0f1\ud06c \ubc0f \ubc00\ud3d0 \uacf5\uac04 \ub0b4 \uc1a1\ud48d\uae30 \uac00\ub3d9 \ucd5c\ub300\ud654. \ubaa8\ub4e0 \uc791\uc5c5\uc790 \uc989\uc2dc \ud0c8\ucd9c \uba85\ub839 \ubc0f \uac00\uc2a4 \ub18d\ub3c4\uac00 0.5% \ubbf8\ub9cc\uc73c\ub85c \ub3c4\ub2ec\ud560 \ub54c\uae4c\uc9c0 \uc9c4\uc785 \ucc28\ub2e8."},{"ISSUE":"\ubd84\uc9c4 \ubc1c\uc0dd","GUIDANCE":"\ud604\uc7a5 \uc791\uc5c5\uc790 \ud2b9\uc218 \ubc29\uc9c4 \ub9c8\uc2a4\ud06c \ucc29\uc6a9 \uc758\ubb34\ud654. \uc218\ubd84 \uc0b4\ud3ec \uc2dc\uc2a4\ud15c \uac00\ub3d9\ud558\uc5ec \ube44\uc0b0 \uba3c\uc9c0 \uc5b5\uc81c \ubc0f \uc8fc\ubcc0 \uacf5\uae30 \uc815\ud654 \uac00\ub3d9."},{"ISSUE":"\ud654\uae30 \uc791\uc5c5 \uc8fc\uc758","GUIDANCE":"\uc8fc\ubcc0 \uac00\uc5f0\uc131 \uc790\uc7ac \uaca9\ub9ac \ud655\uc778. 2\uc778 1\uc870 \uac10\uc2dc \uccb4\uacc4 \uac00\ub3d9 \ubc0f \uc18c\ud654\uae30 \ud604\uc7a5 \ube44\uce58 \ud655\uc778 \ud6c4 \uc791\uc5c5 \uc2b9\uc778."},{"ISSUE":"\uc815\uc0c1","GUIDANCE":"\ud1b5\uc0c1 \uacf5\uc815 \ubaa8\ub2c8\ud130\ub9c1 \ubaa8\ub4dc \uc720\uc9c0. \ud2b9\uc774 \uc0ac\ud56d \uc5c6\uc74c. \uc9c0\uc2dc\uc0ac\ud56d \ub300\uae30 \uc911."},{"ISSUE":"\uc810\uac80","GUIDANCE":"\uc815\uae30 \uc720\uc9c0\ubcf4\uc218 \uad6c\uc5ed. \uc2b9\uc778\ub41c \uc778\uc6d0 \uc678 \ucd9c\uc785 \ud1b5\uc81c \ubc0f \uc810\uac80 \ubcf4\uace0\uc11c \uc2e4\uc2dc\uac04 \uc804\uc1a1 \ub300\uae30."},{"ISSUE":"\uacf5\uc815 \uc9c0\uc5f0","GUIDANCE":"\uc778\ub825 \uc7ac\ubc30\uce58 \ubc0f RPA \ubd07 \uc6b0\uc120 \uc21c\uc704 \uc870\uc815. \uc0dd\uc0b0 \uad00\ub9ac \ubcf8\ubd80\uc640 \uacf5\uc815 \ub9cc\ud68c \ub300\ucc45 \ud68c\uc758 \uc18c\uc9d1."},{"ISSUE":"\uae30\uc0c1 \uc545\ud654","GUIDANCE":"\uc2e4\uc678 \ud0c0\uc6cc\ud06c\ub808\uc778 \uac00\ub3d9 \uc911\ub2e8 \ubc0f \uac15\uc7ac \uace0\uc815 \ud655\uc778. \ud0dc\ud48d \uc601\ud5a5\uad8c \uc9c4\uc785 \uc2dc \uc804 \uad6c\uc5ed \ub300\ud53c \ud504\ub85c\ud1a0\ucf5c \uac00\ub3d9."},{"ISSUE":"\ub2e8\uc804","GUIDANCE":"\ube44\uc0c1 \ubc1c\uc804\uae30 \uac00\ub3d9 \ubc0f \ud575\uc2ec \uc11c\ubc84 \uc804\uc6d0 \ubcf4\ud638. \uc804\uc0b0 \ubcf5\uad6c \uc804\uae4c\uc9c0 \uc218\ub3d9 \ubaa8\ub2c8\ud130\ub9c1 \uccb4\uacc4\ub85c \uc804\ud658."}],
+                searchQuery: '',
+                filterStatus: '전체',
                 openPopup(rawIssue, dock) {
-                    // 접두사 제거를 통한 매칭 향상
                     const prefixes = ["[주의]", "[기상]", "[위험]", "[경고]", "[장비]"];
                     let cleanIssue = rawIssue;
                     prefixes.forEach(p => { cleanIssue = cleanIssue.replace(p + " ", ""); });
                     
-                    // 유연한 매칭 로직: 이슈 문자열이 포함되어 있는지 확인
                     const match = this.guidelines.find(g => cleanIssue.includes(g.ISSUE) || rawIssue.includes(g.ISSUE));
                     
                     this.popup.issueDisplay = cleanIssue;
