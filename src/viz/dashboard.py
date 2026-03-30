@@ -11,12 +11,11 @@ from src.viz import theme
 
 class DashboardEngine:
     """
-    Visualization Engine for Hanwha Ocean AX (v25.2.1 - True Digital Twin).
+    Visualization Engine for Hanwha Ocean AX (v25.3.0 - Strategic Vector Graphic).
     STRATEGIC COMMAND & CONTROL INTERFACE:
-    - [MAIN FOCUS]: 3D Isometric Yard Image is the central hero.
-    - [RESPONSE LAYER]: Critical Focus cards on the left.
-    - [TRACKING LAYER]: Side-panel list on the right-bottom.
-    - [UI]: Clean HUD overlay with minimal background dimming.
+    - [GRAPHIC HUD]: Pure SVG-based interactive shipyard map (100% Code-based Graphic).
+    - [INTERACTIVE NODES]: Glowing safety nodes on a vectorized blueprint.
+    - [TIERED RESPONSE]: Pinned critical response panels.
     """
     
     def __init__(self):
@@ -32,8 +31,53 @@ class DashboardEngine:
         for prefix in ["[주의]", "[기상]", "[위험]", "[경고]", "[장비]"]:
             self.df_dock["안전이슈"] = self.df_dock["안전이슈"].str.replace(prefix + " ", "", regex=False)
 
+    def generate_svg_map(self, df):
+        """Generates a high-end SVG shipyard blueprint with interactive status nodes."""
+        svg_nodes = ""
+        # 60개 노드 조밀 배치 (XY 좌표 가상으로 분산)
+        for i, row in df.iterrows():
+            # 가상 좌표 (Shipyard-like grid)
+            x = 200 + (i % 10) * 80
+            y = 150 + (i // 10) * 100
+            
+            sev = str(row["안전이슈"])
+            color = "#EF4444" if "위험" in sev or "경고" in sev else ("#F59E0B" if "주의" in sev else "#00F2FF")
+            opacity = "0.8" if "위험" in sev else "0.3"
+            stroke_width = "4" if "위험" in sev else "1"
+            pulse_class = "animate-ping" if "위험" in sev else ""
+            
+            svg_nodes += f"""
+            <g class="cursor-pointer group" @mouseenter="showGuidance('{html.escape(sev)}', $event)" @mouseleave="hideGuidance()">
+                <circle cx="{x}" cy="{y}" r="12" fill="{color}" fill-opacity="{opacity}" stroke="{color}" stroke-width="{stroke_width}" class="{pulse_class}" />
+                <circle cx="{x}" cy="{y}" r="6" fill="{color}" />
+                <text x="{x}" y="{y-20}" text-anchor="middle" font-size="10" fill="white" font-weight="900" class="opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">{html.escape(str(row['구역/도크']))}</text>
+            </g>
+            """
+            
+        return f"""
+        <svg viewBox="0 0 1200 800" class="w-full h-full drop-shadow-[0_0_30px_rgba(0,163,255,0.1)]">
+            <!-- BLUEPRINT GRID -->
+            <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+            
+            <!-- SHIPYARD OUTLINE (ABSTRACT GRAPHIC) -->
+            <path d="M 100 100 L 1100 100 L 1100 700 L 100 700 Z" fill="none" stroke="rgba(0, 242, 255, 0.1)" stroke-width="2" stroke-dasharray="10,10" />
+            <path d="M 300 200 Q 600 50 900 200 L 900 600 Q 600 750 300 600 Z" fill="rgba(30, 41, 59, 0.2)" stroke="rgba(0, 242, 255, 0.2)" stroke-width="1" />
+            
+            <!-- DOCK CONNECTORS -->
+            <line x1="100" y1="400" x2="1100" y2="400" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="5,5" />
+            
+            <!-- INTERACTIVE NODES -->
+            {svg_nodes}
+        </svg>
+        """
+
     def render(self):
-        print(f"📡 [Enterprise-AX] Rendering True Digital Twin Dashboard (v25.2.1 Focus Hero)...")
+        print(f"📡 [Enterprise-AX] Rendering Interactive Vector Graphic Dashboard (v25.3.0 Strategic Blueprint)...")
         self.load_data()
         
         # 1. High-Level KPI Data
@@ -41,7 +85,7 @@ class DashboardEngine:
         days_to_go, proj_date = self.analytics.predict_dday(avg_proc)
         risk_index = self.analytics.calculate_executive_risk_index(self.df_dock)
         
-        # 2. Sorting & Tiering Logic
+        # 2. Logic for Tiering
         def get_severity_score(row):
             val = str(row["안전이슈"])
             if any(x in val for x in ["위험", "경고", "중단", "점검", "주의"]): 
@@ -49,58 +93,45 @@ class DashboardEngine:
             return 2
             
         self.df_dock["sev_score"] = self.df_dock.apply(get_severity_score, axis=1)
-        
-        # [Tiering]
-        df_critical = self.df_dock[self.df_dock["sev_score"] == 0].sort_values("공정률")
+        df_critical = self.df_dock[self.df_dock["sev_score"] == 0]
         df_standard = self.df_dock[self.df_dock["sev_score"] != 0].sort_values(["sev_score", "공정률"], ascending=[True, True])
 
-        # 3. Component Generation: Priority HUD (Floating Left)
-        priority_cards_html = ""
+        # 3. Generate SVG Map Component
+        svg_map_html = self.generate_svg_map(self.df_dock)
+
+        # 4. Critical List (Floating HUD)
+        critical_list_html = ""
         for _, row in df_critical.iterrows():
             e_dock = html.escape(str(row['구역/도크']))
-            e_task = html.escape(str(row['현재작업']))
             e_safety = html.escape(str(row['안전이슈']))
-            
-            priority_cards_html += f"""
-            <div class="glass-hud p-6 rounded-[2rem] border-l-8 border-red-500 animate-pulse-slow mb-6 backdrop-blur-3xl">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-[10px] font-black text-red-500 uppercase tracking-widest border border-red-500/20 px-3 py-0.5 rounded-full">URGENT</span>
-                    <span class="text-2xl font-black text-white italic">{row['공정률']}%</span>
+            critical_list_html += f"""
+            <div class="glass-hud p-6 rounded-3xl border-l-[12px] border-red-500 animate-pulse-slow mb-4 flex justify-between items-center bg-red-500/5">
+                <div>
+                    <h5 class="text-xl font-black text-white italic tracking-tighter uppercase">{e_dock}</h5>
+                    <p class="text-[10px] font-black text-red-500 uppercase tracking-widest">{e_safety}</p>
                 </div>
-                <h4 class="text-2xl font-black text-white uppercase tracking-tighter mb-2">{e_dock}</h4>
-                <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">{e_task}</div>
-                <div class="p-3 bg-red-500/20 rounded-xl border border-red-500/30 text-xs font-black text-white text-center cursor-help"
-                     @mouseenter="showGuidance('{e_safety}', $event)" @mouseleave="hideGuidance()">🆘 {e_safety}</div>
+                <div class="text-3xl font-black text-white">{row['공정률']}%</div>
             </div>
             """
 
-        # 4. Component Generation: Compact Tracking List (Right Panel)
-        standard_list_html = ""
+        # 5. Global Track List
+        global_list_html = ""
         for _, row in df_standard.iterrows():
             e_dock = html.escape(str(row['구역/도크']))
-            e_task = html.escape(str(row['현재작업']))
-            e_safety = html.escape(str(row['안전이슈']))
-            
-            sev = row['sev_score']
-            accent = {1: "#F59E0B", 2: "#10B981"}.get(sev, "#64748b")
-            
-            standard_list_html += f"""
-            <div class="flex items-center justify-between p-4 border-b border-white/5 hover:bg-white/5 transition-all text-left card-node cursor-default"
-                 data-severity="{'caution' if sev==1 else 'optimal'}" data-task="{e_task.lower()}" data-name="{e_dock.lower()}">
-                <div class="flex-1">
-                    <div class="text-[10px] font-black text-white uppercase tracking-tighter">{e_dock}</div>
-                    <div class="text-[8px] text-gray-500 uppercase tracking-widest">{e_task}</div>
-                </div>
-                <div class="text-right min-w-[80px]">
-                    <div class="text-xl font-black text-white italic">{row['공정률']}<span class="text-[10px] ml-1">%</span></div>
-                    <div class="h-1 w-full bg-white/5 mt-1 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#FF6B00]" style="width: {row['공정률']}%"></div>
+            global_list_html += f"""
+            <div class="flex items-center justify-between p-3 border-b border-white/5 hover:bg-white/5 transition-all text-left card-node cursor-default"
+                 data-severity="{'caution' if row['sev_score']==1 else 'optimal'}" data-task="{html.escape(str(row['현재작업']))}" data-name="{e_dock.lower()}">
+                <div class="text-[10px] font-black text-gray-400 uppercase tracking-tighter truncate max-w-[120px]">{e_dock}</div>
+                <div class="flex items-center gap-3">
+                    <span class="text-lg font-black text-white italic">{row['공정률']}%</span>
+                    <div class="w-12 h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-full bg-cyan-500" style="width: {row['공정률']}%"></div>
                     </div>
                 </div>
             </div>
             """
 
-        # 5. Final HTML Assembly
+        # 6. Final HTML Assembly
         output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
         guidelines_path = os.path.join(self.config.DATA_DIR, "safety_guidelines.csv")
         guidelines_json = "[]"
@@ -117,7 +148,7 @@ class DashboardEngine:
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한화오션 AX - 리얼 디지털 트윈 (v25.2.1)</title>
+    <title>한화오션 AX - 인터랙티브 블루프린트 (v25.3.0)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -126,148 +157,121 @@ class DashboardEngine:
             {css_vars} 
         }}
         body {{ 
-            background: #000 url('docs/images/final_dashboard_sample.png') no-repeat center center fixed;
-            background-size: cover;
+            background: #020617; 
             color: #fff; 
             font-family: 'Outfit', 'Noto Sans KR', sans-serif;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
             overflow: hidden;
         }}
-        .dimmer {{ background: rgba(2, 6, 23, 0.4); min-height: 100vh; width: 100vw; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10; }}
-        .hud-layer {{ position: relative; z-index: 20; height: 100vh; width: 100vw; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }}
-        .glass-hud {{ background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(50px); border: 1px solid rgba(255, 255, 255, 0.08); }}
+        .hud-layer {{ position: relative; z-index: 20; height: 100vh; display: flex; flex-direction: column; }}
+        .glass-hud {{ background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.08); }}
         @keyframes pulse-slow {{ 0%, 100% {{ opacity: 1; }} 50% {{ opacity: 0.8; transform: scale(1.005); }} }}
         .animate-pulse-slow {{ animation: pulse-slow 3s infinite ease-in-out; }}
+        .custom-scroll::-webkit-scrollbar {{ width: 4px; }}
+        .custom-scroll::-webkit-scrollbar-thumb {{ background: rgba(0, 242, 255, 0.3); border-radius: 10px; }}
         [x-cloak] {{ display: none !important; }}
-        ::-webkit-scrollbar {{ width: 4px; }}
-        ::-webkit-scrollbar-thumb {{ background: rgba(0, 242, 255, 0.3); border-radius: 10px; }}
     </style>
 </head>
 <body x-data="axDashboard()">
     
-    <div class="dimmer"></div>
-
     <div class="hud-layer p-10">
-        <!-- TOP HEADER HUD (Minimal) -->
-        <header class="flex justify-between items-start mb-10 w-full">
-            <div class="space-y-4">
-                <div class="flex items-center gap-6">
-                    <div class="w-16 h-16 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-2xl flex items-center justify-center text-3xl font-black italic shadow-2xl">H</div>
-                    <h1 class="text-5xl lg:text-6xl font-black tracking-tighter uppercase italic leading-none">
-                        STRATEGIC <span class="text-[#FF6B00]">AX ENGINE</span>
+        <!-- TOP STRATEGIC HUD -->
+        <header class="flex justify-between items-center mb-10 w-full">
+            <div class="flex items-center gap-8">
+                <div class="w-16 h-16 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-2xl flex items-center justify-center text-3xl font-black italic">H</div>
+                <div class="flex flex-col">
+                    <h1 class="text-4xl lg:text-5xl font-black tracking-tighter uppercase italic leading-none">
+                        VECTOR <span class="text-[#00F2FF]">BLUEPRINT</span>
                     </h1>
-                </div>
-                <div class="flex items-center gap-4">
-                    <span class="w-10 h-[1px] bg-[#FF6B00]"></span>
-                    <p class="text-[8px] font-black text-[#00F2FF] uppercase tracking-[1em]">v25.2.1 리얼 디지털 트윈 활성</p>
+                    <p class="text-[8px] font-black text-[#FF6B00] uppercase tracking-[1em] mt-2">v25.3.0 그래픽 관제 가동 중</p>
                 </div>
             </div>
 
             <div class="flex gap-4">
-                <div class="glass-hud p-4 rounded-2xl min-w-[180px] border-t-2 border-[#00F2FF]">
-                    <p class="text-[7px] font-black text-gray-500 uppercase tracking-widest mb-1">RISK INDEX</p>
-                    <p class="text-3xl font-black text-white italic tabular-nums">{risk_index}</p>
+                <div class="glass-hud p-6 rounded-3xl min-w-[200px] border-l-4 border-[#00F2FF]">
+                    <p class="text-[7px] font-bold text-gray-500 uppercase tracking-widest mb-1">RISK INDEX</p>
+                    <p class="text-4xl font-black text-white italic tabular-nums">{risk_index}</p>
                 </div>
-                <div class="glass-hud p-4 rounded-2xl min-w-[180px] border-t-2 border-[#FF6B00]">
-                    <p class="text-[7px] font-black text-gray-500 uppercase tracking-widest mb-1">AVG PROGRESS</p>
-                    <p class="text-3xl font-black text-[#FF6B00] italic tabular-nums">{avg_proc:.1f}%</p>
+                <div class="glass-hud p-6 rounded-3xl min-w-[200px] border-l-4 border-[#FF6B00]">
+                    <p class="text-[7px] font-bold text-gray-500 uppercase tracking-widest mb-1">YARD PROGRESS</p>
+                    <p class="text-4xl font-black text-[#FF6B00] italic tabular-nums">{avg_proc:.1f}%</p>
                 </div>
             </div>
         </header>
 
-        <!-- MAIN VIEWPORT (Flexible Center) -->
-        <div class="flex-1 flex gap-10 overflow-hidden">
-            <!-- LEFT: CRITICAL RESPONSE HUD -->
-            <div class="w-[400px] flex flex-col pointer-events-auto">
-                <div class="flex items-end gap-4 mb-6">
-                    <h2 class="text-2xl font-black italic uppercase tracking-tighter text-white">Critical Priority</h2>
-                    <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse mb-1"></div>
+        <!-- MAIN VIEWPORT (SVG MAP HERO) -->
+        <div class="flex-1 flex gap-8 overflow-hidden relative">
+            
+            <!-- LEFT: CRITICAL FLOATING HUD -->
+            <div class="w-[380px] flex flex-col z-50">
+                <h2 class="text-xl font-black italic uppercase tracking-tighter text-white mb-6">Critical Nodes</h2>
+                <div class="flex-1 overflow-y-auto custom-scroll pr-4 space-y-4">
+                    {critical_list_html or '<div class="opacity-20 text-xs text-center border-2 border-dashed border-white/5 py-10 rounded-3xl">Stabilized</div>'}
                 </div>
-                <div class="flex-1 overflow-y-auto pr-4 space-y-4">
-                    {priority_cards_html or '<div class="glass-hud p-10 text-center opacity-30 text-xs italic font-black uppercase tracking-widest rounded-[2rem]">Stable State (0 Hazards)</div>'}
-                </div>
-                <!-- D-DAY HUD -->
-                <div class="glass-hud p-6 rounded-3xl mt-10 border-l-4 border-emerald-500/50">
-                    <p class="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-2">Estimated Arrival</p>
-                    <div class="text-3xl font-black text-white italic">D-{days_to_go:.0f} <span class="text-xs text-emerald-500 ml-2">({proj_date})</span></div>
+                <div class="glass-hud p-8 rounded-[3rem] mt-10">
+                    <p class="text-[8px] font-black text-emerald-500 uppercase tracking-widest mb-2">Completion Prediction</p>
+                    <p class="text-4xl font-black text-white italic">D-{days_to_go:.0f}</p>
                 </div>
             </div>
 
-            <!-- CENTER: HERO SPACE (IMAGE IS FULLY VISIBLE HERE) -->
-            <div class="flex-1 relative flex items-center justify-center pointer-events-none">
-                <!-- Empty space to reveal background image -->
-                <div class="absolute bottom-10 left-1/2 -translate-x-1/2 glass-hud px-12 py-4 rounded-full border border-[#00F2FF]/20 animate-fade-in-up">
-                    <p class="text-[10px] font-black text-[#00F2FF] uppercase tracking-[1em]">Shipyard Digital Twin Interface Active</p>
+            <!-- CENTER GRAPHIC: THE SVG SHIPYARD BLUEPRINT -->
+            <div class="flex-1 glass-hud rounded-[4rem] relative overflow-hidden flex items-center justify-center p-10 border border-white/5">
+                <div class="absolute top-8 right-12 z-50">
+                    <span class="text-[8px] font-black text-[#00F2FF] uppercase tracking-[1em]">Shipyard Virtual Layout Active</span>
                 </div>
+                <!-- THE SVG STARTS HERE -->
+                {svg_map_html}
             </div>
 
-            <!-- RIGHT-BOTTOM: COMPACT GLOBAL TRACKING PANEL -->
-            <div class="w-[400px] flex flex-col pointer-events-auto pt-[20vh]">
-                <div class="glass-hud flex-1 flex flex-col rounded-[3.5rem] overflow-hidden shadow-2xl border border-white/5">
-                    <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
-                        <h3 class="text-sm font-black uppercase italic tracking-widest text-[#00F2FF]">Global Tracking</h3>
-                        <div class="flex gap-2">
-                             <button @click="filter = 'all'" class="text-[8px] font-black px-2 py-1 rounded bg-white/10 hover:bg-white/20">ALL</button>
-                             <button @click="filter = 'caution'" class="text-[8px] font-black px-2 py-1 rounded bg-amber-500/20 text-amber-500">CAUTION</button>
-                        </div>
+            <!-- RIGHT: COMPACT GLOBAL TRACKER -->
+            <div class="w-[320px] flex flex-col z-50 pt-[10vh]">
+                <div class="glass-hud flex-1 flex flex-col rounded-[3rem] overflow-hidden shadow-2xl">
+                    <div class="p-6 border-b border-white/5 bg-white/5">
+                        <h3 class="text-xs font-black uppercase italic tracking-widest text-[#00F2FF]">Global Asset Tracker</h3>
                     </div>
-                    <!-- SEARCH -->
-                    <div class="p-4 bg-black/20">
-                        <input type="text" x-model="search" placeholder="Search Node..." class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-6 text-sm font-black italic focus:outline-none focus:border-[#00F2FF]">
+                    <div class="p-3">
+                        <input type="text" x-model="search" placeholder="Filter..." class="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-xs font-black focus:outline-none focus:border-[#00F2FF]">
                     </div>
-                    <!-- LIST LAYER -->
                     <div class="flex-1 overflow-y-auto custom-scroll">
-                        {standard_list_html}
+                        {global_list_html}
                     </div>
                 </div>
             </div>
         </div>
 
-        <footer class="mt-10 flex justify-between items-center opacity-40 py-6 border-t border-white/5 w-full">
-            <p class="text-[8px] font-black uppercase tracking-[1em]">Hanwha Ocean AX Master Engine V25.2.1 Global Edition</p>
-            <div class="flex gap-4">
-                <span class="text-[8px] font-bold text-emerald-500">SYSTEM: OPTIMAL</span>
-                <span class="text-[8px] font-bold text-[#00F2FF]">SYNC: 99.98%</span>
-            </div>
+        <footer class="mt-8 flex justify-between items-center opacity-30 py-6 border-t border-white/5 w-full">
+            <p class="text-[8px] font-black uppercase tracking-[1em]">Hanwha Ocean AX Vector Engine V25.3.0</p>
         </footer>
     </div>
 
     <!-- AI SISE OVERLAY -->
-    <div x-show="guidance.show" x-cloak class="fixed pointer-events-none z-[3000] glass-hud p-10 max-w-sm border-[#FF6B00]/40 rounded-[2.5rem]" :style="`left: ${{guidance.x}}px; top: ${{guidance.y}}px;`" x-transition>
-        <h5 class="text-[10px] font-black text-[#FF6B00] uppercase tracking-widest mb-3">SISE BOT PROTOCOL</h5>
-        <p class="text-lg font-bold text-white leading-relaxed" x-text="guidance.text"></p>
+    <div x-show="guidance.show" x-cloak class="fixed pointer-events-none z-[3000] glass-hud p-8 max-w-xs border-[#FF6B00]/40 rounded-[2rem]" :style="`left: ${{guidance.x}}px; top: ${{guidance.y}}px;`" x-transition>
+        <p class="text-sm font-bold text-white leading-relaxed" x-text="guidance.text"></p>
     </div>
 
     <script>
         function axDashboard() {{
             return {{
-                filter: 'all',
-                search: '',
-                guidelines: {guidelines_json},
-                guidance: {{ show: false, text: '', x: 0, y: 0 }},
+                filter: 'all', search: '', guidelines: {guidelines_json}, guidance: {{ show: false, text: '', x: 0, y: 0 }},
                 applyFilters() {{
                     const cards = document.querySelectorAll('.card-node');
                     cards.forEach(card => {{
-                        const sev = card.dataset.severity;
                         const name = card.dataset.name;
                         const task = card.dataset.task;
-                        const matchesFilter = this.filter === 'all' || sev === this.filter;
                         const matchesSearch = name.includes(this.search.toLowerCase()) || task.includes(this.search.toLowerCase());
-                        if (matchesFilter && matchesSearch) {{ card.classList.remove('flex'); card.classList.add('flex'); card.style.display = 'flex'; }} 
-                        else {{ card.style.display = 'none'; }}
+                        card.style.display = matchesSearch ? 'flex' : 'none';
                     }});
                 }},
                 showGuidance(issue, event) {{
                     const match = this.guidelines.find(g => issue.includes(g.ISSUE));
-                    this.guidance.text = match ? match.GUIDANCE : 'Default Protocol: Monitoring...';
+                    this.guidance.text = match ? match.GUIDANCE : 'Monitoring State.';
                     this.guidance.x = event.clientX + 20;
                     this.guidance.y = event.clientY + 20;
                     this.guidance.show = true;
                 }},
                 hideGuidance() {{ this.guidance.show = false; }},
                 init() {{
-                    this.$watch('filter', () => this.applyFilters());
                     this.$watch('search', () => this.applyFilters());
                 }}
             }}
@@ -276,7 +280,7 @@ class DashboardEngine:
 </body>
 </html>
             """)
-        print(f"✨ True Digital Twin Hero Dashboard (v25.2.1) Generated: {{output_path}}")
+        print(f"✨ Strategic Vector Blueprint Dashboard (v25.3.0) Generated: {{output_path}}")
 
 if __name__ == "__main__":
     engine = DashboardEngine()
