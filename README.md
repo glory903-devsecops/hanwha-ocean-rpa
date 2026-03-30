@@ -11,9 +11,9 @@
 
 ## 🚀 Strategic Dashboard Showcase (v25.0.0)
 
-### [Full Asset Grid: High-Density Node Monitoring]
-![Main Dashboard Grid](docs/images/full_asset_grid_v25.png)
-*거제 옥포 야드 내 50개 이상의 작업 노드를 실시간 디지털 공간에 동기화합니다.*
+### [Digital Twin HUD: Selected 3D Isometric View]
+![Final Isometric Dashboard](docs/images/final_dashboard_sample.png)
+*사용자가 직접 선택한 3D 아이소메트릭 디지털 트윈 뷰가 상시 가동 중입니다.*
 
 ### [Intelligence: AI-Driven Risk Filtering]
 ![Risk Filter in Action](docs/images/risk_filter_applied_v25.png)
