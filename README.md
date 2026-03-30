@@ -1,84 +1,62 @@
-# ⚓ 한화오션 스마트 야드 AX: 디지털 전략 & 전략 커맨드 센터 (v25.0.0)
+# ⚓ Hanwha Ocean AX: Strategic Command Center (v26.0.0)
 
-[![Python 3.14](https://img.shields.io/badge/Python-3.14-FF6A00?logo=python&logoColor=white)](https://www.python.org/)
-[![Live Dashboard](https://img.shields.io/badge/Live-Strategic_Command-00F2FF?logo=target&logoColor=white)](https://glory903-devsecops.github.io/hanwha-ocean-rpa/)
-[![Status](https://img.shields.io/badge/Status-Enterprise_Elite-emerald)](https://github.com/glory903-devsecops/hanwha-ocean-rpa)
+[![Demo Dashboard](https://img.shields.io/badge/Live-Demo%20Dashboard-orange?style=for-the-badge&logo=github)](https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html)
+[![Portfolio Edition](https://img.shields.io/badge/Portfolio-Global%20Enterprise-blue?style=for-the-badge)](https://github.com/glory903-devsecops/hanwha-ocean-rpa)
 
-## 🏢 Executive Overview
-본 프로젝트는 **한화오션(Hanwha Ocean)**의 'Smart Yard' 비전 실현을 위한 **디지털 트윈 기반 전략 커맨드 센터**입니다. 인공지능(AI)과 디지털 전환(DX)을 결합한 **AX(AI Transformation)** 플랫폼으로, 50개 이상의 핵심 노드 동기화와 전략 리스크 지표(QRI) 관리를 지원합니다.
+본 프로젝트는 **한화오션 스마트 야드(Smart Yard) AX(AI Transformation)** 비전을 실현하기 위한 차세대 전략 관제 및 RPA 통합 관리 시스템입니다. 조선소의 수만 개 자산과 수십 개의 도크 공정을 실시간 디지털 트윈으로 구현하여, 경영진과 현장 관리자가 최적의 의사결정을 내릴 수 있도록 돕습니다.
 
 ---
 
-## 🚀 Strategic Dashboard Showcase (v25.0.0)
+## 🚀 전사 통합 런처 (Enterprise AX Launchpad)
 
-### [Digital Twin HUD: Selected 3D Isometric View]
-![Final Isometric Dashboard](docs/images/final_dashboard_sample.png)
-*사용자가 직접 선택한 3D 아이소메트릭 디지털 트윈 뷰가 상시 가동 중입니다.*
+본 시스템은 3개의 핵심 서비스 채널로 구성되어 있으며, 모든 인터페이스는 **한국어**로 완벽하게 현지화되었습니다.
 
-### [Intelligence: AI-Driven Risk Filtering]
-![Risk Filter in Action](docs/images/risk_filter_applied_v25.png)
-*Quantum Risk Index(QRI) 기반 지능형 필터링을 통해 위험 구역을 즉시 식별합니다.*
-
-### [Insight: Strategic Search & SISE Synthesis]
-![Search Interface](docs/images/dock_search_v25.png)
-*특정 호선 및 도크를 즉각 검색하고, 최적의 공정 리밸런싱 방안을 도출합니다.*
-
----
-
-## 🌐 Enterprise Access Points (4 CORE CHANNELS)
-
-| Channel | Description | Live/Local Access |
-| :--- | :--- | :--- |
-| **🚀 HQ Dashboard** | 전체 야드 전략 커맨드 센터 (메인) | [Live Link](https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html) / [Local (8081)](http://localhost:8081/index.html) |
-| **🎮 AX Launchpad** | 구성 요소별 통합 진입 게이트웨이 | [Live Link](https://glory903-devsecops.github.io/hanwha-ocean-rpa/launchpad.html) / [Local (8081)](http://localhost:8081/launchpad.html) |
-| **💻 ERP Simulator** | 야드 데이터 실시간 연동/등록 보드 | [Local (8081)](http://localhost:8081/src/viz/erp_input.html) |
-| **🛡️ Gov Portal** | 거버넌스 가이드라인 관리 포털 | [Local (8081)](http://localhost:8081/src/viz/admin_guidance.html) |
+1.  **📊 [전략 관제 대시보드] (Strategic Dashboard)**: 
+    - 전사 도크 공정률 및 리스크 지수를 한눈에 파악하는 컨트롤 타워입니다.
+    - 항목별 가로 막대 그래프와 원형 리스크 상태 뷰를 제공하며, 주의사항 클릭 시 **실시간 대응 지휘 팝업**이 출력됩니다.
+2.  **📝 [도크 현황 기록 ERP] (RPA Dock Entry)**:
+    - 현장에서 RPA 봇이 수집한 데이터를 입력하거나 수동으로 공정률을 갱신하는 ERP 시뮬레이터입니다.
+    - 도크 이름 **드롭다운 선택 방식**을 적용하여 데이터 오타 및 중복을 방지합니다.
+3.  **⚙️ [지휘 지시사항 관리] (Admin Portal)**:
+    - 발생 가능한 리스크(가스 감지, 낙하물 등)에 대한 **AX 대응 프로토콜**을 수립하고 실시간으로 배포하는 거버넌스 포털입니다.
 
 ---
 
-## 🏗 Enterprise Quick Start (CEO Guide)
+## 🛠 기술 아키텍처 & 특점 (Refined Tech Stack)
 
-본 시스템은 정밀한 데이터 연동을 위해 **정적 자산 서버(8081)**와 **데이터 인텔리전스 API(8082)**의 병행 가동이 필요합니다.
+-   **Frontend**: Alpine.js, TailwindCSS 기반의 고해상도 HUD UI.
+-   **Backend**: FastAPI, Uvicorn 통합 서버 (포트 8081).
+-   **Data Integrity**: CSV 데이터 저장소 기반의 실시간 CRUD 지원.
+-   **Strategic View**: D-Day 예측 모델 및 리스크 인덱싱(QRI) 엔진 탑재.
+-   **Deployment**: GitHub Pages (Static) 및 Local Python Server (Full Stack).
 
-### 1단계: 환경 구축 (Windows/macOS)
+---
+
+## 📋 빠른 시작 가이드 (Quick Start)
+
+### 1. 로컬 통합 서버 가동 (Full Features)
+모든 데이터 갱신 및 대시보드 실시간 반영 기능을 확인하시려면 로컬 서버를 실행해 주십시오.
+
 ```powershell
-python -m venv venv_windows
-.\venv_windows\Scripts\activate
-python -m pip install -r requirements.txt
-```
-
-### 2단계: 통합 전략 엔진 기동
-```powershell
-# 모든 서버(Dashboard + API)를 원클릭으로 기동합니다.
+# 통합 서버 및 런처 기동
 python enterprise_ax_start.py
 ```
+접속 주소: [http://localhost:8081/index.html](http://localhost:8081/index.html) (새 창에서 열기 권장)
 
-### 3단계: 시스템 접속
-*   **전략 대시보드**: [http://localhost:8081/index.html](http://localhost:8081/index.html)
-*   **거버넌스 포털**: [http://localhost:8081/src/viz/admin_guidance.html](http://localhost:8081/src/viz/admin_guidance.html)
-*   **인텔리전스 API**: [http://localhost:8082/docs](http://localhost:8082/docs)
+### 2. 통합 검증 테스트 실행
+시스템 간의 데이터 정합성 및 대시보드 업데이트 로직에 대한 검증을 수행합니다.
 
----
-
-## 🛠 Strategic Architecture
-![System Architecture](docs/images/architecture_v25.png)
-
-```mermaid
-graph TD
-    A[ERP & Yard IoT Data] --> B{Strategic Insight Engine}
-    B --> C[Digital Twin Dashboard]
-    B --> D[Risk Management Protocol]
-    C --> E[Executive Decision Support]
-    D --> F[Real-time Alerting]
+```powershell
+python tests/test_integration.py
 ```
 
 ---
 
-## 🔒 Security & Governance
-*   **Data Integrity**: AES-256 기반 암호화 및 하드웨어 가속 검증.
-*   **Access Control**: 전용 보안 토큰을 통한 관리자 권한 제어.
-*   **Code Quality**: `TestSprite`를 통한 상시 QA 보장.
+## 🎯 포트폴리오 가치 (Strategic Value)
+
+-   **데이터 기반 의사결정**: 단순 모니터링을 넘어 리스크를 수치화하고 대응 지침을 즉각 배포하는 거버넌스 체계 구축.
+-   **운영 효율성**: RPA 연동 및 ERP 데이터 무결성 설계를 통해 휴먼 에러를 최소화.
+-   **확장성**: 경량화된 아키텍처로 실제 현장 IoT 센서 데이터와의 즉각적인 결합 가능.
 
 ---
-
-© 2026 Hanwha Ocean AX Advanced Development Team. All Rights Reserved.
+© 2026 Hanwha Ocean AX Team. Enterprise Portfolio Edition.

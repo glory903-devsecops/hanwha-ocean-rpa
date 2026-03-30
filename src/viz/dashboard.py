@@ -2,20 +2,21 @@ import pandas as pd
 import os
 import sys
 import html
-import datetime
+import json
 
-# 프로젝트 루트를 path에 추가하여 src 모듈을 불러올 수 있게 함
+# 프로젝트 루트를 path에 추가
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from src.core import config, analytics
 from src.viz import theme
 
 class DashboardEngine:
     """
-    Visualization Engine for Hanwha Ocean AX (v25.3.0 - Strategic Vector Graphic).
+    Visualization Engine for Hanwha Ocean AX (v26.0.0 - Executive List Edition).
     STRATEGIC COMMAND & CONTROL INTERFACE:
-    - [GRAPHIC HUD]: Pure SVG-based interactive shipyard map (100% Code-based Graphic).
-    - [INTERACTIVE NODES]: Glowing safety nodes on a vectorized blueprint.
-    - [TIERED RESPONSE]: Pinned critical response panels.
+    - [DASHBOARD UI]: Reverted to Executive List with horizontal progress bars.
+    - [STATUS VIZ]: Circular status indicators for risk levels.
+    - [INTERACTION]: Center Popup for detailed instructions.
+    - [LOCALIZATION]: Full Korean Support.
     """
     
     def __init__(self):
@@ -27,119 +28,82 @@ class DashboardEngine:
     def load_data(self):
         csv_path = os.path.join(self.config.DATA_DIR, "dock_status.csv")
         self.df_dock = pd.read_csv(csv_path)
-        # Clean safety prefixes
         for prefix in ["[주의]", "[기상]", "[위험]", "[경고]", "[장비]"]:
             self.df_dock["안전이슈"] = self.df_dock["안전이슈"].str.replace(prefix + " ", "", regex=False)
 
-    def generate_svg_map(self, df):
-        """Generates a high-end SVG shipyard blueprint with interactive status nodes."""
-        svg_nodes = ""
-        # 60개 노드 조밀 배치 (XY 좌표 가상으로 분산)
-        for i, row in df.iterrows():
-            # 가상 좌표 (Shipyard-like grid)
-            x = 200 + (i % 10) * 80
-            y = 150 + (i // 10) * 100
-            
-            sev = str(row["안전이슈"])
-            color = "#EF4444" if "위험" in sev or "경고" in sev else ("#F59E0B" if "주의" in sev else "#00F2FF")
-            opacity = "0.8" if "위험" in sev else "0.3"
-            stroke_width = "4" if "위험" in sev else "1"
-            pulse_class = "animate-ping" if "위험" in sev else ""
-            
-            svg_nodes += f"""
-            <g class="cursor-pointer group" @mouseenter="showGuidance('{html.escape(sev)}', $event)" @mouseleave="hideGuidance()">
-                <circle cx="{x}" cy="{y}" r="12" fill="{color}" fill-opacity="{opacity}" stroke="{color}" stroke-width="{stroke_width}" class="{pulse_class}" />
-                <circle cx="{x}" cy="{y}" r="6" fill="{color}" />
-                <text x="{x}" y="{y-20}" text-anchor="middle" font-size="10" fill="white" font-weight="900" class="opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">{html.escape(str(row['구역/도크']))}</text>
-            </g>
-            """
-            
-        return f"""
-        <svg viewBox="0 0 1200 800" class="w-full h-full drop-shadow-[0_0_30px_rgba(0,163,255,0.1)]">
-            <!-- BLUEPRINT GRID -->
-            <defs>
-                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
-                </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-            
-            <!-- SHIPYARD OUTLINE (ABSTRACT GRAPHIC) -->
-            <path d="M 100 100 L 1100 100 L 1100 700 L 100 700 Z" fill="none" stroke="rgba(0, 242, 255, 0.1)" stroke-width="2" stroke-dasharray="10,10" />
-            <path d="M 300 200 Q 600 50 900 200 L 900 600 Q 600 750 300 600 Z" fill="rgba(30, 41, 59, 0.2)" stroke="rgba(0, 242, 255, 0.2)" stroke-width="1" />
-            
-            <!-- DOCK CONNECTORS -->
-            <line x1="100" y1="400" x2="1100" y2="400" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="5,5" />
-            
-            <!-- INTERACTIVE NODES -->
-            {svg_nodes}
-        </svg>
-        """
-
     def render(self):
-        print(f"📡 [Enterprise-AX] Rendering Interactive Vector Graphic Dashboard (v25.3.0 Strategic Blueprint)...")
+        print(f"📡 [Enterprise-AX] Rendering Executive List Dashboard (v26.0.0 Final)...")
         self.load_data()
         
-        # 1. High-Level KPI Data
         avg_proc = self.analytics.calculate_average_progress(self.df_dock)
-        days_to_go, proj_date = self.analytics.predict_dday(avg_proc)
         risk_index = self.analytics.calculate_executive_risk_index(self.df_dock)
+        days_to_go, proj_date = self.analytics.predict_dday(avg_proc)
         
-        # 2. Logic for Tiering
+        # Sorting
         def get_severity_score(row):
             val = str(row["안전이슈"])
-            if any(x in val for x in ["위험", "경고", "중단", "점검", "주의"]): 
-                return 0 if "위험" in val or "경고" in val else 1
+            if any(x in val for x in ["위험", "경고", "중단"]): return 0
+            if any(x in val for x in ["주의", "점검"]): return 1
             return 2
             
         self.df_dock["sev_score"] = self.df_dock.apply(get_severity_score, axis=1)
-        df_critical = self.df_dock[self.df_dock["sev_score"] == 0]
-        df_standard = self.df_dock[self.df_dock["sev_score"] != 0].sort_values(["sev_score", "공정률"], ascending=[True, True])
+        df_sorted = self.df_dock.sort_values(["sev_score", "공정률"], ascending=[True, True])
 
-        # 3. Generate SVG Map Component
-        svg_map_html = self.generate_svg_map(self.df_dock)
-
-        # 4. Critical List (Floating HUD)
-        critical_list_html = ""
-        for _, row in df_critical.iterrows():
-            e_dock = html.escape(str(row['구역/도크']))
-            e_safety = html.escape(str(row['안전이슈']))
-            critical_list_html += f"""
-            <div class="glass-hud p-6 rounded-3xl border-l-[12px] border-red-500 animate-pulse-slow mb-4 flex justify-between items-center bg-red-500/5">
-                <div>
-                    <h5 class="text-xl font-black text-white italic tracking-tighter uppercase">{e_dock}</h5>
-                    <p class="text-[10px] font-black text-red-500 uppercase tracking-widest">{e_safety}</p>
-                </div>
-                <div class="text-3xl font-black text-white">{row['공정률']}%</div>
-            </div>
-            """
-
-        # 5. Global Track List
-        global_list_html = ""
-        for _, row in df_standard.iterrows():
-            e_dock = html.escape(str(row['구역/도크']))
-            global_list_html += f"""
-            <div class="flex items-center justify-between p-3 border-b border-white/5 hover:bg-white/5 transition-all text-left card-node cursor-default"
-                 data-severity="{'caution' if row['sev_score']==1 else 'optimal'}" data-task="{html.escape(str(row['현재작업']))}" data-name="{e_dock.lower()}">
-                <div class="text-[10px] font-black text-gray-400 uppercase tracking-tighter truncate max-w-[120px]">{e_dock}</div>
-                <div class="flex items-center gap-3">
-                    <span class="text-lg font-black text-white italic">{row['공정률']}%</span>
-                    <div class="w-12 h-1 bg-white/10 rounded-full overflow-hidden">
-                        <div class="h-full bg-cyan-500" style="width: {row['공정률']}%"></div>
-                    </div>
-                </div>
-            </div>
-            """
-
-        # 6. Final HTML Assembly
-        output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
+        # Guidelines for Popup
         guidelines_path = os.path.join(self.config.DATA_DIR, "safety_guidelines.csv")
         guidelines_json = "[]"
         if os.path.exists(guidelines_path):
             g_df = pd.read_csv(guidelines_path)
             guidelines_json = g_df.to_json(orient="records")
+
+        # HTML Generation: List Items
+        list_html = ""
+        for _, row in df_sorted.iterrows():
+            e_dock = html.escape(str(row['구역/도크']))
+            e_task = html.escape(str(row['현재작업']))
+            e_safety = html.escape(str(row['안전이슈']))
             
+            sev = row['sev_score']
+            color = {0: "#EF4444", 1: "#F59E0B", 2: "#10B981"}.get(sev)
+            label = {0: "위험", 1: "주의", 2: "정상"}.get(sev)
+            
+            list_html += f"""
+            <div class="glass flex items-center gap-12 p-10 rounded-[2.5rem] border-l-[16px] group transition-all hover:bg-white/5" style="border-left-color: {color}">
+                <!-- CIRCULAR STATUS -->
+                <div class="relative w-24 h-24 flex items-center justify-center shrink-0">
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle cx="48" cy="48" r="40" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" />
+                        <circle cx="48" cy="48" r="40" stroke="{color}" stroke-width="8" fill="transparent" 
+                                stroke-dasharray="251.2" stroke-dashoffset="{251.2 * (1 - (100 if sev==2 else 50 if sev==1 else 25)/100)}" 
+                                class="transition-all duration-1000" />
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center text-xs font-black" style="color: {color}">{label}</div>
+                </div>
+
+                <!-- MAIN INFO -->
+                <div class="flex-1 space-y-3">
+                    <div class="flex items-end gap-6">
+                        <h4 class="text-4xl font-black italic tracking-tighter uppercase whitespace-nowrap">{e_dock}</h4>
+                        <span class="text-sm font-bold text-gray-500 uppercase tracking-widest pb-1">{e_task}</span>
+                    </div>
+                    <!-- PROGRESS BAR -->
+                    <div class="flex items-center gap-8">
+                        <div class="flex-1 bg-white/5 h-2.5 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full transition-all duration-1000" style="width: {row['공정률']}%"></div>
+                        </div>
+                        <div class="text-4xl font-black italic tracking-tighter w-24 text-right">{row['공정률']}%</div>
+                    </div>
+                </div>
+
+                <!-- PRECAUTION ACTION BUTTON -->
+                <button @click="openPopup('{e_safety}', '{e_dock}')" class="px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-orange-500 hover:border-orange-400 transition-all text-xs font-black uppercase tracking-widest whitespace-nowrap">
+                    ⚠️ 주의사항 확인
+                </button>
+            </div>
+            """
+
         css_vars = theme.get_css_vars()
+        output_path = os.path.join(self.config.BASE_DIR, "smart_yard_dashboard.html")
         
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(f"""
@@ -148,131 +112,111 @@ class DashboardEngine:
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한화오션 AX - 인터랙티브 블루프린트 (v25.3.0)</title>
+    <title>한화오션 AX: 전략 관제 시스템 (v26.0.0)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {{ 
-            {css_vars} 
-        }}
+        :root {{ {css_vars} }}
         body {{ 
             background: #020617; 
             color: #fff; 
             font-family: 'Outfit', 'Noto Sans KR', sans-serif;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
+            background-image: radial-gradient(circle at 0% 0%, rgba(249,115,22,0.1), transparent 50%);
+            min-height: 100vh;
         }}
-        .hud-layer {{ position: relative; z-index: 20; height: 100vh; display: flex; flex-direction: column; }}
-        .glass-hud {{ background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.08); }}
-        @keyframes pulse-slow {{ 0%, 100% {{ opacity: 1; }} 50% {{ opacity: 0.8; transform: scale(1.005); }} }}
-        .animate-pulse-slow {{ animation: pulse-slow 3s infinite ease-in-out; }}
-        .custom-scroll::-webkit-scrollbar {{ width: 4px; }}
-        .custom-scroll::-webkit-scrollbar-thumb {{ background: rgba(0, 242, 255, 0.3); border-radius: 10px; }}
+        .glass {{ background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.05); }}
         [x-cloak] {{ display: none !important; }}
+        ::-webkit-scrollbar {{ width: 8px; }}
+        ::-webkit-scrollbar-thumb {{ background: rgba(249,115,22,0.2); border-radius: 10px; }}
     </style>
 </head>
-<body x-data="axDashboard()">
-    
-    <div class="hud-layer p-10">
-        <!-- TOP STRATEGIC HUD -->
-        <header class="flex justify-between items-center mb-10 w-full">
-            <div class="flex items-center gap-8">
-                <div class="w-16 h-16 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-2xl flex items-center justify-center text-3xl font-black italic">H</div>
-                <div class="flex flex-col">
-                    <h1 class="text-4xl lg:text-5xl font-black tracking-tighter uppercase italic leading-none">
-                        VECTOR <span class="text-[#00F2FF]">BLUEPRINT</span>
-                    </h1>
-                    <p class="text-[8px] font-black text-[#FF6B00] uppercase tracking-[1em] mt-2">v25.3.0 그래픽 관제 가동 중</p>
+<body x-data="dashboard()" class="p-8 lg:p-20">
+    <div class="max-w-[1400px] mx-auto">
+        <!-- HEADER -->
+        <header class="flex justify-between items-end mb-20">
+            <div>
+                <div class="flex items-center gap-6 mb-6">
+                    <div class="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center text-3xl font-black italic shadow-2xl">H</div>
+                    <h1 class="text-6xl font-black italic tracking-tighter uppercase leading-none">STRATEGIC <span class="text-orange-500">AX DASHBOARD</span></h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="w-12 h-0.5 bg-orange-500"></span>
+                    <p class="text-xs font-black text-gray-500 uppercase tracking-[1em]">v26.0.0 전사 통합 관제 시스템</p>
                 </div>
             </div>
-
-            <div class="flex gap-4">
-                <div class="glass-hud p-6 rounded-3xl min-w-[200px] border-l-4 border-[#00F2FF]">
-                    <p class="text-[7px] font-bold text-gray-500 uppercase tracking-widest mb-1">RISK INDEX</p>
-                    <p class="text-4xl font-black text-white italic tabular-nums">{risk_index}</p>
+            <div class="flex gap-10">
+                <div class="text-right">
+                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2">RISK INDEX</p>
+                    <p class="text-5xl font-black italic">{risk_index}</p>
                 </div>
-                <div class="glass-hud p-6 rounded-3xl min-w-[200px] border-l-4 border-[#FF6B00]">
-                    <p class="text-[7px] font-bold text-gray-500 uppercase tracking-widest mb-1">YARD PROGRESS</p>
-                    <p class="text-4xl font-black text-[#FF6B00] italic tabular-nums">{avg_proc:.1f}%</p>
+                <div class="text-right border-l border-white/10 pl-10">
+                    <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2">YARD PROGRESS</p>
+                    <p class="text-5xl font-black italic text-orange-500">{avg_proc:.1f}%</p>
                 </div>
             </div>
         </header>
 
-        <!-- MAIN VIEWPORT (SVG MAP HERO) -->
-        <div class="flex-1 flex gap-8 overflow-hidden relative">
-            
-            <!-- LEFT: CRITICAL FLOATING HUD -->
-            <div class="w-[380px] flex flex-col z-50">
-                <h2 class="text-xl font-black italic uppercase tracking-tighter text-white mb-6">Critical Nodes</h2>
-                <div class="flex-1 overflow-y-auto custom-scroll pr-4 space-y-4">
-                    {critical_list_html or '<div class="opacity-20 text-xs text-center border-2 border-dashed border-white/5 py-10 rounded-3xl">Stabilized</div>'}
-                </div>
-                <div class="glass-hud p-8 rounded-[3rem] mt-10">
-                    <p class="text-[8px] font-black text-emerald-500 uppercase tracking-widest mb-2">Completion Prediction</p>
-                    <p class="text-4xl font-black text-white italic">D-{days_to_go:.0f}</p>
+        <!-- MAIN LIST AREA -->
+        <main class="space-y-6 pb-40">
+            <div class="flex justify-between items-center px-10 mb-10">
+                <h2 class="text-2xl font-black italic uppercase tracking-widest text-white/50">Yard Asset Operations</h2>
+                <div class="flex items-center gap-4 text-xs font-black text-orange-500 bg-orange-500/5 px-6 py-3 rounded-full border border-orange-500/20">
+                    <span class="w-2 h-2 bg-orange-500 rounded-full animate-ping"></span>
+                    D-{days_to_go:.0f} (예상 인도: {proj_date})
                 </div>
             </div>
+            {list_html}
+        </main>
 
-            <!-- CENTER GRAPHIC: THE SVG SHIPYARD BLUEPRINT -->
-            <div class="flex-1 glass-hud rounded-[4rem] relative overflow-hidden flex items-center justify-center p-10 border border-white/5">
-                <div class="absolute top-8 right-12 z-50">
-                    <span class="text-[8px] font-black text-[#00F2FF] uppercase tracking-[1em]">Shipyard Virtual Layout Active</span>
-                </div>
-                <!-- THE SVG STARTS HERE -->
-                {svg_map_html}
-            </div>
+        <!-- FOOTER WITH GITHUB LINK -->
+        <footer class="flex flex-col items-center py-20 border-t border-white/5 opacity-40">
+             <p class="text-[10px] font-black uppercase tracking-[1.5em] mb-12">Proprietary AX Engine | Hanwha Ocean AX Team</p>
+             <a href="https://github.com/glory903-devsecops/hanwha-ocean-rpa" target="_blank" 
+                class="inline-flex items-center gap-4 px-10 py-5 bg-white text-black rounded-full font-black italic tracking-tighter hover:scale-110 active:scale-95 transition-all">
+                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                 GITHUB REPOSITORY
+             </a>
+        </footer>
 
-            <!-- RIGHT: COMPACT GLOBAL TRACKER -->
-            <div class="w-[320px] flex flex-col z-50 pt-[10vh]">
-                <div class="glass-hud flex-1 flex flex-col rounded-[3rem] overflow-hidden shadow-2xl">
-                    <div class="p-6 border-b border-white/5 bg-white/5">
-                        <h3 class="text-xs font-black uppercase italic tracking-widest text-[#00F2FF]">Global Asset Tracker</h3>
-                    </div>
-                    <div class="p-3">
-                        <input type="text" x-model="search" placeholder="Filter..." class="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-xs font-black focus:outline-none focus:border-[#00F2FF]">
-                    </div>
-                    <div class="flex-1 overflow-y-auto custom-scroll">
-                        {global_list_html}
+        <!-- CENTER POPUP OVERLAY -->
+        <div x-show="popup.open" x-cloak class="fixed inset-0 z-[1000] flex items-center justify-center p-10 bg-black/80 backdrop-blur-md" x-transition>
+            <div class="glass max-w-2xl w-full p-16 rounded-[4rem] border-orange-500/30 relative" @click.away="popup.open = false">
+                <button @click="popup.open = false" class="absolute top-10 right-10 text-4xl text-white/50 hover:text-white">&times;</button>
+                <div class="flex items-center gap-6 mb-10">
+                    <div class="w-16 h-16 bg-orange-500/10 rounded-2xl flex items-center justify-center text-4xl">🤖</div>
+                    <div>
+                        <h3 class="text-4xl font-black italic tracking-tighter uppercase mb-2">지시사항 <span class="text-orange-500">브리핑</span></h3>
+                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest" x-text="`DOCK ID: ${{popup.dock}}`"></p>
                     </div>
                 </div>
+                <div class="space-y-8">
+                    <div>
+                        <p class="text-[10px] font-black text-orange-500 uppercase tracking-[0.5em] mb-4">현재 이슈</p>
+                        <p class="text-3xl font-black text-white" x-text="popup.issue"></p>
+                    </div>
+                    <div class="h-px bg-white/10"></div>
+                    <div>
+                        <p class="text-[10px] font-black text-orange-500 uppercase tracking-[0.5em] mb-4">AX 대응 지침 (Protocol)</p>
+                        <p class="text-2xl font-bold text-gray-300 leading-relaxed" x-text="popup.guidance"></p>
+                    </div>
+                </div>
+                <button @click="popup.open = false" class="mt-16 w-full py-6 rounded-3xl bg-orange-500 text-white text-xl font-black italic transition-all hover:scale-[1.02]">알겠습니다. 즉시 시행합니다.</button>
             </div>
         </div>
-
-        <footer class="mt-8 flex justify-between items-center opacity-30 py-6 border-t border-white/5 w-full">
-            <p class="text-[8px] font-black uppercase tracking-[1em]">Hanwha Ocean AX Vector Engine V25.3.0</p>
-        </footer>
-    </div>
-
-    <!-- AI SISE OVERLAY -->
-    <div x-show="guidance.show" x-cloak class="fixed pointer-events-none z-[3000] glass-hud p-8 max-w-xs border-[#FF6B00]/40 rounded-[2rem]" :style="`left: ${{guidance.x}}px; top: ${{guidance.y}}px;`" x-transition>
-        <p class="text-sm font-bold text-white leading-relaxed" x-text="guidance.text"></p>
     </div>
 
     <script>
-        function axDashboard() {{
+        function dashboard() {{
             return {{
-                filter: 'all', search: '', guidelines: {guidelines_json}, guidance: {{ show: false, text: '', x: 0, y: 0 }},
-                applyFilters() {{
-                    const cards = document.querySelectorAll('.card-node');
-                    cards.forEach(card => {{
-                        const name = card.dataset.name;
-                        const task = card.dataset.task;
-                        const matchesSearch = name.includes(this.search.toLowerCase()) || task.includes(this.search.toLowerCase());
-                        card.style.display = matchesSearch ? 'flex' : 'none';
-                    }});
-                }},
-                showGuidance(issue, event) {{
-                    const match = this.guidelines.find(g => issue.includes(g.ISSUE));
-                    this.guidance.text = match ? match.GUIDANCE : 'Monitoring State.';
-                    this.guidance.x = event.clientX + 20;
-                    this.guidance.y = event.clientY + 20;
-                    this.guidance.show = true;
-                }},
-                hideGuidance() {{ this.guidance.show = false; }},
-                init() {{
-                    this.$watch('search', () => this.applyFilters());
+                popup: {{ open: false, issue: '', guidance: '', dock: '' }},
+                guidelines: {guidelines_json},
+                openPopup(issue, dock) {{
+                    const match = this.guidelines.find(g => issue.includes(g.ISSUE)) || {{ GUIDANCE: '해당 항목에 대한 자동 프로토콜이 정의되지 않았습니다. 관리 센터에 직접 문의하십시오.' }};
+                    this.popup.issue = issue;
+                    this.popup.dock = dock;
+                    this.popup.guidance = match.GUIDANCE;
+                    this.popup.open = true;
                 }}
             }}
         }}
@@ -280,7 +224,7 @@ class DashboardEngine:
 </body>
 </html>
             """)
-        print(f"✨ Strategic Vector Blueprint Dashboard (v25.3.0) Generated: {{output_path}}")
+        print(f"✨ Executive List Dashboard (v26.0.0) Generated: {{output_path}}")
 
 if __name__ == "__main__":
     engine = DashboardEngine()

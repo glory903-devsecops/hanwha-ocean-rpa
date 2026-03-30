@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>한화오션 Smart Yard: 지휘 지시사항 관리 (Admin)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: #020617; 
+            color: #f1f5f9;
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+        }
+        .form-card { background: #1e1b4b; border: 1px solid #4338ca; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-10">
+    
+    <div class="max-w-xl w-full">
+        <header class="text-center mb-12">
+             <div class="inline-flex items-center gap-3 px-6 py-2 bg-cyan-500/10 rounded-full border border-cyan-500/20 mb-4">
+                <span class="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></span>
+                <span class="text-[10px] font-black tracking-widest text-cyan-500 uppercase">Governance Mode</span>
+            </div>
+            <h1 class="text-5xl font-black text-cyan-400 italic mb-4 uppercase">Governance Portal</h1>
+            <p class="text-gray-400 font-bold tracking-widest uppercase">데이터 거버넌스 및 대응 지시사항 관리</p>
+        </header>
+
+        <div class="form-card p-12 rounded-[3rem] shadow-2xl space-y-10">
+            <div>
+                <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">대응 이슈 (Keyword)</label>
+                <select id="issue" class="w-full bg-slate-950 border border-slate-800 rounded-2xl py-5 px-8 text-xl font-black text-white focus:outline-none focus:border-cyan-500">
+                    <option value="" disabled selected>관리할 이슈를 선택하십시오</option>
+                    <option>크레인 오작동</option>
+                    <option>낙하물 발생</option>
+                    <option>유해가스 감지</option>
+                    <option>분진 발생</option>
+                    <option>화기 작업 주의</option>
+                    <option>정상</option>
+                </select>
+                <p class="mt-2 text-[10px] text-gray-500">* 대시보드 팝업에 실시간으로 매칭될 키워드입니다.</p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">현장 대응 지침 (Guidance)</label>
+                <textarea id="guidance" placeholder="작업 중단 및 전원 차단 명령..." rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-2xl py-6 px-8 text-lg font-bold text-white focus:outline-none focus:border-cyan-500 placeholder:text-slate-800"></textarea>
+            </div>
+
+            <button onclick="submitGuidance()" class="w-full py-8 bg-cyan-600 text-white text-2xl font-black italic rounded-3xl hover:bg-cyan-500 transition-all shadow-xl">전략 지침 데이터베이스 갱신</button>
+        </div>
+
+        <nav class="mt-12 flex justify-between px-10">
+            <a href="index.html" target="_blank" class="text-xs font-black text-gray-500 hover:text-cyan-400 transition-colors uppercase tracking-widest">← HUB Home</a>
+            <a href="smart_yard_dashboard.html" target="_blank" class="text-xs font-black text-gray-500 hover:text-cyan-400 transition-colors uppercase tracking-widest">Dashboard →</a>
+        </nav>
+
+        <footer class="mt-20 text-center opacity-40">
+            <p class="text-[10px] font-black uppercase tracking-[1.5em] mb-8 text-gray-800">Governance Admin Gateway V26.0.0</p>
+             <a href="https://github.com/glory903-devsecops/hanwha-ocean-rpa" target="_blank" class="inline-flex items-center gap-2 text-xs font-black text-white hover:underline">
+                 GITHUB REPOSITORY
+             </a>
+        </footer>
+    </div>
+
+    <script>
+        async function submitGuidance() {
+            const issue = document.getElementById('issue').value;
+            const guidance = document.getElementById('guidance').value;
+
+            if (!issue || !guidance) {
+                alert("이슈 선택 및 지시사항 내용을 입력하십시오.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/update_guideline', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ issue, guidance })
+                });
+
+                if (response.ok) {
+                    alert("성공: [" + issue + "] 지시사항이 업데이트되었습니다.");
+                } else {
+                    alert("오류: 지침 갱신에 실패했습니다.");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("연결 오류: API 서버 기동 상태를 확인하십시오.");
+            }
+        }
+    </script>
+</body>
+</html>
