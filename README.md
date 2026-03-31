@@ -1,9 +1,9 @@
-# 한화오션 스마트 야드 전략 관제 시스템 (v26.3.2)
+# 한화오션 AX 스마트 야드 전략 관제 시스템 (v26.3.2)
 
 ## 🌐 바로가기
 - **<a href="https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html" target="_blank">📊 라이브 대시보드 데모</a>**
 
-[![Demo Dashboard](https://img.shields.io/badge/Live-Demo%20Dashboard-orange?style=for-the-badge&logo=github)](https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html)
+<a href="https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html" target="_blank"><img src="https://img.shields.io/badge/Live-Demo%20Dashboard-orange?style=for-the-badge&logo=github" alt="Demo Dashboard"></a>
 
 본 프로젝트는 **한화오션 스마트 야드 디지털 전환(AX)** 비전을 실현하기 위한 차세대 전략 관제 및 RPA 통합 관리 시스템입니다. 조선소의 수만 개 자산과 수십 개의 도크 공정을 실시간 디지털 트윈으로 구현하여, 경영진과 현장 관리자가 최적의 의사결정을 내릴 수 있도록 돕습니다.
 
