@@ -1,7 +1,7 @@
 # 한화오션 AX 스마트 야드 전략 관제 시스템 (v26.3.2)
 
 ## 🌐 바로가기
-- **<a href="https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html" target="_blank">📊 라이브 대시보드 데모</a>**
+<a href="https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html" target="_blank" rel="noopener noreferrer">📊 라이브 대시보드 데모 바로가기</a>
 
 <a href="https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html" target="_blank"><img src="https://img.shields.io/badge/Live-Demo%20Dashboard-orange?style=for-the-badge&logo=github" alt="Demo Dashboard"></a>
 
