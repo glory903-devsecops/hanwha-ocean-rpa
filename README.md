@@ -1,32 +1,28 @@
-# ⚓ 한화오션 AX: 최첨단 전략 관제 및 RPA 통합 관리 시스템 (v26.3.2)
+# 한화오션 스마트 야드 전략 관제 시스템 (v26.3.2)
 
-## 🌐 바로가기 (Live Quick Links)
-- **📊 [라이브 대시보드 데모]**: [https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html](https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html)
-- **📁 [포트폴리오 저장소]**: [https://github.com/glory903-devsecops/hanwha-ocean-rpa](https://github.com/glory903-devsecops/hanwha-ocean-rpa)
+## 🌐 바로가기
+- **<a href="https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html" target="_blank">📊 라이브 대시보드 데모</a>**
 
 [![Demo Dashboard](https://img.shields.io/badge/Live-Demo%20Dashboard-orange?style=for-the-badge&logo=github)](https://glory903-devsecops.github.io/hanwha-ocean-rpa/index.html)
-[![Portfolio Edition](https://img.shields.io/badge/Portfolio-Global%20Enterprise-blue?style=for-the-badge)](https://github.com/glory903-devsecops/hanwha-ocean-rpa)
 
-본 프로젝트는 **한화오션 스마트 야드(Smart Yard) AX(AI Transformation)** 비전을 실현하기 위한 차세대 전략 관제 및 RPA 통합 관리 시스템입니다. 조선소의 수만 개 자산과 수십 개의 도크 공정을 실시간 디지털 트윈으로 구현하여, 경영진과 현장 관리자가 최적의 의사결정을 내릴 수 있도록 돕습니다.
+본 프로젝트는 **한화오션 스마트 야드 디지털 전환(AX)** 비전을 실현하기 위한 차세대 전략 관제 및 RPA 통합 관리 시스템입니다. 조선소의 수만 개 자산과 수십 개의 도크 공정을 실시간 디지털 트윈으로 구현하여, 경영진과 현장 관리자가 최적의 의사결정을 내릴 수 있도록 돕습니다.
 
 ---
 
-## 🚀 전사 통합 런처 (Enterprise AX Launchpad)
+## 🚀 전사 통합 런처
 
-본 시스템은 3개의 핵심 서비스 채널로 구성되어 있으며, 모든 인터페이스는 **한국어**로 완벽하게 현지화되었습니다.
-
-1.  **📊 [전략 관제 대시보드] (Strategic Dashboard)**: 
+1.  **📊 [전략 관제 대시보드]**: 
     - 전사 도크 공정률 및 리스크 지수를 한눈에 파악하는 컨트롤 타워입니다.
     - 항목별 가로 막대 그래프와 원형 리스크 상태 뷰를 제공하며, 주의사항 클릭 시 **실시간 대응 지휘 팝업**이 출력됩니다.
-2.  **📝 [도크 현황 기록 ERP] (RPA Dock Entry)**:
+2.  **📝 [도크 현황 기록 ERP]**:
     - 현장에서 RPA 봇이 수집한 데이터를 입력하거나 수동으로 공정률을 갱신하는 ERP 시뮬레이터입니다.
     - 도크 이름 **드롭다운 선택 방식**을 적용하여 데이터 오타 및 중복을 방지합니다.
-3.  **⚙️ [지휘 지시사항 관리] (Admin Portal)**:
+3.  **⚙️ [지휘 지시사항 관리]**:
     - 발생 가능한 리스크(가스 감지, 낙하물 등)에 대한 **AX 대응 프로토콜**을 수립하고 실시간으로 배포하는 거버넌스 포털입니다.
 
 ---
 
-## 🛠 기술 아키텍처 & 특점 (Refined Tech Stack)
+## 🛠 기술 아키텍처 및 특점
 
 -   **Frontend**: Alpine.js, TailwindCSS 기반의 고해상도 HUD UI.
 -   **Backend**: FastAPI, Uvicorn 통합 서버 (포트 8081).
@@ -36,16 +32,16 @@
 
 ---
 
-## 📋 빠른 시작 가이드 (Quick Start)
+## 📋 빠른 시작 가이드
 
-### 1. 로컬 통합 서버 가동 (Full Features)
+### 1. 로컬 통합 서버 가동
 모든 데이터 갱신 및 대시보드 실시간 반영 기능을 확인하시려면 로컬 서버를 실행해 주십시오.
 
 ```powershell
 # 통합 서버 및 런처 기동
 python enterprise_ax_start.py
 ```
-접속 주소: [http://localhost:8081/index.html](http://localhost:8081/index.html) (새 창에서 열기 권장)
+접속 주소: <a href="http://localhost:8081/index.html" target="_blank">http://localhost:8081/index.html</a>
 
 ### 2. 통합 검증 테스트 실행
 시스템 간의 데이터 정합성 및 대시보드 업데이트 로직에 대한 검증을 수행합니다.
@@ -72,7 +68,10 @@ python tests/test_api_integration.py
 ### 2. 라이브 시스템 시연 (Live Activity Workflow)
 아래 시연 과정은 실제 로컬 서버 상에서 **'신규 도크 추가 -> 긴급 대응 지침 등록 -> 대시보드 실시간 필터링 및 팝업 확인'**의 전 과정을 기록한 것입니다.
 
-![플랫폼 통합 검증 시연](docs/videos/verification_v26_3.webp)
+<br>
+<img src="https://raw.githubusercontent.com/glory903-devsecops/hanwha-ocean-rpa/main/docs/videos/verification_v26_3.webp" width="100%" alt="플랫폼 통합 검증 시연">
+<br>
+
 *시연 파일: `docs/videos/verification_v26_3.webp` (Enterprise-AX-Cycle)*
 
 #### [핵심 검증 포인트]
